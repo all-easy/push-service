@@ -1,0 +1,26 @@
+version: "3"
+services:
+  # APP*****************************************
+  push-service:
+    container_name: push-service
+    build: .
+    networks:
+      - postgres
+      - metrics
+    volumes:
+      - ./log:/var/log
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    environment:
+      - PROFILE=${PROFILE}
+    restart: unless-stopped
+
+networks:
+  postgres:
+    external:
+      name: common
+  metrics:
+    external:
+      name: metrics

@@ -1,0 +1,1 @@
+scp -r target/*.jar root@all-easy.ru:./push/target
