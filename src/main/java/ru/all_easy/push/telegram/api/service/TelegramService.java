@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import ru.all_easy.push.common.ClientApi;
@@ -20,15 +19,15 @@ public class TelegramService implements ClientApi {
     private final String hookUrl;
     private final boolean dropPendingUpdates;
     private final TelegramFeignClient telegramFeignClient;
+    private final TelegramConfig telegramConfig;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TelegramService.class);
 
-    public TelegramService(@Value("${telegram.hook}") String hookUrl,
-                           @Value("${telegram.drop_pending_updates}") boolean dropPendingUpdates,
-                           TelegramFeignClient telegramFeignClient) {
-        this.hookUrl = hookUrl;
-        this.dropPendingUpdates = dropPendingUpdates;
+    public TelegramService(TelegramFeignClient telegramFeignClient, TelegramConfig telegramConfig) {
+        this.hookUrl = telegramConfig.hook();
+        this.dropPendingUpdates = telegramConfig.dropPendingUpdates();
         this.telegramFeignClient = telegramFeignClient;
+        this.telegramConfig = telegramConfig;
     }
 
     @PostConstruct
@@ -41,7 +40,7 @@ public class TelegramService implements ClientApi {
 
     @Override
     public String setWebhook(SetWebhookInfo info) {
-        SetWebhookRequest request = new SetWebhookRequest(info.url(), info.drop_pending_updates());
+        SetWebhookRequest request = new SetWebhookRequest(info.url(), info.dropPendingUpdates());
         String response = telegramFeignClient.setWebhook(request);
         LOGGER.info(response);
 
