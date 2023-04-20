@@ -18,27 +18,30 @@ import ru.all_easy.push.telegram.api.client.model.SetWebhookRequest;
 public class TelegramService implements ClientApi {
 
     private final String hookUrl;
+    private final boolean dropPendingUpdates;
     private final TelegramFeignClient telegramFeignClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TelegramService.class);
 
-    public TelegramService(@Value("${telegram.hook}") String hookUrl, 
+    public TelegramService(@Value("${telegram.hook}") String hookUrl,
+                           @Value("${telegram.drop_pending_updates}") boolean dropPendingUpdates,
                            TelegramFeignClient telegramFeignClient) {
         this.hookUrl = hookUrl;
+        this.dropPendingUpdates = dropPendingUpdates;
         this.telegramFeignClient = telegramFeignClient;
     }
 
     @PostConstruct
     void init() {
-        String removeHookResult = setWebhook(new SetWebhookInfo(""));
+        String removeHookResult = setWebhook(new SetWebhookInfo("", dropPendingUpdates));
         LOGGER.info("Remove WebHook: {}", removeHookResult);
-        String setHookResult = setWebhook(new SetWebhookInfo(hookUrl));
+        String setHookResult = setWebhook(new SetWebhookInfo(hookUrl, dropPendingUpdates));
         LOGGER.info("Set WebHook: {}, {}", setHookResult, hookUrl);
     }
 
     @Override
     public String setWebhook(SetWebhookInfo info) {
-        SetWebhookRequest request = new SetWebhookRequest(info.url());
+        SetWebhookRequest request = new SetWebhookRequest(info.url(), info.drop_pending_updates());
         String response = telegramFeignClient.setWebhook(request);
         LOGGER.info(response);
 
