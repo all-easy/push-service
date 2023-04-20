@@ -14,7 +14,6 @@ import ru.all_easy.push.room.service.model.RoomResult;
 import ru.all_easy.push.shape.repository.Shape;
 import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
-import ru.all_easy.push.telegram.api.service.TelegramService;
 import ru.all_easy.push.telegram.commands.Commands;
 import ru.all_easy.push.user.repository.UserEntity;
 import ru.all_easy.push.user.service.UserService;
@@ -25,14 +24,11 @@ public class AddCommandRule implements CommandRule {
 
     private final RoomService roomService;
     private final UserService userService;
-    private  final TelegramService telegramService;
 
     public AddCommandRule(RoomService roomService,
-                          UserService userService,
-                          TelegramService telegramService) {
+                          UserService userService) {
         this.roomService = roomService;
         this.userService = userService;
-        this.telegramService = telegramService;
     }
 
     @Override
@@ -42,15 +38,17 @@ public class AddCommandRule implements CommandRule {
 
     @Override
     @Transactional
-    public void process(Update update) {
+    public SendMessageInfo process(Update update) {
         String userId = String.valueOf(update.message().from().id());
         String roomId = String.valueOf(update.message().chat().id());
         String username = update.message().from().username();
         Long chatId = update.message().chat().id();
         
         if (username == null) {
-            sendMessage(chatId, "Add username in Telegram settings please");
-            return;
+            return new SendMessageInfo(
+                    chatId,
+                    "Add username in Telegram settings please",
+                    ParseMode.MARKDOWN.getMode());
         }
 
         try {
@@ -62,13 +60,9 @@ public class AddCommandRule implements CommandRule {
             UserEntity user = userService.registerEntity(new RegisterInfo(username, StringUtils.EMPTY, userId));
             RoomResult result = roomService.enterRoom(user, room);
             String message = String.format("*%s* have been successfully added to virtual room *%s*", username, result.title());
-            sendMessage(chatId, message);
+            return new SendMessageInfo(chatId, message, ParseMode.MARKDOWN.getMode());
         } catch (RoomServiceException ex) {
-            sendMessage(chatId, ex.getMessage());
+            return new SendMessageInfo(chatId, ex.getMessage(), ParseMode.MARKDOWN.getMode());
         }
-    }
-
-    private void sendMessage(Long chatId, String message) {
-        telegramService.sendMessage(new SendMessageInfo(chatId, message, ParseMode.MARKDOWN.getMode()));
     }
 }

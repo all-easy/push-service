@@ -49,12 +49,13 @@ public class PushGroupCommandRule implements CommandRule {
     }
 
     @Override
-    public void process(Update update) {
+    public SendMessageInfo process(Update update) {
         Long chatId = update.message().chat().id();
         String messageText = update.message().text();
         String[] messageParts = messageText.split(" ");
-        if (!validate(chatId, messageParts)) {
-            return;
+        SendMessageInfo validationMessage = validate(chatId, messageParts);
+        if (validationMessage != null) {
+            return validationMessage;
         }
 
         String toUsername = null;
@@ -71,8 +72,7 @@ public class PushGroupCommandRule implements CommandRule {
         RoomEntity roomEntity = roomService.findByToken(String.valueOf(chatId));
         if (roomEntity == null) {
             String answerMessage = AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage();
-            telegramService.sendMessage(new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode()));
-            return;
+            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         }
 
         RoomUserEntity fromEntity = findRoomUser(roomEntity, update.message().from().username());
@@ -80,15 +80,13 @@ public class PushGroupCommandRule implements CommandRule {
             String answerMessage = String.format(
                 AnswerMessageTemplate.UNADDED_USER.getMessage(), 
                 update.message().from().username());
-            telegramService.sendMessage(new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode()));
-            return;
+            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         }
 
         RoomUserEntity toEntity = findRoomUser(roomEntity, toUsername);
         if (toEntity == null) {
             String answerMessage = String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), toUsername);
-            telegramService.sendMessage(new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode()));
-            return;
+            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         }
         
         try {
@@ -106,21 +104,20 @@ public class PushGroupCommandRule implements CommandRule {
                 "Expense *%s* to user *%s* has been successfully added", 
                 result.getAmount(), 
                 result.getTo().getUsername());
-            telegramService.sendMessage(new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode()));
+            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         } catch (IllegalArgumentException ex) {
             String answerErrorMessage = "Incorrect amount format 🤔";
-            telegramService.sendMessage(new SendMessageInfo(chatId, answerErrorMessage, ParseMode.MARKDOWN.getMode()));
+            return new SendMessageInfo(chatId, answerErrorMessage, ParseMode.MARKDOWN.getMode());
         }
     }
 
-    private boolean validate(Long chatId, String[] messageParts) {
+    private SendMessageInfo validate(Long chatId, String[] messageParts) {
         if (messageParts.length < 3) {
             String answerMessage = "Incorrect format 🤔, try like this: /exp @to <amount>";
-            telegramService.sendMessage(new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode()));
-            return false;
+            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         }
 
-        return true;
+        return null;
     }
 
     private RoomUserEntity findRoomUser(RoomEntity room, String username) {

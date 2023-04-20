@@ -38,15 +38,14 @@ public class ResultGroupCommandRule implements CommandRule {
     }
 
     @Override
-    public void process(Update update) {
+    public SendMessageInfo process(Update update) {
         Long chatId = update.message().chat().id();
         String roomId = String.valueOf(chatId);
         
         RoomEntity roomEntity = roomService.findByToken(roomId);
         if (roomEntity == null) {
             String answerMessage = "Virtual is empty, please send /addme command 🙃";
-            telegramService.sendMessage(new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode()));
-            return;
+            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         }
         
         Map<String, BigDecimal> result = expenseService.optimize(roomEntity);
@@ -60,7 +59,7 @@ public class ResultGroupCommandRule implements CommandRule {
                 sum.doubleValue()));
         }
 
-        telegramService.sendMessage(new SendMessageInfo(chatId, stringBuilder.toString(), ParseMode.MARKDOWN.getMode()));
+        return new SendMessageInfo(chatId, stringBuilder.toString(), ParseMode.MARKDOWN.getMode());
     }
     
 }
