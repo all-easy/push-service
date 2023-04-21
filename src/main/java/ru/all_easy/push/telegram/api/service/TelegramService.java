@@ -15,27 +15,22 @@ import ru.all_easy.push.telegram.api.client.model.SetWebhookRequest;
 
 @Service
 public class TelegramService implements ClientApi {
-
-    private final String hookUrl;
-    private final boolean dropPendingUpdates;
     private final TelegramFeignClient telegramFeignClient;
     private final TelegramConfig telegramConfig;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TelegramService.class);
 
     public TelegramService(TelegramFeignClient telegramFeignClient, TelegramConfig telegramConfig) {
-        this.hookUrl = telegramConfig.hook();
-        this.dropPendingUpdates = telegramConfig.dropPendingUpdates();
         this.telegramFeignClient = telegramFeignClient;
         this.telegramConfig = telegramConfig;
     }
 
     @PostConstruct
     void init() {
-        String removeHookResult = setWebhook(new SetWebhookInfo("", dropPendingUpdates));
+        String removeHookResult = setWebhook(new SetWebhookInfo("", telegramConfig.dropPendingUpdates()));
         LOGGER.info("Remove WebHook: {}", removeHookResult);
-        String setHookResult = setWebhook(new SetWebhookInfo(hookUrl, dropPendingUpdates));
-        LOGGER.info("Set WebHook: {}, {}", setHookResult, hookUrl);
+        String setHookResult = setWebhook(new SetWebhookInfo(telegramConfig.hook(), telegramConfig.dropPendingUpdates()));
+        LOGGER.info("Set WebHook: {}, {}", setHookResult, telegramConfig.hook());
     }
 
     @Override
