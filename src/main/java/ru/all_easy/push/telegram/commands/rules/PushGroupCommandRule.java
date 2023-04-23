@@ -28,16 +28,13 @@ public class PushGroupCommandRule implements CommandRule {
 
     private final ExpenseService expenseService;
     private final RoomService roomService;
-    private final TelegramService telegramService;
     private final MathHelper mathHelper;
 
-    public PushGroupCommandRule(ExpenseService expenseService, 
-                                TelegramService telegramService,
+    public PushGroupCommandRule(ExpenseService expenseService,
                                 RoomService roomService,
                                 MathHelper mathHelper) {
         this.expenseService = expenseService;
         this.roomService = roomService;
-        this.telegramService = telegramService;
         this.mathHelper = mathHelper;
     }
 

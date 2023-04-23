@@ -1,10 +1,7 @@
 package ru.all_easy.push.telegram.commands.rules;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
@@ -18,6 +15,8 @@ import ru.all_easy.push.telegram.commands.Commands;
 import ru.all_easy.push.user.repository.UserEntity;
 import ru.all_easy.push.user.service.UserService;
 import ru.all_easy.push.user.service.model.RegisterInfo;
+
+import javax.transaction.Transactional;
 
 @Service
 public class AddCommandRule implements CommandRule {
