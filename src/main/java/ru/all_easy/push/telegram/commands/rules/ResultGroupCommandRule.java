@@ -1,10 +1,6 @@
 package ru.all_easy.push.telegram.commands.rules;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
-
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.room.repository.model.RoomEntity;
@@ -12,20 +8,18 @@ import ru.all_easy.push.room.service.RoomService;
 import ru.all_easy.push.telegram.api.ChatType;
 import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
-import ru.all_easy.push.telegram.api.service.TelegramService;
 import ru.all_easy.push.telegram.commands.Commands;
+
+import java.math.BigDecimal;
+import java.util.Map;
 
 @Service
 public class ResultGroupCommandRule implements CommandRule {
+    private final ExpenseService expenseService;
+    private final RoomService roomService;
 
-    private TelegramService telegramService;
-    private ExpenseService expenseService;
-    private RoomService roomService;
-
-    public ResultGroupCommandRule(TelegramService telegramService, 
-                                  ExpenseService expenseService,
+    public ResultGroupCommandRule(ExpenseService expenseService,
                                   RoomService roomService) {
-        this.telegramService = telegramService;
         this.expenseService = expenseService;
         this.roomService = roomService;
     }
@@ -38,15 +32,14 @@ public class ResultGroupCommandRule implements CommandRule {
     }
 
     @Override
-    public void process(Update update) {
+    public SendMessageInfo process(Update update) {
         Long chatId = update.message().chat().id();
         String roomId = String.valueOf(chatId);
         
         RoomEntity roomEntity = roomService.findByToken(roomId);
         if (roomEntity == null) {
             String answerMessage = "Virtual is empty, please send /addme command 🙃";
-            telegramService.sendMessage(new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode()));
-            return;
+            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         }
         
         Map<String, BigDecimal> result = expenseService.optimize(roomEntity);
@@ -60,7 +53,7 @@ public class ResultGroupCommandRule implements CommandRule {
                 sum.doubleValue()));
         }
 
-        telegramService.sendMessage(new SendMessageInfo(chatId, stringBuilder.toString(), ParseMode.MARKDOWN.getMode()));
+        return new SendMessageInfo(chatId, stringBuilder.toString(), ParseMode.MARKDOWN.getMode());
     }
     
 }
