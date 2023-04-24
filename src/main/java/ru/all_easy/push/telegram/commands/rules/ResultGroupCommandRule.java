@@ -3,6 +3,7 @@ package ru.all_easy.push.telegram.commands.rules;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.service.ExpenseService;
+import ru.all_easy.push.helper.FormatHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
 import ru.all_easy.push.telegram.api.ChatType;
@@ -17,11 +18,14 @@ import java.util.Map;
 public class ResultGroupCommandRule implements CommandRule {
     private final ExpenseService expenseService;
     private final RoomService roomService;
+    private final FormatHelper formatHelper;
 
     public ResultGroupCommandRule(ExpenseService expenseService,
-                                  RoomService roomService) {
+                                  RoomService roomService,
+                                  FormatHelper formatHelper) {
         this.expenseService = expenseService;
         this.roomService = roomService;
+        this.formatHelper = formatHelper;
     }
 
     @Override
@@ -43,17 +47,10 @@ public class ResultGroupCommandRule implements CommandRule {
         }
         
         Map<String, BigDecimal> result = expenseService.optimize(roomEntity);
-        StringBuilder stringBuilder = new StringBuilder();
-        for (var set : result.entrySet()) {
-            String[] participants = set.getKey().split(",");
-            BigDecimal sum = set.getValue();
-            stringBuilder.append(String.format("*%s* owes *%s* sum: *%s*\n", 
-                participants[0], 
-                participants[1],
-                sum.doubleValue()));
-        }
+        String formattedMessage = formatHelper.formatResult(result);
 
-        return new SendMessageInfo(chatId, stringBuilder.toString(), ParseMode.MARKDOWN.getMode());
+        String message = formattedMessage.isEmpty() ? "No debts, chill for now \uD83D\uDE09" : formattedMessage;
+        return new SendMessageInfo(chatId, message, ParseMode.MARKDOWN.getMode());
     }
     
 }

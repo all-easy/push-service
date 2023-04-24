@@ -11,6 +11,8 @@ import ru.all_easy.push.expense.repository.ExpenseEntity;
 
 public class OptimizeTools {
 
+    private static final String SEPARATOR = ",";
+
     public Set<OweInfo> getOwes(String to, Map<String, BigDecimal> optExpenses) {
         return optExpenses.entrySet().stream()
                 .filter(entry -> entry.getKey().contains(to))
@@ -21,8 +23,6 @@ public class OptimizeTools {
                 })
                 .collect(Collectors.toSet());
     }
-
-    private static final String SEPARATOR = ",";
 
     public Map<String, BigDecimal> optimize(List<ExpenseEntity> roomExpenses) {
         var grouped = new HashMap<String, BigDecimal>();

@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.repository.ExpenseRepository;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
@@ -17,7 +16,7 @@ import ru.all_easy.push.user.service.UserService;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,18 +62,15 @@ public class ExpenseService {
             PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "dateTime")));
         
         
-        List<ExpenseInfoDateTime> result = page.get()
-            .map(p -> new ExpenseInfoDateTime(
-                p.getFrom().getUsername(), 
-                p.getTo().getUsername(), 
-                p.getAmount(), 
-                p.getName(), 
-                p.getDateTime()))
-            .collect(Collectors.toList());
-        
-        Collections.sort(result, (o1, o2) -> o1.dateTime().compareTo(o2.dateTime()));
-
-        return result;
+        return page.get()
+                .map(p -> new ExpenseInfoDateTime(
+                        p.getFrom().getUsername(),
+                        p.getTo().getUsername(),
+                        p.getAmount(),
+                        p.getName(),
+                        p.getDateTime()))
+                .sorted(Comparator.comparing(ExpenseInfoDateTime::dateTime))
+                .collect(Collectors.toList());
     }
 
     public List<ExpenseEntity> findRoomExpenses(RoomEntity room) {
