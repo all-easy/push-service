@@ -26,8 +26,8 @@ class FormatHelperTest extends UnitTest {
         String actual = formatHelper.formatResult(result);
 
         String expected = """
-        *person4* owes *person5* sum: *1000.0*
-        *person1* owes *person2* sum: *22.0*""";
+        *person4* owes *person5* sum: *1000.0000*
+        *person1* owes *person2* sum: *22.0000*""";
 
         assertEquals(expected, actual);
     }
