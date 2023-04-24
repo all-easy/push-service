@@ -1,5 +1,9 @@
 package ru.all_easy.push.optimize;
 
+import org.springframework.stereotype.Component;
+import ru.all_easy.push.common.MathHelper;
+import ru.all_easy.push.expense.repository.ExpenseEntity;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -7,11 +11,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ru.all_easy.push.expense.repository.ExpenseEntity;
-
+@Component
 public class OptimizeTools {
 
     private static final String SEPARATOR = ",";
+
+    private final MathHelper mathHelper;
+
+    public OptimizeTools(MathHelper mathHelper) {
+        this.mathHelper = mathHelper;
+    }
 
     public Set<OweInfo> getOwes(String to, Map<String, BigDecimal> optExpenses) {
         return optExpenses.entrySet().stream()
@@ -34,7 +43,7 @@ public class OptimizeTools {
                 return;
             }
 
-            grouped.computeIfPresent(key, (k, v) -> v.add(expense.getAmount()));
+            grouped.computeIfPresent(key, (k, v) -> mathHelper.add(v, expense.getAmount()));
         });
 
         Map<String, BigDecimal> collapsed = new HashMap<>();
@@ -44,7 +53,7 @@ public class OptimizeTools {
             if (mirroredSum == null) {
                 mirroredSum = BigDecimal.ZERO;
             }
-            var result = value.subtract(mirroredSum);
+            var result = mathHelper.subtract(value, mirroredSum);
             if (result.doubleValue() < 0) {
                 collapsed.put(key, BigDecimal.ZERO);
             } else {

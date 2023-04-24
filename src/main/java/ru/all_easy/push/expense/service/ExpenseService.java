@@ -27,13 +27,16 @@ public class ExpenseService {
     private final UserService userService;
     private final DateTimeHelper dateTimeHelper;
     private final ExpenseRepository repository;
+    private final OptimizeTools optimizeTools;
 
     public ExpenseService(UserService userService,
                           DateTimeHelper dateTimeHelper,
-                          ExpenseRepository repository) {
+                          ExpenseRepository repository,
+                          OptimizeTools optimizeTools) {
         this.userService = userService;
         this.dateTimeHelper = dateTimeHelper;
         this.repository = repository;
+        this.optimizeTools = optimizeTools;
     }
 
     @Transactional
@@ -54,7 +57,7 @@ public class ExpenseService {
 
     public Map<String, BigDecimal> optimize(RoomEntity room) {
         List<ExpenseEntity> roomExpenses = findRoomExpenses(room);
-        return new OptimizeTools().optimize(roomExpenses);
+        return optimizeTools.optimize(roomExpenses);
     }
 
     public List<ExpenseInfoDateTime> findLimitRoomExpenses(String roomToken, Integer limit) {
