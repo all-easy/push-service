@@ -1,4 +1,4 @@
-package ru.all_easy.push.common;
+package ru.all_easy.push.helper;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -29,5 +29,8 @@ public class MathHelper {
     public BigDecimal subtract(BigDecimal val1, BigDecimal val2) {
         return val1.subtract(val2, precision);
     }
-    
+
+    public boolean equalWithDelta(BigDecimal val1, BigDecimal val2, double delta) {
+        return val1.subtract(val2, precision).doubleValue() <= delta;
+    }
 }

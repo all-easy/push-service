@@ -1,9 +1,8 @@
 package ru.all_easy.push.expense.strategy.impl;
 
-import com.fathzer.soft.javaluator.DoubleEvaluator;
 import org.springframework.stereotype.Component;
 
-import ru.all_easy.push.common.MathHelper;
+import ru.all_easy.push.helper.MathHelper;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;

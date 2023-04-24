@@ -1,12 +1,11 @@
 package ru.all_easy.push.telegram.commands.rules;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import ru.all_easy.push.common.MathHelper;
+import ru.all_easy.push.helper.MathHelper;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
@@ -18,7 +17,6 @@ import ru.all_easy.push.telegram.api.ChatType;
 import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.MessageEntity;
 import ru.all_easy.push.telegram.api.controller.model.Update;
-import ru.all_easy.push.telegram.api.service.TelegramService;
 import ru.all_easy.push.telegram.commands.Commands;
 import ru.all_easy.push.telegram.messages.AnswerMessageTemplate;
 

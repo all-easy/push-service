@@ -1,7 +1,7 @@
 package ru.all_easy.push.optimize;
 
 import org.springframework.stereotype.Component;
-import ru.all_easy.push.common.MathHelper;
+import ru.all_easy.push.helper.MathHelper;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 
 import java.math.BigDecimal;

@@ -9,9 +9,15 @@ import java.util.stream.Collectors;
 @Component
 public class FormatHelper {
 
+    private final MathHelper mathHelper;
+
+    public FormatHelper(MathHelper mathHelper) {
+        this.mathHelper = mathHelper;
+    }
+
     public String formatResult(Map<String, BigDecimal> result) {
         return result.entrySet().stream()
-            .filter(set -> !set.getValue().equals(BigDecimal.ZERO))
+            .filter(set -> !mathHelper.equalWithDelta(set.getValue(), BigDecimal.ZERO, 0.0001))
             .map(set -> {
                 String[] participants = set.getKey().split(",");
                 BigDecimal sum = set.getValue();
