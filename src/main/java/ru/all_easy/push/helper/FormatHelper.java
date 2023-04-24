@@ -16,7 +16,7 @@ public class FormatHelper {
                 String[] participants = set.getKey().split(",");
                 BigDecimal sum = set.getValue();
 
-                return String.format("*%s* owes *%s* sum: *%s*",
+                return String.format("*%s* owes *%s* sum: *%.4f*",
                         participants[0],
                         participants[1],
                         sum.doubleValue());

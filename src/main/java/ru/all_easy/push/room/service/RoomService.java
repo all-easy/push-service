@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import ru.all_easy.push.common.ErrorType;
 import ru.all_easy.push.expense.service.ExpenseService;
-import ru.all_easy.push.helper.HashGenerator;
 import ru.all_easy.push.optimize.OptimizeTools;
 import ru.all_easy.push.optimize.OweInfo;
 import ru.all_easy.push.room.repository.RoomRepository;
@@ -22,13 +21,11 @@ import ru.all_easy.push.room.service.model.UserRoomResult;
 import ru.all_easy.push.room_user.service.RoomUserService;
 import ru.all_easy.push.shape.repository.ShapeEntity;
 import ru.all_easy.push.shape.service.ShapeService;
-import ru.all_easy.push.telegram.messages.AnswerMessageTemplate;
 import ru.all_easy.push.user.repository.UserEntity;
 import ru.all_easy.push.user.service.UserService;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -45,18 +42,22 @@ public class RoomService {
     private final ExpenseService expenseService;
     private final RoomUserService roomUserService;
 
+    private final OptimizeTools optimizeTools;
+
     private static final Logger logger = LoggerFactory.getLogger(RoomService.class);
 
     public RoomService(RoomRepository repository,
                        ShapeService shapeService,
                        UserService userService,
                        ExpenseService expenseService,
-                       RoomUserService roomUserService) {
+                       RoomUserService roomUserService,
+                       OptimizeTools optimizeTools) {
         this.repository = repository;
         this.shapeService = shapeService;
         this.userService = userService;
         this.expenseService = expenseService;
         this.roomUserService = roomUserService;
+        this.optimizeTools = optimizeTools;
     }
 
     public RoomResult createRoom(RoomInfo roomInfo) {
@@ -174,7 +175,7 @@ public class RoomService {
     private Set<OweInfo> optimize(String username, String roomToken) {
         RoomEntity room = repository.findByToken(roomToken);
         Map<String, BigDecimal> optimized = expenseService.optimize(room);
-        return new OptimizeTools().getOwes(username, optimized);
+        return optimizeTools.getOwes(username, optimized);
     }
 
     private RoomResult createRoomResult(RoomEntity room,
