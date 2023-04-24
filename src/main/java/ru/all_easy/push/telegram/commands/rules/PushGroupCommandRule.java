@@ -33,7 +33,8 @@ public class PushGroupCommandRule implements CommandRule {
 
     public PushGroupCommandRule(ExpenseService expenseService,
                                 RoomService roomService,
-                                MathHelper mathHelper, PushHelper pushHelper) {
+                                MathHelper mathHelper,
+                                PushHelper pushHelper) {
         this.expenseService = expenseService;
         this.roomService = roomService;
         this.mathHelper = mathHelper;

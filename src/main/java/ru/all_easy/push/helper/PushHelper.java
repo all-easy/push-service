@@ -8,20 +8,6 @@ import java.util.Optional;
 
 @Component
 public class PushHelper {
-    private Optional<Integer> validatePercentage(String value) {
-        if (!value.contains("%") || value.isBlank() || value.equals(" ")) return Optional.empty();
-
-        String valueStr = value.replace("%", "");
-        for (int i = 0; i < valueStr.length(); i++) {
-            if (!Character.isDigit(valueStr.charAt(i))) return Optional.empty();
-        }
-
-        int valueInt = Integer.parseInt(valueStr);
-        if (valueInt <= 0 || valueInt > 100) return Optional.empty();
-
-        return Optional.of(valueInt);
-    }
-
     public NameAndCalculatedAmount getNameAndCalculatedAmount(String[] messageParts, BigDecimal calculatedAmount) {
         String name = StringUtils.EMPTY;
 
@@ -50,5 +36,19 @@ public class PushHelper {
         }
 
         return new NameAndCalculatedAmount(name, calculatedAmount);
+    }
+
+    private Optional<Integer> validatePercentage(String value) {
+        if (!value.contains("%") || value.isBlank() || value.equals(" ")) return Optional.empty();
+
+        String valueStr = value.replace("%", "");
+        for (int i = 0; i < valueStr.length(); i++) {
+            if (!Character.isDigit(valueStr.charAt(i))) return Optional.empty();
+        }
+
+        int valueInt = Integer.parseInt(valueStr);
+        if (valueInt <= 0 || valueInt > 100) return Optional.empty();
+
+        return Optional.of(valueInt);
     }
 }
