@@ -1,0 +1,30 @@
+Positive cases
+/push @DennyKort 100
+/push @DennyKort 100 20%
+/push @DennyKort 100 expName
+/push @DennyKort 100 expName 20%
+
+/push @DennyKort 100+100
+/push @DennyKort 100+100 20%
+/push @DennyKort 100+100 expName
+/push @DennyKort 100+100 expName 20%
+
+/push @DennyKort -100
+/push @DennyKort -100 expName
+/push @DennyKort 100-200
+/push @DennyKort 100-200 expName
+/push @DennyKort 100-200 20%
+/push @DennyKort 100-200 expName 20%
+
+Negative cases
+/push @DennyKort 100 expName 20
+/push @DennyKort 100+100 expName 20
+
+/push @DennyKort 100 expName -20
+/push @DennyKort 100+100 expName -20
+
+/push @DennyKort 100 expName 101
+/push @DennyKort 100+100 expName 101
+
+/push @DennyKort 100 expName a
+/push @DennyKort 100+100 expName a

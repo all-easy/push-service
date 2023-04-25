@@ -2,7 +2,6 @@ package ru.all_easy.push.telegram.commands.rules;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import ru.all_easy.push.helper.MathHelper;
@@ -10,6 +9,8 @@ import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
+import ru.all_easy.push.helper.NameAndCalculatedAmount;
+import ru.all_easy.push.helper.PushHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
 import ru.all_easy.push.room_user.repository.RoomUserEntity;
@@ -28,13 +29,16 @@ public class PushGroupCommandRule implements CommandRule {
     private final ExpenseService expenseService;
     private final RoomService roomService;
     private final MathHelper mathHelper;
+    private final PushHelper pushHelper;
 
     public PushGroupCommandRule(ExpenseService expenseService,
                                 RoomService roomService,
-                                MathHelper mathHelper) {
+                                MathHelper mathHelper,
+                                PushHelper pushHelper) {
         this.expenseService = expenseService;
         this.roomService = roomService;
         this.mathHelper = mathHelper;
+        this.pushHelper = pushHelper;
     }
 
     @Override
@@ -46,6 +50,7 @@ public class PushGroupCommandRule implements CommandRule {
 
     @Override
     public SendMessageInfo process(Update update) {
+        // TODO: refactor to parsing builder
         Long chatId = update.message().chat().id();
         String messageText = update.message().text();
         String[] messageParts = messageText.split(" ");
@@ -87,12 +92,14 @@ public class PushGroupCommandRule implements CommandRule {
         
         try {
             BigDecimal calculatedAmount = mathHelper.calculate(messageParts[2]);
-            String name = messageParts.length == 4 ? messageParts[3] : StringUtils.EMPTY;
+            NameAndCalculatedAmount nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
+                    messageParts, calculatedAmount);
+            String name = nameAndCalculatedAmount.name();
             ExpenseInfo info = new ExpenseInfo(
                 roomEntity.getToken(), 
                 fromEntity.getUserUid(), 
                 toEntity.getUserUid(),
-                calculatedAmount, 
+                nameAndCalculatedAmount.calculatedAmount(),
                 name);
             
             ExpenseEntity result = expenseService.expense(info, roomEntity);
@@ -108,8 +115,9 @@ public class PushGroupCommandRule implements CommandRule {
     }
 
     private SendMessageInfo validate(Long chatId, String[] messageParts) {
-        if (messageParts.length < 3) {
-            String answerMessage = "Incorrect format 🤔, try like this: /exp @to <amount>";
+        if (messageParts.length < 3 || messageParts.length > 5) {
+            String answerMessage =
+                    "Incorrect format 🤔, try like this: /push @to <amount> <optional expense name> <optional amount%>";
             return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         }
 
