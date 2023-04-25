@@ -1,0 +1,18 @@
+version: "3"
+services:
+  prometheus:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - grafana_storage:/var/lib/grafana
+    networks:
+      - metrics
+    restart: unless-stopped
+
+networks:
+  metrics:
+    external:
+      name: metrics
+
+volumes:
+  grafana_storage: {}

@@ -1,0 +1,26 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    networks:
+      - default
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - /root/migrations/:/migrations
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=expenseBotPassword
+      - POSTGRES_DB=expenseDb
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+
+networks:
+  default:
+    name: common
