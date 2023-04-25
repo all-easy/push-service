@@ -129,6 +129,5 @@ public class PushGroupCommandRule implements CommandRule {
             .filter(entity -> entity.getUser().getUsername().equals(username))
             .findFirst()
             .orElse(null);
-    } 
-    
+    }
 }
