@@ -30,8 +30,8 @@ public class ResultGroupCommandServiceImpl implements ResultGroupCommandService 
     }
 
     @Override
-    @CacheEvict(value = "results", key = "#update.message().chat().id()")
-    @CachePut(value = "results", key = "#update.message().chat().id()")
+//    @CacheEvict(value = "results", key = "#update.message().chat().id()")
+//    @CachePut(value = "results", key = "#update.message().chat().id()")
     public SendMessageInfo getResult(Update update) {
         Long chatId = update.message().chat().id();
         String roomId = String.valueOf(chatId);
