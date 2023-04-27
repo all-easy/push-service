@@ -1,5 +1,7 @@
 package ru.all_easy.push.telegram.commands.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.service.ExpenseService;
@@ -28,6 +30,8 @@ public class ResultGroupCommandServiceImpl implements ResultGroupCommandService 
     }
 
     @Override
+    @CacheEvict(value = "results", key = "#update.message().chat().id()")
+    @CachePut(value = "results", key = "#update.message().chat().id()")
     public SendMessageInfo getResult(Update update) {
         Long chatId = update.message().chat().id();
         String roomId = String.valueOf(chatId);

@@ -1,5 +1,6 @@
 package ru.all_easy.push.telegram.commands.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
@@ -16,6 +17,7 @@ public class ResultGroupCommandCacheService implements ResultGroupCommandService
     }
 
     @Override
+    @Cacheable(value = "results", key = "#update.message().chat().id()")
     public SendMessageInfo getResult(Update update) {
         return resultGroupCommandService.getResult(update);
     }

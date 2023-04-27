@@ -1,5 +1,6 @@
 package ru.all_easy.push.telegram.commands.rules;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.helper.FormatHelper;
@@ -33,5 +34,5 @@ public class ResultGroupCommandRule implements CommandRule {
     public SendMessageInfo process(Update update) {
         return resultGroupCommandService.getResult(update);
     }
-    
+
 }
