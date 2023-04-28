@@ -1,10 +1,8 @@
 package ru.all_easy.push.helper;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import ru.all_easy.push.common.UnitTest;
 
 import java.math.BigDecimal;
@@ -22,7 +20,7 @@ class PushHelperTest extends UnitTest {
     void getNameAndCalculatedAmount_PushAmountWithExpenseNameWithoutPercentage() {
         // Case [0]/push [1]@username [2]math_expr [3]expName
         String[] messageParts = new String[]{"/push", "username", "100", "expenseName"};
-        NameAndCalculatedAmount nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
+        NameAndAmountWithPercents nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
                 messageParts, initialCalculatedAmount);
 
         assertEquals(expectedName, nameAndCalculatedAmount.name());
@@ -33,7 +31,7 @@ class PushHelperTest extends UnitTest {
     void getNameAndCalculatedAmount_PushAmountWithPercentageAndWithoutExpenseName() {
         // Case [0]/push [1]@username [2]math_expr [3]percentage
         String[] messageParts = new String[]{"/push", "username", "100", "10%"};
-        NameAndCalculatedAmount nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
+        NameAndAmountWithPercents nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
                 messageParts, initialCalculatedAmount);
 
         assertEquals(expectedEmptyName, nameAndCalculatedAmount.name());
@@ -44,7 +42,7 @@ class PushHelperTest extends UnitTest {
     void getNameAndCalculatedAmount_PushAmountWithExpenseNameAndPercentage() {
         // Case [0]/push [1]@username [2]math_expr [3]expName [4]Percentage
         String[] messageParts = new String[]{"/push", "username", "100", "expenseName", "10%"};
-        NameAndCalculatedAmount nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
+        NameAndAmountWithPercents nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
                 messageParts, initialCalculatedAmount);
 
         assertEquals(expectedName, nameAndCalculatedAmount.name());

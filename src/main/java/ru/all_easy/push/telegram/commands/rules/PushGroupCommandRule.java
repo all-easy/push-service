@@ -9,7 +9,7 @@ import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
-import ru.all_easy.push.helper.NameAndCalculatedAmount;
+import ru.all_easy.push.helper.NameAndAmountWithPercents;
 import ru.all_easy.push.helper.PushHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
@@ -92,14 +92,18 @@ public class PushGroupCommandRule implements CommandRule {
         
         try {
             BigDecimal calculatedAmount = mathHelper.calculate(messageParts[2]);
-            NameAndCalculatedAmount nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
+            NameAndAmountWithPercents nameAndAmountWithPercents = pushHelper.getNameAndCalculatedAmount(
                     messageParts, calculatedAmount);
-            String name = nameAndCalculatedAmount.name();
+            String name = nameAndAmountWithPercents.name();
             ExpenseInfo info = new ExpenseInfo(
                 roomEntity.getToken(), 
-                fromEntity.getUserUid(), 
-                toEntity.getUserUid(),
-                nameAndCalculatedAmount.calculatedAmount(),
+                nameAndAmountWithPercents.calculatedAmount().compareTo(BigDecimal.ZERO) < 0
+                        ? toEntity.getUserUid()
+                        : fromEntity.getUserUid(),
+                    nameAndAmountWithPercents.calculatedAmount().compareTo(BigDecimal.ZERO) < 0
+                        ? fromEntity.getUserUid()
+                        : toEntity.getUserUid(),
+                nameAndAmountWithPercents.calculatedAmount().abs(),
                 name);
             
             ExpenseEntity result = expenseService.expense(info, roomEntity);
