@@ -25,8 +25,8 @@ public class ResultGroupCommandRule implements CommandRule {
 
     @Override
     public boolean apply(Update update) {
-        return update.message().text().contains(Commands.RESULT.getCommand()) 
-            && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
+        return update.message().text().contains(Commands.RESULT.getCommand())
+                && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
                 || update.message().chat().type().equals(ChatType.GROUP.getType()));
     }
 

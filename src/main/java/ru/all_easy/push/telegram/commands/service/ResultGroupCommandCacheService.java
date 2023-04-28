@@ -23,16 +23,16 @@ public class ResultGroupCommandCacheService implements ResultGroupCommandService
     }
 
     @Override
-//    @Cacheable(value = "results", key = "#update.message().chat().id()")
+    @Cacheable(value = "results", key = "#update.message().chat().id()")
     public SendMessageInfo getResult(Update update) {
 //        ValueOperations<String, Object> ops = redisTemplate.opsForValue();
 //        ops.set("my-key-1", "my-value-1");
 //        ops.get("my-key-1");
 //        redisTemplate.delete("my-key-1");
 
-        HashOperations<String, Object, Object> hashOps = redisTemplate.opsForHash();
-        hashOps.put("my-hash-key-1", "my-hash-key-1", "my-hash-value-1");
-        hashOps.entries("my-hash-key-1");
+//        HashOperations<String, Object, Object> hashOps = redisTemplate.opsForHash();
+//        hashOps.put("my-hash-key-1", "my-hash-key-1", "my-hash-value-1");
+//        hashOps.entries("my-hash-key-1");
 
         return resultGroupCommandService.getResult(update);
     }
