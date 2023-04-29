@@ -1,7 +1,5 @@
 package ru.all_easy.push.telegram.commands.rules;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.telegram.api.ChatType;
@@ -11,8 +9,11 @@ import ru.all_easy.push.telegram.commands.service.PushGroupCommandService;
 
 @Service
 public class PushGroupCommandRule implements CommandRule {
-    @Autowired
-    PushGroupCommandService pushGroupCommandService;
+    private final PushGroupCommandService pushGroupCommandService;
+
+    public PushGroupCommandRule(PushGroupCommandService pushGroupCommandService) {
+        this.pushGroupCommandService = pushGroupCommandService;
+    }
 
     @Override
     public boolean apply(Update update) {

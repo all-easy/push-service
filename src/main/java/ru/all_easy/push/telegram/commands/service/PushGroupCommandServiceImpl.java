@@ -39,7 +39,6 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
     }
 
     @Override
-    @CacheEvict(value = "results", key = "#update.message().chat().id()")
     public SendMessageInfo getResult(Update update) {
         // TODO: refactor to parsing builder
         Long chatId = update.message().chat().id();
@@ -103,5 +102,22 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
             String answerErrorMessage = "Incorrect amount format 🤔";
             return new SendMessageInfo(chatId, answerErrorMessage, ParseMode.MARKDOWN.getMode());
         }
+    }
+
+    private SendMessageInfo validate(Long chatId, String[] messageParts) {
+        if (messageParts.length < 3 || messageParts.length > 5) {
+            String answerMessage =
+                    "Incorrect format 🤔, try like this: /push @to <amount> <optional expense name> <optional amount%>";
+            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
+        }
+
+        return null;
+    }
+
+    private RoomUserEntity findRoomUser(RoomEntity room, String username) {
+        return room.getUsers().stream()
+                .filter(entity -> entity.getUser().getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
     }
 }
