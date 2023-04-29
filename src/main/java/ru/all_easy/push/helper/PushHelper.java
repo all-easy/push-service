@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Component
 public class PushHelper {
-    public NameAndCalculatedAmount getNameAndCalculatedAmount(String[] messageParts, BigDecimal calculatedAmount) {
+    public NameAndAmountWithPercents getNameAndCalculatedAmount(String[] messageParts, BigDecimal calculatedAmount) {
         String name = StringUtils.EMPTY;
 
         // Case [0]/push [1]@username [2]math_expr [3]expNameOrPercentage?
@@ -35,7 +35,7 @@ public class PushHelper {
             }
         }
 
-        return new NameAndCalculatedAmount(name, calculatedAmount);
+        return new NameAndAmountWithPercents(name, calculatedAmount);
     }
 
     private Optional<Integer> validatePercentage(String value) {
