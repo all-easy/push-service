@@ -1,9 +1,42 @@
 version: "3"
 services:
-  # APP*****************************************
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    networks:
+      - default
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - /root/migrations/:/migrations
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=push-user
+      - POSTGRES_PASSWORD=push-password
+      - POSTGRES_DB=push-service
+    restart: unless-stopped
+
+  redis:
+    image: redis
+    container_name: redis
+    networks:
+      - default
+    volumes:
+      - cache:/data
+    ports:
+      - 6379:6379
+    expose:
+      - 6379
+    restart: unless-stopped
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_HOST_PASSWORD"
+    env_file:
+      - redis.env
+
   push-service:
     container_name: push-service
-    build: .
+    build: docker
     networks:
       - postgres
       - metrics
@@ -17,10 +50,45 @@ services:
       - PROFILE=${PROFILE}
     restart: unless-stopped
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - metrics
+    expose:
+      - 9090
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - grafana_storage:/var/lib/grafana
+    networks:
+      - metrics
+    expose:
+      - 3000
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  cache:
+  grafana_storage: {}
+  prometheus_data: {}
+
 networks:
+  default:
+    name: common
   postgres:
-    external:
-      name: common
+    external: true
+    name: common
   metrics:
-    external:
-      name: metrics
+    external: true
+    name: metrics
