@@ -36,7 +36,7 @@ services:
 
   push-service:
     container_name: push-service
-    build: docker
+    build: .
     networks:
       - postgres
       - metrics
