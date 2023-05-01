@@ -1,7 +1,5 @@
 package ru.all_easy.push.telegram.commands.service;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.service.ExpenseService;
