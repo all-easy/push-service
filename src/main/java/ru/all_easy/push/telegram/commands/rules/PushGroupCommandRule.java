@@ -7,6 +7,8 @@ import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.Commands;
 import ru.all_easy.push.telegram.commands.service.PushGroupCommandService;
 
+import java.math.BigDecimal;
+
 @Service
 public class PushGroupCommandRule implements CommandRule {
     private final PushGroupCommandService pushGroupCommandService;
