@@ -7,7 +7,7 @@ import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.helper.MathHelper;
-import ru.all_easy.push.helper.NameAndCalculatedAmount;
+import ru.all_easy.push.helper.NameAndAmountWithPercents;
 import ru.all_easy.push.helper.PushHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
@@ -60,13 +60,21 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
             toUsername = messageParts[1].replace("@", "");
         }
 
+        String fromUsername = update.message().from().username();
+        if (fromUsername.equals(toUsername)) {
+            return new SendMessageInfo(
+                    chatId,
+                    AnswerMessageTemplate.YOURSELF_PUSH.getMessage(),
+                    ParseMode.MARKDOWN.getMode());
+        }
+
         RoomEntity roomEntity = roomService.findByToken(String.valueOf(chatId));
         if (roomEntity == null) {
             String answerMessage = AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage();
             return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         }
 
-        RoomUserEntity fromEntity = findRoomUser(roomEntity, update.message().from().username());
+        RoomUserEntity fromEntity = findRoomUser(roomEntity, fromUsername);
         if (fromEntity == null) {
             String answerMessage = String.format(
                     AnswerMessageTemplate.UNADDED_USER.getMessage(),
@@ -82,7 +90,7 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
 
         try {
             BigDecimal calculatedAmount = mathHelper.calculate(messageParts[2]);
-            NameAndCalculatedAmount nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
+            NameAndAmountWithPercents nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
                     messageParts, calculatedAmount);
             String name = nameAndCalculatedAmount.name();
             ExpenseInfo info = new ExpenseInfo(
