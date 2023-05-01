@@ -14,7 +14,12 @@ services:
     ports:
       - 8080:8080
     environment:
-      - PROFILE=${PROFILE}
+      - spring_profiles_active=${PROFILE}
+      - spring_datasource_username=${DB_USERNAME}
+      - spring_datasource_password=${DB_PASSWORD}
+      - telegram_hook_secret=${TG_HOOK_SECRET}
+      - telegram_token=${TG_TOKEN}
+      - api_key=${API_KEY}
     restart: unless-stopped
 
 networks:
