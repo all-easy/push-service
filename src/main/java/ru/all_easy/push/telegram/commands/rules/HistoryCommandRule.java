@@ -3,7 +3,7 @@ package ru.all_easy.push.telegram.commands.rules;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
-import ru.all_easy.push.expense.service.ExpenseService;
+import ru.all_easy.push.expense.service.ExpenseServiceHelper;
 import ru.all_easy.push.expense.service.model.ExpenseInfoDateTime;
 import ru.all_easy.push.helper.DateTimeHelper;
 import ru.all_easy.push.telegram.api.ParseMode;
@@ -15,14 +15,14 @@ import java.util.List;
 @Service
 public class HistoryCommandRule implements  CommandRule {
 
-    private final ExpenseService expenseService;
+    private final ExpenseServiceHelper expenseServiceHelper;
     private final DateTimeHelper dateTimeHelper;
 
     private static final Integer MAX_HISTORY_LIMIT = 10;
     
-    public HistoryCommandRule(ExpenseService expenseService,
+    public HistoryCommandRule(ExpenseServiceHelper expenseService,
                               DateTimeHelper dateTimeHelper) {
-        this.expenseService = expenseService;
+        this.expenseServiceHelper = expenseService;
         this.dateTimeHelper = dateTimeHelper;
     }
 
@@ -35,7 +35,7 @@ public class HistoryCommandRule implements  CommandRule {
     public SendMessageInfo process(Update update) {
         Long chatId = update.message().chat().id();
 
-        List<ExpenseInfoDateTime> infoList = expenseService.findLimitRoomExpenses(String.valueOf(chatId), MAX_HISTORY_LIMIT);
+        List<ExpenseInfoDateTime> infoList = expenseServiceHelper.findLimitRoomExpenses(String.valueOf(chatId), MAX_HISTORY_LIMIT);
         if (infoList.isEmpty()) {
             return new SendMessageInfo(chatId, "History is empty", ParseMode.MARKDOWN.getMode());
         }
