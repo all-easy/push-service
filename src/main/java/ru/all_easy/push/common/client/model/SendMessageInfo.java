@@ -4,5 +4,5 @@ public record SendMessageInfo(
     Long chatId,
     String text,
     String parseMode
-) {
+) implements SendMessage {
 }

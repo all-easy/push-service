@@ -7,11 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import ru.all_easy.push.common.ClientApi;
+import ru.all_easy.push.common.client.model.SendMessageCurrencyInfo;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.common.client.model.SetWebhookInfo;
 import ru.all_easy.push.telegram.api.client.TelegramFeignClient;
-import ru.all_easy.push.telegram.api.client.model.SendMessageRequest;
-import ru.all_easy.push.telegram.api.client.model.SetWebhookRequest;
+import ru.all_easy.push.telegram.api.client.model.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TelegramService implements ClientApi {
@@ -45,5 +48,10 @@ public class TelegramService implements ClientApi {
     @Override
     public String sendMessage(SendMessageInfo info) {
         return telegramFeignClient.sendMessage(new SendMessageRequest(info.chatId(), info.text(), info.parseMode()));
+    }
+
+    @Override
+    public String sendMessage(SendMessageCurrencyInfo info) {
+        return telegramFeignClient.sendMessage(new SendMessageCurrencyRequest(info.chatId(), info.replyMarkup()));
     }
 }

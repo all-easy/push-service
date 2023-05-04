@@ -13,6 +13,9 @@ public record Update(
     Long updateId,
 
     @JsonProperty("message")
-    Message message
+    Message message,
+
+    @JsonProperty("callback_query")
+    CallbackQuery callbackQuery
 ) {
 }
