@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.all_easy.push.common.AbstractAuthentication;
 import ru.all_easy.push.common.client.model.SendMessage;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
+import ru.all_easy.push.currency.service.CurrencyService;
 import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.api.service.TelegramService;
@@ -35,27 +36,27 @@ public class UpdateController extends AbstractAuthentication {
 
     private final CommandsContextService commandContextService;
     private final TelegramService telegramService;
+    private final CurrencyService currencyService;
 
     public UpdateController(CommandsContextService commandContextService,
-                            TelegramService telegramService) {
+                            TelegramService telegramService,
+                            CurrencyService currencyService) {
         this.commandContextService = commandContextService;
         this.telegramService = telegramService;
+        this.currencyService = currencyService;
     }
 
     @PostMapping("/")
     public void postMethodName(@RequestBody Update update) {
-        logger.info("Update received: {}", update);
-
         if (update.callbackQuery() != null) {
-            // TODO: update room in db with currency from callback
-            // helper.updateRoomCurrency(chatId, currency)
-            SendMessage message = new SendMessageInfo(
-                    update.callbackQuery().message().chat().id(),
-                    update.callbackQuery().data(), // chosen currency
-                    ParseMode.MARKDOWN.getMode()
-            );
-            telegramService.sendMessage((SendMessageInfo) message);
+            logger.info("Callback received: {}", update);
+            currencyService.setCurrency(update.callbackQuery().message().chat().id(), update.callbackQuery().data());
+            telegramService.sendMessage(
+                    new SendMessageInfo(update.callbackQuery().message().chat().id(),
+                    "Chat's currency is set to " + currencyService.getCurrencySymbolAndCode(update.callbackQuery().data()),
+                            ParseMode.MARKDOWN.getMode()));
         } else {
+            logger.info("Update received: {}", update);
             commandContextService.process(update);
         }
     }

@@ -52,6 +52,7 @@ public class TelegramService implements ClientApi {
 
     @Override
     public String sendMessage(SendMessageCurrencyInfo info) {
-        return telegramFeignClient.sendMessage(new SendMessageCurrencyRequest(info.chatId(), info.replyMarkup()));
+        return telegramFeignClient.sendMessage(
+                new SendMessageCurrencyRequest(info.chatId(), info.text(), info.replyMarkup()));
     }
 }

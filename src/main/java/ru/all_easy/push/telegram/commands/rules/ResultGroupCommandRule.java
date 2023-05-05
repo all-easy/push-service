@@ -2,6 +2,7 @@ package ru.all_easy.push.telegram.commands.rules;
 
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
+import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.helper.FormatHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
@@ -45,9 +46,14 @@ public class ResultGroupCommandRule implements CommandRule {
             String answerMessage = "Virtual is empty, please send /addme command 🙃";
             return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         }
-        
+
         Map<String, BigDecimal> result = expenseService.optimize(roomEntity);
         String formattedMessage = formatHelper.formatResult(result);
+
+        if (roomEntity.getCurrency() != null) {
+            CurrencyEntity currencyEntity = roomEntity.getCurrency();
+            formattedMessage += " " +  currencyEntity.getSymbol() + " " + currencyEntity.getCode();
+        }
 
         String message = formattedMessage.isEmpty() ? "No debts, chill for now \uD83D\uDE09" : formattedMessage;
         return new SendMessageInfo(chatId, message, ParseMode.MARKDOWN.getMode());

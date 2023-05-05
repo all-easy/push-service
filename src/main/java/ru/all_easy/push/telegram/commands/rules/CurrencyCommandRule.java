@@ -1,9 +1,11 @@
 package ru.all_easy.push.telegram.commands.rules;
 
-import com.sun.xml.bind.v2.TODO;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessage;
 import ru.all_easy.push.common.client.model.SendMessageCurrencyInfo;
+import ru.all_easy.push.currency.repository.model.CurrencyEntity;
+import ru.all_easy.push.currency.service.CurrencyService;
+import ru.all_easy.push.currency.service.model.CurrencyInfo;
 import ru.all_easy.push.telegram.api.client.model.InlineKeyboard;
 import ru.all_easy.push.telegram.api.client.model.InlineKeyboardButton;
 import ru.all_easy.push.telegram.api.controller.model.Update;
@@ -14,6 +16,12 @@ import java.util.List;
 
 @Service
 public class CurrencyCommandRule implements CommandRule {
+    private final CurrencyService currencyService;
+
+    public CurrencyCommandRule(CurrencyService currencyService) {
+        this.currencyService = currencyService;
+    }
+
     @Override
     public boolean apply(Update update) {
         return update.message().text().contains(Commands.CURRENCY.getCommand());
@@ -21,21 +29,25 @@ public class CurrencyCommandRule implements CommandRule {
 
     @Override
     public SendMessage process(Update update) {
-        // TODO: retrieve a list of the currencies from db
-        InlineKeyboardButton buttonUSD = new InlineKeyboardButton("USD \u0024", "Your callback is USD");
-        InlineKeyboardButton buttonGEL = new InlineKeyboardButton("GEL \u20be", "Your callback is GEL");
-        InlineKeyboardButton buttonGBR = new InlineKeyboardButton("GBR \u00a3", "Your callback is GBR");
-        InlineKeyboardButton buttonAMD = new InlineKeyboardButton("AMD \u058f", "Your callback is AMD");
-
+        List<CurrencyInfo> currencies = currencyService.getAll();
         List<InlineKeyboardButton> buttonRow = new ArrayList<>();
-        buttonRow.add(buttonUSD);
-        buttonRow.add(buttonGEL);
-        buttonRow.add(buttonGBR);
-        buttonRow.add(buttonAMD);
+
+        for (CurrencyInfo currency : currencies) {
+            InlineKeyboardButton button = new InlineKeyboardButton(
+                    currency.code() + " " + currency.symbol(), currency.code());
+            buttonRow.add(button);
+        }
+
         List<List<InlineKeyboardButton>> buttonRows = new ArrayList<>();
         buttonRows.add(buttonRow);
-
         InlineKeyboard allButtons = new InlineKeyboard(buttonRows);
-        return new SendMessageCurrencyInfo(update.message().chat().id(), "Please set up chat's currency", allButtons);
+
+        String message = "Please set up chat's currency";
+        CurrencyEntity currencyEntity = currencyService.getCurrencyByRoomId(update.message().chat().id());
+        if (currencyEntity != null) {
+            message += ". Current is %s %s".formatted(currencyEntity.getSymbol(), currencyEntity.getCode());
+        }
+
+        return new SendMessageCurrencyInfo(update.message().chat().id(), message, allButtons);
     }
 }

@@ -1,17 +1,11 @@
 package ru.all_easy.push.room.repository.model;
 
 import org.hibernate.annotations.NaturalId;
+import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.room_user.repository.RoomUserEntity;
 import ru.all_easy.push.user.repository.UserEntity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,6 +34,10 @@ public class RoomEntity implements Serializable {
     )
     private Set<RoomUserEntity> users = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency", referencedColumnName = "code")
+    private CurrencyEntity currency;
+
     public Long getId() {
         return id;
     }
@@ -56,6 +54,10 @@ public class RoomEntity implements Serializable {
 
     public Set<RoomUserEntity> getUsers() {
         return users;
+    }
+
+    public CurrencyEntity getCurrency() {
+        return currency;
     }
 
     public RoomEntity setId(Long id) {
@@ -76,6 +78,10 @@ public class RoomEntity implements Serializable {
     public RoomEntity setUsers(Set<RoomUserEntity> roomUser) {
         this.users = roomUser;
         return this;
+    }
+
+    public void setCurrency(CurrencyEntity currency) {
+        this.currency = currency;
     }
 
     public RoomUserEntity addRoomUser(RoomUserEntity roomUser) {

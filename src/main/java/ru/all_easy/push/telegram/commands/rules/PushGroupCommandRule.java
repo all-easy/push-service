@@ -2,6 +2,7 @@ package ru.all_easy.push.telegram.commands.rules;
 
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
+import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
@@ -115,9 +116,12 @@ public class PushGroupCommandRule implements CommandRule {
             
             ExpenseEntity result = expenseService.expense(info, roomEntity);
             String answerMessage = String.format(
-                "Expense *%s* to user *%s* has been successfully added", 
-                result.getAmount(), 
+                "Expense *%s*%s to user *%s* has been successfully added",
+                result.getAmount(),
+                roomEntity.getCurrency() == null ? "" :
+                        " " + roomEntity.getCurrency().getSymbol() + " " + roomEntity.getCurrency().getCode(),
                 result.getTo().getUsername());
+
             return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
         } catch (IllegalArgumentException ex) {
             String answerErrorMessage = "Incorrect amount format 🤔";
