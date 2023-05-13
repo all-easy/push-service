@@ -1,10 +1,14 @@
 package ru.all_easy.push.telegram.commands;
 
 import org.springframework.stereotype.Service;
+import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
+import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.api.service.TelegramService;
 import ru.all_easy.push.telegram.commands.rules.CommandRule;
+import ru.all_easy.push.telegram.commands.rules.model.CommandError;
+import ru.all_easy.push.telegram.commands.rules.model.CommandProcessed;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +34,13 @@ public class CommandsContextService {
                 .filter(it -> it.apply(update))
                 .findFirst();
         if (rule.isPresent()) {
-            SendMessageInfo messageInfo = rule.get().process(update);
-            sendMessage(messageInfo);
+            var chatId = update.message().chat().id();
+            ResultK<CommandProcessed, CommandError> processed = rule.get().process(update);
+            if (processed.hasError()) {
+                sendMessage(new SendMessageInfo(chatId, processed.getError().message(), ParseMode.MARKDOWN.getMode()));
+            } else {
+                sendMessage(new SendMessageInfo(chatId, processed.getResult().message(), ParseMode.MARKDOWN.getMode()));
+            }
         }
     }
 
