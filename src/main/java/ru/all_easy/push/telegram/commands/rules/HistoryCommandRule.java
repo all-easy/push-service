@@ -20,7 +20,8 @@ public class HistoryCommandRule implements  CommandRule {
     private final DateTimeHelper dateTimeHelper;
 
     private static final Integer MAX_HISTORY_LIMIT = 10;
-    
+    private static final Integer MIN_HISTORY_LIMIT = 5;
+
     public HistoryCommandRule(ExpenseService expenseService,
                               DateTimeHelper dateTimeHelper) {
         this.expenseService = expenseService;
@@ -45,7 +46,7 @@ public class HistoryCommandRule implements  CommandRule {
         virtualLimit = virtualLimit > infoList.size() ? infoList.size() : virtualLimit;
         StringBuilder message = new StringBuilder();
         for (var info : infoList.subList(infoList.size() - virtualLimit, infoList.size())) {
-            message.append(String.format("%s  |  *%s* → %s  |  sum *%.2f*  |  %s\n\n",
+            message.append(String.format("%s\n*%s* → %s\nsum *%.2f*\n%s\n\n",
                 dateTimeHelper.toString(info.dateTime(), "dd.MM"),
                 info.fromUsername(),
                 info.toUsername(),
@@ -59,7 +60,7 @@ public class HistoryCommandRule implements  CommandRule {
     private Integer getLimit(Update update) {
         String[] messageParts = update.message().text().split(" ");
         if (messageParts.length < 2) {
-            return MAX_HISTORY_LIMIT;
+            return MIN_HISTORY_LIMIT;
         }
 
         String limitStr = messageParts[1];
@@ -67,7 +68,7 @@ public class HistoryCommandRule implements  CommandRule {
             return Integer.valueOf(limitStr);
         }
         
-        return MAX_HISTORY_LIMIT;
+        return MIN_HISTORY_LIMIT;
     }
     
 }
