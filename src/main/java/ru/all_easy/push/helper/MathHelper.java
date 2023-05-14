@@ -1,11 +1,10 @@
 package ru.all_easy.push.helper;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-
+import com.fathzer.soft.javaluator.DoubleEvaluator;
 import org.springframework.stereotype.Component;
 
-import com.fathzer.soft.javaluator.DoubleEvaluator;
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 @Component
 public class MathHelper {
@@ -32,5 +31,9 @@ public class MathHelper {
 
     public boolean equalWithDelta(BigDecimal val1, BigDecimal val2, double delta) {
         return val1.subtract(val2, precision).doubleValue() <= delta;
+    }
+
+    public BigDecimal addPercent(int percent, BigDecimal amount) {
+        return BigDecimal.valueOf(amount.doubleValue() * (100 + percent) / 100);
     }
 }

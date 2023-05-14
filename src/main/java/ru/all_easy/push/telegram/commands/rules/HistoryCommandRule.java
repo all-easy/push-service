@@ -2,13 +2,14 @@ package ru.all_easy.push.telegram.commands.rules;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
-import ru.all_easy.push.common.client.model.SendMessageInfo;
+import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfoDateTime;
 import ru.all_easy.push.helper.DateTimeHelper;
-import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.Commands;
+import ru.all_easy.push.telegram.commands.rules.model.CommandError;
+import ru.all_easy.push.telegram.commands.rules.model.CommandProcessed;
 
 import java.util.List;
 
@@ -32,12 +33,12 @@ public class HistoryCommandRule implements  CommandRule {
     }
 
     @Override
-    public SendMessageInfo process(Update update) {
+    public ResultK<CommandProcessed, CommandError> process(Update update) {
         Long chatId = update.message().chat().id();
 
         List<ExpenseInfoDateTime> infoList = expenseService.findLimitRoomExpenses(String.valueOf(chatId), MAX_HISTORY_LIMIT);
         if (infoList.isEmpty()) {
-            return new SendMessageInfo(chatId, "History is empty", ParseMode.MARKDOWN.getMode());
+            return ResultK.Ok(new CommandProcessed("History is empty"));
         }
 
         Integer virtualLimit = getLimit(update);
@@ -52,7 +53,7 @@ public class HistoryCommandRule implements  CommandRule {
                 info.amount()));
         }
 
-        return new SendMessageInfo(chatId, message.toString(), ParseMode.MARKDOWN.getMode());
+        return ResultK.Ok(new CommandProcessed(message.toString()));
     }
 
     private Integer getLimit(Update update) {
