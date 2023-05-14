@@ -45,12 +45,12 @@ public class HistoryCommandRule implements  CommandRule {
         virtualLimit = virtualLimit > infoList.size() ? infoList.size() : virtualLimit;
         StringBuilder message = new StringBuilder();
         for (var info : infoList.subList(infoList.size() - virtualLimit, infoList.size())) {
-            message.append(String.format("*%s* +0, *%s*, *%s* -> *%s*, sum *%s*\n\n", 
-                dateTimeHelper.toString(info.dateTime(), "dd-MM-yy HH:mm"),
-                info.name(),
-                info.fromUsername(), 
-                info.toUsername(), 
-                info.amount()));
+            message.append(String.format("%s  |  *%s* → %s  |  sum *%.2f*  |  %s\n\n",
+                dateTimeHelper.toString(info.dateTime(), "dd.MM"),
+                info.fromUsername(),
+                info.toUsername(),
+                info.amount(),
+                info.name()));
         }
 
         return ResultK.Ok(new CommandProcessed(message.toString()));
