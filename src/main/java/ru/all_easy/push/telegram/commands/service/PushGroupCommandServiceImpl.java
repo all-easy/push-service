@@ -3,7 +3,7 @@ package ru.all_easy.push.telegram.commands.service;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
-import ru.all_easy.push.expense.service.ExpenseServiceHelper;
+import ru.all_easy.push.expense.service.ExpenseServiceImpl;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.helper.MathHelper;
 import ru.all_easy.push.helper.NameAndAmountWithPercents;
@@ -22,16 +22,16 @@ import java.math.BigDecimal;
 public class PushGroupCommandServiceImpl implements PushGroupCommandService {
     private static final String TEXT_MENTION = "text_mention";
 
-    private final ExpenseServiceHelper expenseServiceHelper;
+    private final ExpenseServiceImpl expenseService;
     private final RoomService roomService;
     private final MathHelper mathHelper;
     private final PushHelper pushHelper;
 
-    public PushGroupCommandServiceImpl(ExpenseServiceHelper expenseService,
+    public PushGroupCommandServiceImpl(ExpenseServiceImpl expenseService,
                                        RoomService roomService,
                                        MathHelper mathHelper,
                                        PushHelper pushHelper) {
-        this.expenseServiceHelper = expenseService;
+        this.expenseService = expenseService;
         this.roomService = roomService;
         this.mathHelper = mathHelper;
         this.pushHelper = pushHelper;
@@ -99,7 +99,7 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
                     nameAndCalculatedAmount.calculatedAmount(),
                     name);
 
-            ExpenseEntity result = expenseServiceHelper.expense(info, roomEntity);
+            ExpenseEntity result = expenseService.expense(info, roomEntity);
             String answerMessage = String.format(
                     "Expense *%s* to user *%s* has been successfully added",
                     result.getAmount(),

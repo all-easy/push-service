@@ -4,7 +4,7 @@ import com.fathzer.soft.javaluator.DoubleEvaluator;
 import org.springframework.stereotype.Component;
 
 import ru.all_easy.push.expense.controller.ExpenseType;
-import ru.all_easy.push.expense.service.ExpenseServiceHelper;
+import ru.all_easy.push.expense.service.ExpenseServiceImpl;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.expense.strategy.ExpenseTypeRule;
 import ru.all_easy.push.expense.strategy.model.ExpenseRuleInfo;
@@ -22,16 +22,16 @@ public class AllRule implements ExpenseTypeRule {
 
     private final RoomService roomService;
     private final UserService userService;
-    private final ExpenseServiceHelper expenseServiceHelper;
+    private final ExpenseServiceImpl expenseService;
     private final DoubleEvaluator doubleEvaluator;
 
     public AllRule(RoomService roomService,
                    UserService userService,
-                   ExpenseServiceHelper expenseServiceHelper,
+                   ExpenseServiceImpl expenseService,
                    DoubleEvaluator doubleEvaluator) {
         this.roomService = roomService;
         this.userService = userService;
-        this.expenseServiceHelper = expenseServiceHelper;
+        this.expenseService = expenseService;
         this.doubleEvaluator = doubleEvaluator;
     }
 
@@ -54,7 +54,7 @@ public class AllRule implements ExpenseTypeRule {
                             amountPerUser,
                             expenseRuleInfo.name()
                     );
-                    expenseServiceHelper.expense(expenseInfo, room);
+                    expenseService.expense(expenseInfo, room);
                 });
 
         return new ExpenseResult(
