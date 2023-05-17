@@ -35,7 +35,7 @@ class PushCommandValidatorUnitTest extends UnitTest {
         ResultK<PushCommandValidated, ValidationError> validated = pushCommandValidator.validate(update);
 
         assertEquals(
-            "Incorrect format \uD83E\uDD14, try like this: /push @username 123 expense_name 18%",
+            "Incorrect format \uD83E\uDD14, try like this: /push @username 123 name 18%",
             validated.getError().message());
     }
 
