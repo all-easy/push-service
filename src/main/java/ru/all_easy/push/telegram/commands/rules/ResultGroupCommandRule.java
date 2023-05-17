@@ -1,15 +1,16 @@
 package ru.all_easy.push.telegram.commands.rules;
 
 import org.springframework.stereotype.Service;
-import ru.all_easy.push.common.client.model.SendMessageInfo;
+import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.helper.FormatHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
 import ru.all_easy.push.telegram.api.ChatType;
-import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.Commands;
+import ru.all_easy.push.telegram.commands.rules.model.CommandError;
+import ru.all_easy.push.telegram.commands.rules.model.CommandProcessed;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -36,26 +37,20 @@ public class ResultGroupCommandRule implements CommandRule {
     }
 
     @Override
-    public SendMessageInfo process(Update update) {
+    public ResultK<CommandProcessed, CommandError> process(Update update) {
         Long chatId = update.message().chat().id();
         String roomId = String.valueOf(chatId);
 
         RoomEntity roomEntity = roomService.findByToken(roomId);
         if (roomEntity == null) {
-            return new SendMessageInfo(
-                    update.message().chat().id(),
-                    "Virtual is empty, please send /addme command 🙃",
-                    ParseMode.MARKDOWN.getMode());
+            String answerMessage = "Virtual is empty, please send /addme command 🙃";
+            return ResultK.Ok(new CommandProcessed(answerMessage));
         }
 
         Map<String, BigDecimal> optimize = expenseService.optimize(roomEntity);
         String formattedMessage = formatHelper.formatResult(optimize);
         String message = formattedMessage.isEmpty() ? "No debts, chill for now \uD83D\uDE09" : formattedMessage;
-
-        return new SendMessageInfo(
-                update.message().chat().id(),
-                message,
-                ParseMode.MARKDOWN.getMode());
+        return ResultK.Ok(new CommandProcessed(message));
     }
 
 }
