@@ -80,9 +80,10 @@ public class PushGroupCommandRule implements CommandRule {
 
         ExpenseEntity result = expenseService.expense(info, roomEntity);
         String answerMessage = String.format(
-                "Expense *%.2f* to user *%s* has been successfully added",
-                result.getAmount(),
-                result.getTo().getUsername());
+            "Expense *%.2f* to user *%s* has been successfully added, description: %s",
+            result.getAmount(),
+            result.getTo().getUsername(),
+            result.getName());
 
         return ResultK.Ok(new CommandProcessed(answerMessage));
     }
