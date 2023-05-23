@@ -5,5 +5,5 @@ import ru.all_easy.push.telegram.commands.service.model.PushCommandServiceError;
 import ru.all_easy.push.telegram.commands.validators.model.PushCommandValidated;
 
 public interface PushGroupCommandService {
-    ResultK<String, PushCommandServiceError> getResult(PushCommandValidated validated);
+    ResultK<String, PushCommandServiceError> push(PushCommandValidated validated);
 }

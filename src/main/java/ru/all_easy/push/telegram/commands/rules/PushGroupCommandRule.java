@@ -2,8 +2,6 @@ package ru.all_easy.push.telegram.commands.rules;
 
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
-import ru.all_easy.push.room.repository.model.RoomEntity;
-import ru.all_easy.push.room_user.repository.RoomUserEntity;
 import ru.all_easy.push.telegram.api.ChatType;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.Commands;
@@ -37,19 +35,12 @@ public class PushGroupCommandRule implements CommandRule {
             return ResultK.Err(new CommandError(validated.getError().message()));
         }
 
-        var result = pushGroupCommandService.getResult(validated.getResult());
+        var result = pushGroupCommandService.push(validated.getResult());
         if (result.hasError()) {
             return ResultK.Err(new CommandError(validated.getError().message()));
         }
 
         return ResultK.Ok(new CommandProcessed(result.getResult()));
     }
-
-    private RoomUserEntity findRoomUser(RoomEntity room, String username) {
-        return room.getUsers().stream()
-            .filter(entity -> entity.getUser().getUsername().equals(username))
-            .findFirst()
-            .orElse(null);
-    } 
     
 }

@@ -18,7 +18,7 @@ public class PushGroupCommandCacheService implements PushGroupCommandService {
 
     @Override
     @CacheEvict(value = "results", key = "#validated.chatId")
-    public ResultK<String, PushCommandServiceError> getResult(PushCommandValidated validated) {
-        return pushGroupCommandService.getResult(validated);
+    public ResultK<String, PushCommandServiceError> push(PushCommandValidated validated) {
+        return pushGroupCommandService.push(validated);
     }
 }

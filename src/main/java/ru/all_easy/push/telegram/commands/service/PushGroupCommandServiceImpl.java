@@ -2,14 +2,12 @@ package ru.all_easy.push.telegram.commands.service;
 
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
-import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseServiceImpl;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
 import ru.all_easy.push.room_user.repository.RoomUserEntity;
-import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.commands.service.model.PushCommandServiceError;
 import ru.all_easy.push.telegram.commands.validators.model.PushCommandValidated;
 import ru.all_easy.push.telegram.messages.AnswerMessageTemplate;
@@ -28,7 +26,7 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
     }
 
     @Override
-    public ResultK<String, PushCommandServiceError> getResult(PushCommandValidated validated) {
+    public ResultK<String, PushCommandServiceError> push(PushCommandValidated validated) {
         Long chatId = validated.getChatId();
         RoomEntity roomEntity = roomService.findByToken(String.valueOf(chatId));
         if (roomEntity == null) {
@@ -61,21 +59,12 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
 
         ExpenseEntity expense = expenseService.expense(info, roomEntity);
         String answerMessage = String.format(
-                "Expense *%.2f* to user *%s* has been successfully added",
+                "Expense *%.2f* to user *%s* has been successfully added, description: %s",
                 expense.getAmount(),
-                expense.getTo().getUsername());
+                expense.getTo().getUsername(),
+                expense.getName());
 
         return ResultK.Ok(answerMessage);
-    }
-
-    private SendMessageInfo validate(Long chatId, String[] messageParts) {
-        if (messageParts.length < 3 || messageParts.length > 5) {
-            String answerMessage =
-                    "Incorrect format 🤔, try like this: /push @to <amount> <optional expense name> <optional amount%>";
-            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
-        }
-
-        return null;
     }
 
     private RoomUserEntity findRoomUser(RoomEntity room, String username) {
