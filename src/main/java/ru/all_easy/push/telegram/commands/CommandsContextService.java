@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class CommandsContextService {
 
-    private  final TelegramService telegramService;
+    private final TelegramService telegramService;
     private final List<CommandRule> commands;
 
     public CommandsContextService(TelegramService telegramService,
