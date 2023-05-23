@@ -1,114 +1,71 @@
 package ru.all_easy.push.telegram.commands.service;
 
 import org.springframework.stereotype.Service;
+import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseServiceImpl;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
-import ru.all_easy.push.helper.MathHelper;
-import ru.all_easy.push.helper.NameAndAmountWithPercents;
-import ru.all_easy.push.helper.PushHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
 import ru.all_easy.push.room_user.repository.RoomUserEntity;
 import ru.all_easy.push.telegram.api.ParseMode;
-import ru.all_easy.push.telegram.api.controller.model.MessageEntity;
-import ru.all_easy.push.telegram.api.controller.model.Update;
+import ru.all_easy.push.telegram.commands.service.model.PushCommandServiceError;
+import ru.all_easy.push.telegram.commands.validators.model.PushCommandValidated;
 import ru.all_easy.push.telegram.messages.AnswerMessageTemplate;
 
 import java.math.BigDecimal;
 
 @Service
 public class PushGroupCommandServiceImpl implements PushGroupCommandService {
-    private static final String TEXT_MENTION = "text_mention";
-
-    private final ExpenseServiceImpl expenseService;
     private final RoomService roomService;
-    private final MathHelper mathHelper;
-    private final PushHelper pushHelper;
+    private final ExpenseServiceImpl expenseService;
 
-    public PushGroupCommandServiceImpl(ExpenseServiceImpl expenseService,
-                                       RoomService roomService,
-                                       MathHelper mathHelper,
-                                       PushHelper pushHelper) {
-        this.expenseService = expenseService;
+    public PushGroupCommandServiceImpl(RoomService roomService,
+                                       ExpenseServiceImpl expenseService) {
         this.roomService = roomService;
-        this.mathHelper = mathHelper;
-        this.pushHelper = pushHelper;
+        this.expenseService = expenseService;
     }
 
     @Override
-    public SendMessageInfo getResult(Update update) {
-        // TODO: refactor to parsing builder
-        Long chatId = update.message().chat().id();
-        String messageText = update.message().text();
-        String[] messageParts = messageText.split(" ");
-        SendMessageInfo validationMessage = validate(chatId, messageParts);
-        if (validationMessage != null) {
-            return validationMessage;
-        }
-
-        String toUsername = null;
-        for (MessageEntity entity : update.message().entities()) {
-            if (TEXT_MENTION.equals(entity.type()) && !entity.user().username().isEmpty()) {
-                toUsername = entity.user().username();
-            }
-        }
-
-        if (messageParts[1].contains("@")) {
-            toUsername = messageParts[1].replace("@", "");
-        }
-
-        String fromUsername = update.message().from().username();
-        if (fromUsername.equals(toUsername)) {
-            return new SendMessageInfo(
-                    chatId,
-                    AnswerMessageTemplate.YOURSELF_PUSH.getMessage(),
-                    ParseMode.MARKDOWN.getMode());
-        }
-
+    public ResultK<String, PushCommandServiceError> getResult(PushCommandValidated validated) {
+        Long chatId = validated.getChatId();
         RoomEntity roomEntity = roomService.findByToken(String.valueOf(chatId));
         if (roomEntity == null) {
-            String answerMessage = AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage();
-            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
+            return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage()));
         }
 
-        RoomUserEntity fromEntity = findRoomUser(roomEntity, fromUsername);
+        RoomUserEntity fromEntity = findRoomUser(roomEntity, validated.getFromUsername());
         if (fromEntity == null) {
-            String answerMessage = String.format(
-                    AnswerMessageTemplate.UNADDED_USER.getMessage(),
-                    update.message().from().username());
-            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
+            return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNADDED_USER.getMessage()));
         }
 
-        RoomUserEntity toEntity = findRoomUser(roomEntity, toUsername);
+        RoomUserEntity toEntity = findRoomUser(roomEntity, validated.getToUsername());
         if (toEntity == null) {
-            String answerMessage = String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), toUsername);
-            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
+            return ResultK.Err(new PushCommandServiceError(
+                    String.format(
+                            AnswerMessageTemplate.UNADDED_USER.getMessage(),
+                            validated.getToUsername())));
         }
 
-        try {
-            BigDecimal calculatedAmount = mathHelper.calculate(messageParts[2]);
-            NameAndAmountWithPercents nameAndCalculatedAmount = pushHelper.getNameAndCalculatedAmount(
-                    messageParts, calculatedAmount);
-            String name = nameAndCalculatedAmount.name();
-            ExpenseInfo info = new ExpenseInfo(
-                    roomEntity.getToken(),
-                    fromEntity.getUserUid(),
-                    toEntity.getUserUid(),
-                    nameAndCalculatedAmount.calculatedAmount(),
-                    name);
+        ExpenseInfo info = new ExpenseInfo(
+                roomEntity.getToken(),
+                validated.getAmount().compareTo(BigDecimal.ZERO) < 0
+                        ? toEntity.getUserUid()
+                        : fromEntity.getUserUid(),
+                validated.getAmount().compareTo(BigDecimal.ZERO) < 0
+                        ? fromEntity.getUserUid()
+                        : toEntity.getUserUid(),
+                validated.getAmount().abs(),
+                validated.getName());
 
-            ExpenseEntity result = expenseService.expense(info, roomEntity);
-            String answerMessage = String.format(
-                    "Expense *%s* to user *%s* has been successfully added",
-                    result.getAmount(),
-                    result.getTo().getUsername());
-            return new SendMessageInfo(chatId, answerMessage, ParseMode.MARKDOWN.getMode());
-        } catch (IllegalArgumentException ex) {
-            String answerErrorMessage = "Incorrect amount format 🤔";
-            return new SendMessageInfo(chatId, answerErrorMessage, ParseMode.MARKDOWN.getMode());
-        }
+        ExpenseEntity expense = expenseService.expense(info, roomEntity);
+        String answerMessage = String.format(
+                "Expense *%.2f* to user *%s* has been successfully added",
+                expense.getAmount(),
+                expense.getTo().getUsername());
+
+        return ResultK.Ok(answerMessage);
     }
 
     private SendMessageInfo validate(Long chatId, String[] messageParts) {

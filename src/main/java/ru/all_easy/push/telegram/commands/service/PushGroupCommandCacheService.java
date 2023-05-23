@@ -3,8 +3,9 @@ package ru.all_easy.push.telegram.commands.service;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import ru.all_easy.push.common.client.model.SendMessageInfo;
-import ru.all_easy.push.telegram.api.controller.model.Update;
+import ru.all_easy.push.common.ResultK;
+import ru.all_easy.push.telegram.commands.service.model.PushCommandServiceError;
+import ru.all_easy.push.telegram.commands.validators.model.PushCommandValidated;
 
 @Primary
 @Service
@@ -16,8 +17,8 @@ public class PushGroupCommandCacheService implements PushGroupCommandService {
     }
 
     @Override
-    @CacheEvict(value = "results", key = "#update.message().chat().id()")
-    public SendMessageInfo getResult(Update update) {
-        return pushGroupCommandService.getResult(update);
+    @CacheEvict(value = "results", key = "#validated.chatId")
+    public ResultK<String, PushCommandServiceError> getResult(PushCommandValidated validated) {
+        return pushGroupCommandService.getResult(validated);
     }
 }

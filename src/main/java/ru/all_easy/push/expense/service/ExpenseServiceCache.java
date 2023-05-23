@@ -18,7 +18,7 @@ public class ExpenseServiceCache implements ExpenseService {
     }
 
     @Override
-    @Cacheable(value = "results", key = "#room.getToken()")
+    @Cacheable(value = "results", key = "#room.token")
     public Map<String, BigDecimal> optimize(RoomEntity room) {
         return expenseService.optimize(room);
     }

@@ -3,10 +3,19 @@ package ru.all_easy.push.telegram.commands.validators.model;
 import java.math.BigDecimal;
 
 public class PushCommandValidated {
+    private Long chatId;
     private String fromUsername;
     private String toUsername;
     private BigDecimal amount;
     private String name;
+
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
+    }
 
     public String getFromUsername() {
         return fromUsername;
