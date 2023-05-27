@@ -34,9 +34,10 @@ public class CommandsContextService {
             .ifPresent(result -> {
                 var chatId = update.message().chat().id();
                 if (result.hasError()) {
-                    sendMessage(new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode(), null));
+                    sendMessage(new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode()));
                 } else {
-                    sendMessage(new SendMessageInfo(chatId, result.getResult().message(), ParseMode.MARKDOWN.getMode(), result.getResult().allButtons()));
+                    sendMessage(new SendMessageInfo(chatId, result.getResult().message(),
+                            ParseMode.MARKDOWN.getMode(), result.getResult().allButtons()));
                 }
             });
     }

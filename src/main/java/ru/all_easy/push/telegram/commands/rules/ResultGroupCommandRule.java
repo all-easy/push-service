@@ -53,7 +53,12 @@ public class ResultGroupCommandRule implements CommandRule {
 
         if (roomEntity.getCurrency() != null) {
             CurrencyEntity currencyEntity = roomEntity.getCurrency();
-            formattedMessage += " " +  currencyEntity.getSymbol() + " " + currencyEntity.getCode();
+            StringBuilder stringBuilder = new StringBuilder(formattedMessage)
+                    .append(" ")
+                    .append(currencyEntity.getSymbol())
+                    .append(" ")
+                    .append(currencyEntity.getCode());
+            formattedMessage = stringBuilder.toString();
         }
 
         String message = formattedMessage.isEmpty() ? "No debts, chill for now \uD83D\uDE09" : formattedMessage;

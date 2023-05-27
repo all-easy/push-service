@@ -7,4 +7,7 @@ public record SendMessageInfo(
     String text,
     String parseMode,
     InlineKeyboard keyboard) implements SendMessage {
+    public SendMessageInfo(Long chatId, String text, String parseMode) {
+        this(chatId, text, parseMode, null);
+    }
 }

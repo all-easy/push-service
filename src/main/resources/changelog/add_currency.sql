@@ -1,10 +1,12 @@
 insert into currency(code, symbol) values
 ('USD', '$'),
-('GEL', '₾'),
 ('GBR', '£'),
+('EUR', '€'),
+('GEL', '₾'),
 ('AMD', '֏');
 
 -- USD \u0024 $
--- GEL \u20be ₾
 -- GBR \u00a3 £
+-- EUR \u20ac
+-- GEL \u20be ₾
 -- AMD \u058f ֏

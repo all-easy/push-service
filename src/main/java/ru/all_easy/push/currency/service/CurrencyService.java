@@ -15,13 +15,10 @@ import java.util.stream.Collectors;
 public class CurrencyService {
     private final CurrencyRepository currencyRepository;
     private final RoomService roomService;
-    private final RoomRepository roomRepository;
 
-    public CurrencyService(CurrencyRepository currencyRepository, RoomService roomService,
-                           RoomRepository roomRepository) {
+    public CurrencyService(CurrencyRepository currencyRepository, RoomService roomService) {
         this.currencyRepository = currencyRepository;
         this.roomService = roomService;
-        this.roomRepository = roomRepository;
     }
 
     public List<CurrencyInfo> getAll() {
@@ -33,16 +30,12 @@ public class CurrencyService {
     public void setCurrency(Long chatId, String currencyCode) {
         RoomEntity room = roomService.findRoomByToken(String.valueOf(chatId));
         CurrencyEntity currency = currencyRepository.findByCode(currencyCode);
-        room.setCurrency(currency);
-        roomRepository.save(room);
+        roomService.setRoomCurrency(room, currency);
     }
 
     public CurrencyEntity getCurrencyByRoomId(Long chatId) {
-        RoomEntity roomEntity = roomRepository.findByToken(String.valueOf(chatId));
-        if (roomEntity != null) {
-            return roomEntity.getCurrency();
-        }
-        return null;
+        RoomEntity roomEntity = roomService.findByToken(String.valueOf(chatId));
+        return roomEntity == null ? null : roomEntity.getCurrency();
     }
 
     public String getCurrencySymbolAndCode(String currencyCode) {

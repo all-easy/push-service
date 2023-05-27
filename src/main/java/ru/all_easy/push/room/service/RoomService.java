@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import ru.all_easy.push.common.ErrorType;
+import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.optimize.OptimizeTools;
 import ru.all_easy.push.optimize.OweInfo;
@@ -239,4 +240,10 @@ public class RoomService {
 
         return true;
     }
+
+    public void setRoomCurrency(RoomEntity room, CurrencyEntity currency) {
+        room.setCurrency(currency);
+        repository.save(room);
+    }
+
 }

@@ -8,5 +8,6 @@
     <property name="clob.type" value="clob" dbms="postgresql"/>
 
     <include file="changelog/init.xml"/>
+    <include file="changelog/add_currency.xml"/>
 
 </databaseChangeLog>
