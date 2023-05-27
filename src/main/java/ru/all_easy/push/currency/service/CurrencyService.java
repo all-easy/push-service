@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import ru.all_easy.push.currency.repository.CurrencyRepository;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.currency.service.model.CurrencyInfo;
-import ru.all_easy.push.room.repository.RoomRepository;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
 
@@ -27,9 +26,8 @@ public class CurrencyService {
                 .collect(Collectors.toList());
     }
 
-    public void setCurrency(Long chatId, String currencyCode) {
+    public void setCurrency(Long chatId, CurrencyEntity currency) {
         RoomEntity room = roomService.findRoomByToken(String.valueOf(chatId));
-        CurrencyEntity currency = currencyRepository.findByCode(currencyCode);
         roomService.setRoomCurrency(room, currency);
     }
 
@@ -38,9 +36,8 @@ public class CurrencyService {
         return roomEntity == null ? null : roomEntity.getCurrency();
     }
 
-    public String getCurrencySymbolAndCode(String currencyCode) {
-        CurrencyEntity currencyEntity = currencyRepository.findByCode(currencyCode);
-        return currencyEntity.getSymbol() + " " + currencyEntity.getCode();
+    public CurrencyEntity getCurrencyByCode(String currencyCode) {
+        return currencyRepository.findByCode(currencyCode);
     }
 
 }

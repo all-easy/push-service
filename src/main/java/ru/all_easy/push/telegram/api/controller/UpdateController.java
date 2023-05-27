@@ -6,11 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 import ru.all_easy.push.common.AbstractAuthentication;
-import ru.all_easy.push.common.client.model.SendMessageInfo;
-import ru.all_easy.push.currency.service.CurrencyService;
-import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
-import ru.all_easy.push.telegram.api.service.TelegramService;
 import ru.all_easy.push.telegram.commands.CommandsContextService;
 
 
@@ -27,30 +23,15 @@ public class UpdateController extends AbstractAuthentication {
     }
 
     private final CommandsContextService commandContextService;
-    private final TelegramService telegramService;
-    private final CurrencyService currencyService;
 
-    public UpdateController(CommandsContextService commandContextService,
-                            TelegramService telegramService,
-                            CurrencyService currencyService) {
+    public UpdateController(CommandsContextService commandContextService) {
         this.commandContextService = commandContextService;
-        this.telegramService = telegramService;
-        this.currencyService = currencyService;
     }
 
     @PostMapping("/")
     public void postMethodName(@RequestBody Update update) {
-        if (update.callbackQuery() != null) {
-            logger.info("Callback received: {}", update);
-            currencyService.setCurrency(update.callbackQuery().message().chat().id(), update.callbackQuery().data());
-            telegramService.sendMessage(
-                    new SendMessageInfo(update.callbackQuery().message().chat().id(),
-                    "Chat's currency is set to " + currencyService.getCurrencySymbolAndCode(update.callbackQuery().data()),
-                            ParseMode.MARKDOWN.getMode(), null));
-        } else {
-            logger.info("Update received: {}", update);
-            commandContextService.process(update);
-        }
+        logger.info("Update received: {}", update);
+        commandContextService.process(update);
     }
 
 }
