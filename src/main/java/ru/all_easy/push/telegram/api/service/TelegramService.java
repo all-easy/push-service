@@ -21,7 +21,7 @@ public class TelegramService implements ClientApi {
     private final TelegramFeignClient telegramFeignClient;
     private final TelegramConfig telegramConfig;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TelegramService.class);
+    private final Logger logger = LoggerFactory.getLogger(TelegramService.class);
 
     public TelegramService(TelegramFeignClient telegramFeignClient, TelegramConfig telegramConfig) {
         this.telegramFeignClient = telegramFeignClient;
@@ -31,23 +31,26 @@ public class TelegramService implements ClientApi {
     @PostConstruct
     void init() {
         String removeHookResult = setWebhook(new SetWebhookInfo("", telegramConfig.dropPendingUpdates()));
-        LOGGER.info("Remove WebHook: {}", removeHookResult);
+        logger.info("Remove WebHook: {}", removeHookResult);
         String setHookResult = setWebhook(new SetWebhookInfo(telegramConfig.hook(), telegramConfig.dropPendingUpdates()));
-        LOGGER.info("Set WebHook: {}, {}", setHookResult, telegramConfig.hook());
+        logger.info("Set WebHook: {}, {}", setHookResult, telegramConfig.hook());
     }
 
     @Override
     public String setWebhook(SetWebhookInfo info) {
         SetWebhookRequest request = new SetWebhookRequest(info.url(), info.dropPendingUpdates());
         String response = telegramFeignClient.setWebhook(request);
-        LOGGER.info(response);
+        logger.info(response);
 
         return response;
     }
 
     @Override
     public String sendMessage(SendMessageInfo info) {
-        return telegramFeignClient.sendMessage(new SendMessageRequest(info.chatId(), info.text(), info.parseMode()));
+        var response = telegramFeignClient.sendMessage(new SendMessageRequest(info.chatId(), info.text(), info.parseMode()));
+        logger.info(response);
+
+        return response;
     }
 
     @Override
