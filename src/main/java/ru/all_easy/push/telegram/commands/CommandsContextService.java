@@ -23,19 +23,16 @@ public class CommandsContextService {
     }
 
     public void process(Update update) {
-        if (update.message() == null || update.message().text() == null) {
-            return;
-        }
-
         commands.stream()
             .filter(it -> it.apply(update))
             .findFirst()
             .map(commandRule -> commandRule.process(update))
             .ifPresent(result -> {
-                var chatId = update.message().chat().id();
                 if (result.hasError()) {
+                    var chatId = result.getError().chatId();
                     sendMessage(new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode()));
                 } else {
+                    var chatId = result.getResult().chatId();
                     sendMessage(new SendMessageInfo(chatId, result.getResult().message(),
                             ParseMode.MARKDOWN.getMode(), result.getResult().allButtons()));
                 }

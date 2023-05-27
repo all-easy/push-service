@@ -25,6 +25,9 @@ public class CurrencyCommandRule implements CommandRule {
 
     @Override
     public boolean apply(Update update) {
+        if (update.message() == null || update.message().text() == null) {
+            return false;
+        }
         return update.message().text().contains(Commands.CURRENCY.getCommand());
     }
 
@@ -49,6 +52,6 @@ public class CurrencyCommandRule implements CommandRule {
             message += ". Current is %s %s".formatted(currencyEntity.getSymbol(), currencyEntity.getCode());
         }
 
-        return ResultK.Ok(new CommandProcessed(message, allButtons));
+        return ResultK.Ok(new CommandProcessed(message, update.message().chat().id(), allButtons));
     }
 }

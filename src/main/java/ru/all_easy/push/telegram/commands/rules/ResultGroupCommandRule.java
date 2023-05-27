@@ -32,6 +32,9 @@ public class ResultGroupCommandRule implements CommandRule {
 
     @Override
     public boolean apply(Update update) {
+        if (update.message() == null || update.message().text() == null) {
+            return false;
+        }
         return update.message().text().contains(Commands.RESULT.getCommand()) 
             && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
                 || update.message().chat().type().equals(ChatType.GROUP.getType()));
@@ -45,11 +48,15 @@ public class ResultGroupCommandRule implements CommandRule {
         RoomEntity roomEntity = roomService.findByToken(roomId);
         if (roomEntity == null) {
             String answerMessage = "Virtual is empty, please send /addme command 🙃";
-            return ResultK.Ok(new CommandProcessed(answerMessage));
+            return ResultK.Ok(new CommandProcessed(answerMessage, chatId));
         }
 
         Map<String, BigDecimal> result = expenseService.optimize(roomEntity);
         String formattedMessage = formatHelper.formatResult(result);
+        if (formattedMessage.isEmpty()) {
+            String message = "No debts, chill for now \uD83D\uDE09";
+            return ResultK.Ok(new CommandProcessed(message, chatId));
+        }
 
         if (roomEntity.getCurrency() != null) {
             CurrencyEntity currencyEntity = roomEntity.getCurrency();
@@ -61,8 +68,7 @@ public class ResultGroupCommandRule implements CommandRule {
             formattedMessage = stringBuilder.toString();
         }
 
-        String message = formattedMessage.isEmpty() ? "No debts, chill for now \uD83D\uDE09" : formattedMessage;
-        return ResultK.Ok(new CommandProcessed(message));
+        return ResultK.Ok(new CommandProcessed(formattedMessage, chatId));
     }
     
 }

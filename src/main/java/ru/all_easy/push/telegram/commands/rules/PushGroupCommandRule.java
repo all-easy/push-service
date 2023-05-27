@@ -36,6 +36,9 @@ public class PushGroupCommandRule implements CommandRule {
 
     @Override
     public boolean apply(Update update) {
+        if (update.message() == null || update.message().text() == null) {
+            return false;
+        }
         return update.message().text().contains(Commands.PUSH.getCommand()) 
             && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
                 || update.message().chat().type().equals(ChatType.GROUP.getType()));
@@ -47,17 +50,17 @@ public class PushGroupCommandRule implements CommandRule {
 
         var validated = pushCommandValidator.validate(update);
         if (validated.hasError()) {
-            return ResultK.Err(new CommandError(validated.getError().message()));
+            return ResultK.Err(new CommandError(validated.getError().message(), chatId));
         }
 
         RoomEntity roomEntity = roomService.findByToken(String.valueOf(chatId));
         if (roomEntity == null) {
-            return ResultK.Err(new CommandError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage()));
+            return ResultK.Err(new CommandError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage(), chatId));
         }
 
         RoomUserEntity fromEntity = findRoomUser(roomEntity, validated.getResult().getFromUsername());
         if (fromEntity == null) {
-            return ResultK.Err(new CommandError(AnswerMessageTemplate.UNADDED_USER.getMessage()));
+            return ResultK.Err(new CommandError(AnswerMessageTemplate.UNADDED_USER.getMessage(), chatId));
         }
 
         RoomUserEntity toEntity = findRoomUser(roomEntity, validated.getResult().getToUsername());
@@ -65,7 +68,7 @@ public class PushGroupCommandRule implements CommandRule {
             return ResultK.Err(new CommandError(
                     String.format(
                         AnswerMessageTemplate.UNADDED_USER.getMessage(),
-                        validated.getResult().getToUsername())));
+                        validated.getResult().getToUsername()), chatId));
         }
 
         ExpenseInfo info = new ExpenseInfo(
@@ -89,7 +92,7 @@ public class PushGroupCommandRule implements CommandRule {
 
             result.getName());
 
-        return ResultK.Ok(new CommandProcessed(answerMessage));
+        return ResultK.Ok(new CommandProcessed(answerMessage, chatId));
     }
 
     private RoomUserEntity findRoomUser(RoomEntity room, String username) {
