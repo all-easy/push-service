@@ -2,6 +2,7 @@ package ru.all_easy.push.telegram.commands.rules;
 
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
+import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
@@ -35,6 +36,9 @@ public class PushGroupCommandRule implements CommandRule {
 
     @Override
     public boolean apply(Update update) {
+        if (update.message() == null || update.message().text() == null) {
+            return false;
+        }
         return update.message().text().contains(Commands.PUSH.getCommand()) 
             && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
                 || update.message().chat().type().equals(ChatType.GROUP.getType()));
@@ -46,17 +50,17 @@ public class PushGroupCommandRule implements CommandRule {
 
         var validated = pushCommandValidator.validate(update);
         if (validated.hasError()) {
-            return ResultK.Err(new CommandError(validated.getError().message()));
+            return ResultK.Err(new CommandError(validated.getError().message(), chatId));
         }
 
         RoomEntity roomEntity = roomService.findByToken(String.valueOf(chatId));
         if (roomEntity == null) {
-            return ResultK.Err(new CommandError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage()));
+            return ResultK.Err(new CommandError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage(), chatId));
         }
 
         RoomUserEntity fromEntity = findRoomUser(roomEntity, validated.getResult().getFromUsername());
         if (fromEntity == null) {
-            return ResultK.Err(new CommandError(AnswerMessageTemplate.UNADDED_USER.getMessage()));
+            return ResultK.Err(new CommandError(AnswerMessageTemplate.UNADDED_USER.getMessage(), chatId));
         }
 
         RoomUserEntity toEntity = findRoomUser(roomEntity, validated.getResult().getToUsername());
@@ -64,7 +68,7 @@ public class PushGroupCommandRule implements CommandRule {
             return ResultK.Err(new CommandError(
                     String.format(
                         AnswerMessageTemplate.UNADDED_USER.getMessage(),
-                        validated.getResult().getToUsername())));
+                        validated.getResult().getToUsername()), chatId));
         }
 
         ExpenseInfo info = new ExpenseInfo(
@@ -80,12 +84,15 @@ public class PushGroupCommandRule implements CommandRule {
 
         ExpenseEntity result = expenseService.expense(info, roomEntity);
         String answerMessage = String.format(
-            "Expense *%.2f* to user *%s* has been successfully added, description: %s",
-            result.getAmount(),
+            "Expense *%.2f*%s to user *%s* has been successfully added, description: %s",
+                result.getAmount(),
+                roomEntity.getCurrency() == null ? "" :
+                        " " + roomEntity.getCurrency().getSymbol() + " " + roomEntity.getCurrency().getCode(),
             result.getTo().getUsername(),
+
             result.getName());
 
-        return ResultK.Ok(new CommandProcessed(answerMessage));
+        return ResultK.Ok(new CommandProcessed(answerMessage, chatId));
     }
 
     private RoomUserEntity findRoomUser(RoomEntity room, String username) {
