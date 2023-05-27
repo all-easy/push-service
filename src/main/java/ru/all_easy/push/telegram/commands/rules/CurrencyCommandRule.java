@@ -1,8 +1,7 @@
 package ru.all_easy.push.telegram.commands.rules;
 
 import org.springframework.stereotype.Service;
-import ru.all_easy.push.common.client.model.SendMessage;
-import ru.all_easy.push.common.client.model.SendMessageCurrencyInfo;
+import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.currency.service.CurrencyService;
 import ru.all_easy.push.currency.service.model.CurrencyInfo;
@@ -10,6 +9,8 @@ import ru.all_easy.push.telegram.api.client.model.InlineKeyboard;
 import ru.all_easy.push.telegram.api.client.model.InlineKeyboardButton;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.Commands;
+import ru.all_easy.push.telegram.commands.rules.model.CommandError;
+import ru.all_easy.push.telegram.commands.rules.model.CommandProcessed;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class CurrencyCommandRule implements CommandRule {
     }
 
     @Override
-    public SendMessage process(Update update) {
+    public ResultK<CommandProcessed, CommandError> process(Update update) {
         List<CurrencyInfo> currencies = currencyService.getAll();
         List<InlineKeyboardButton> buttonRow = new ArrayList<>();
 
@@ -48,6 +49,6 @@ public class CurrencyCommandRule implements CommandRule {
             message += ". Current is %s %s".formatted(currencyEntity.getSymbol(), currencyEntity.getCode());
         }
 
-        return new SendMessageCurrencyInfo(update.message().chat().id(), message, allButtons);
+        return ResultK.Ok(new CommandProcessed(message, allButtons));
     }
 }

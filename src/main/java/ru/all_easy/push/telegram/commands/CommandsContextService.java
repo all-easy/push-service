@@ -2,7 +2,6 @@ package ru.all_easy.push.telegram.commands;
 
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.client.model.SendMessage;
-import ru.all_easy.push.common.client.model.SendMessageCurrencyInfo;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
@@ -35,21 +34,15 @@ public class CommandsContextService {
             .ifPresent(result -> {
                 var chatId = update.message().chat().id();
                 if (result.hasError()) {
-                    sendMessage(new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode()));
+                    sendMessage(new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode(), null));
                 } else {
-                    sendMessage(new SendMessageInfo(chatId, result.getResult().message(), ParseMode.MARKDOWN.getMode()));
+                    sendMessage(new SendMessageInfo(chatId, result.getResult().message(), ParseMode.MARKDOWN.getMode(), result.getResult().allButtons()));
                 }
             });
     }
 
     private void sendMessage(SendMessage message) {
-        if (message instanceof SendMessageInfo){
-            telegramService.sendMessage((SendMessageInfo) message);
-        }
-
-        if (message instanceof SendMessageCurrencyInfo){
-            telegramService.sendMessage((SendMessageCurrencyInfo) message);
-        }
+        telegramService.sendMessage((SendMessageInfo) message);
     }
 
 }

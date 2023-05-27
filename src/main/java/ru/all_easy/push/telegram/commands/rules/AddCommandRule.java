@@ -42,7 +42,6 @@ public class AddCommandRule implements CommandRule {
         String userId = String.valueOf(update.message().from().id());
         String roomId = String.valueOf(update.message().chat().id());
         String username = update.message().from().username();
-        Long chatId = update.message().chat().id();
         
         if (username == null) {
             return ResultK.Err(new CommandError("Add username in Telegram settings please"));

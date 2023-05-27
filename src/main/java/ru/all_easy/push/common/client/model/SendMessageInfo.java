@@ -1,8 +1,10 @@
 package ru.all_easy.push.common.client.model;
 
+import ru.all_easy.push.telegram.api.client.model.InlineKeyboard;
+
 public record SendMessageInfo(
     Long chatId,
     String text,
-    String parseMode
-) implements SendMessage {
+    String parseMode,
+    InlineKeyboard keyboard) implements SendMessage {
 }

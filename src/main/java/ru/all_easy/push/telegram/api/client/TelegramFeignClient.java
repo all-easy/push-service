@@ -2,8 +2,6 @@ package ru.all_easy.push.telegram.api.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import ru.all_easy.push.telegram.api.client.model.SendMessageCurrencyRequest;
 import ru.all_easy.push.telegram.api.client.model.SendMessageRequest;
 import ru.all_easy.push.telegram.api.client.model.SetWebhookRequest;
 
@@ -15,7 +13,4 @@ public interface TelegramFeignClient {
     
     @PostMapping("/sendMessage")
     String sendMessage(SendMessageRequest request);
-
-    @PostMapping("/sendMessage")
-    String sendMessage(SendMessageCurrencyRequest request);
 }

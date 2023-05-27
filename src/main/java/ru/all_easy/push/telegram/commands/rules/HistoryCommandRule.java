@@ -54,7 +54,7 @@ public class HistoryCommandRule implements  CommandRule {
                 info.name()));
         }
 
-        return ResultK.Ok(new CommandProcessed(message.toString()));
+        return ResultK.Ok(new CommandProcessed(message.toString(), null));
     }
 
     private Integer getLimit(Update update) {
