@@ -18,4 +18,8 @@ public record Update(
     @JsonProperty("callback_query")
     CallbackQuery callbackQuery
 ) {
+
+    public Update(Long updateId, Message message) {
+        this(updateId, message, null);
+    }
 }
