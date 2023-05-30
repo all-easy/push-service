@@ -13,6 +13,13 @@ public record Update(
     Long updateId,
 
     @JsonProperty("message")
-    Message message
+    Message message,
+
+    @JsonProperty("callback_query")
+    CallbackQuery callbackQuery
 ) {
+
+    public Update(Long updateId, Message message) {
+        this(updateId, message, null);
+    }
 }

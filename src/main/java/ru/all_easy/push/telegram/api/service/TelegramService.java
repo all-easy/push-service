@@ -1,17 +1,16 @@
 package ru.all_easy.push.telegram.api.service;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import ru.all_easy.push.common.ClientApi;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.common.client.model.SetWebhookInfo;
 import ru.all_easy.push.telegram.api.client.TelegramFeignClient;
 import ru.all_easy.push.telegram.api.client.model.SendMessageRequest;
 import ru.all_easy.push.telegram.api.client.model.SetWebhookRequest;
+
+import javax.annotation.PostConstruct;
 
 @Service
 public class TelegramService implements ClientApi {
@@ -44,7 +43,8 @@ public class TelegramService implements ClientApi {
 
     @Override
     public String sendMessage(SendMessageInfo info) {
-        var response = telegramFeignClient.sendMessage(new SendMessageRequest(info.chatId(), info.text(), info.parseMode()));
+        var response = telegramFeignClient.sendMessage(
+                new SendMessageRequest(info.chatId(), info.text(), info.parseMode(), info.keyboard()));
         logger.info(response);
 
         return response;

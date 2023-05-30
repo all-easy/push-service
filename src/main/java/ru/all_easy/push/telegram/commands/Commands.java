@@ -7,7 +7,8 @@ public enum Commands {
     RESULT("/result"),
     HELP("/help"),
     HISTORY("/history"),
-    ADD_ME("/addme");
+    ADD_ME("/addme"),
+    CURRENCY("/currency");
 
     private final String command;
 

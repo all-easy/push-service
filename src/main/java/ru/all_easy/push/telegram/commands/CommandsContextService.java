@@ -1,6 +1,7 @@
 package ru.all_easy.push.telegram.commands;
 
 import org.springframework.stereotype.Service;
+import ru.all_easy.push.common.client.model.SendMessage;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
@@ -22,26 +23,24 @@ public class CommandsContextService {
     }
 
     public void process(Update update) {
-        if (update.message() == null || update.message().text() == null) {
-            return;
-        }
-
         commands.stream()
             .filter(it -> it.apply(update))
             .findFirst()
             .map(commandRule -> commandRule.process(update))
             .ifPresent(result -> {
-                var chatId = update.message().chat().id();
                 if (result.hasError()) {
+                    var chatId = result.getError().chatId();
                     sendMessage(new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode()));
                 } else {
-                    sendMessage(new SendMessageInfo(chatId, result.getResult().message(), ParseMode.MARKDOWN.getMode()));
+                    var chatId = result.getResult().chatId();
+                    sendMessage(new SendMessageInfo(chatId, result.getResult().message(),
+                            ParseMode.MARKDOWN.getMode(), result.getResult().allButtons()));
                 }
             });
     }
 
-    private void sendMessage(SendMessageInfo message) {
-        telegramService.sendMessage(message);
+    private void sendMessage(SendMessage message) {
+        telegramService.sendMessage((SendMessageInfo) message);
     }
 
 }
