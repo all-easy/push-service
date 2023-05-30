@@ -2,7 +2,6 @@ package ru.all_easy.push.telegram.commands.validators;
 
 import org.springframework.stereotype.Component;
 import ru.all_easy.push.common.ResultK;
-import ru.all_easy.push.helper.MathHelper;
 import ru.all_easy.push.helper.PushParser;
 import ru.all_easy.push.telegram.api.controller.model.MessageEntity;
 import ru.all_easy.push.telegram.api.controller.model.Update;
@@ -61,6 +60,8 @@ public class PushCommandValidator {
         } catch (IllegalArgumentException ex) {
             return ResultK.Err(new ValidationError(AnswerMessageTemplate.INCORRECT_MATH_EXPRESSION.getMessage()));
         }
+
+        validated.setChatId(update.message().chat().id());
 
         return ResultK.Ok(validated);
     }

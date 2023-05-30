@@ -18,15 +18,15 @@ import java.util.Map;
 
 @Service
 public class ResultGroupCommandRule implements CommandRule {
-    private final ExpenseService expenseService;
     private final RoomService roomService;
+    private final ExpenseService expenseService;
     private final FormatHelper formatHelper;
 
-    public ResultGroupCommandRule(ExpenseService expenseService,
-                                  RoomService roomService,
+    public ResultGroupCommandRule(RoomService roomService,
+                                  ExpenseService expenseService,
                                   FormatHelper formatHelper) {
-        this.expenseService = expenseService;
         this.roomService = roomService;
+        this.expenseService = expenseService;
         this.formatHelper = formatHelper;
     }
 
@@ -35,8 +35,8 @@ public class ResultGroupCommandRule implements CommandRule {
         if (update.message() == null || update.message().text() == null) {
             return false;
         }
-        return update.message().text().contains(Commands.RESULT.getCommand()) 
-            && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
+        return update.message().text().contains(Commands.RESULT.getCommand())
+                && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
                 || update.message().chat().type().equals(ChatType.GROUP.getType()));
     }
 
@@ -44,7 +44,7 @@ public class ResultGroupCommandRule implements CommandRule {
     public ResultK<CommandProcessed, CommandError> process(Update update) {
         Long chatId = update.message().chat().id();
         String roomId = String.valueOf(chatId);
-        
+
         RoomEntity roomEntity = roomService.findByToken(roomId);
         if (roomEntity == null) {
             String answerMessage = "Virtual is empty, please send /addme command 🙃";
@@ -70,5 +70,5 @@ public class ResultGroupCommandRule implements CommandRule {
 
         return ResultK.Ok(new CommandProcessed(formattedMessage, chatId));
     }
-    
+
 }

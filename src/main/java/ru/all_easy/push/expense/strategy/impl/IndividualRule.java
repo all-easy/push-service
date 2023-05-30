@@ -2,9 +2,9 @@ package ru.all_easy.push.expense.strategy.impl;
 
 import org.springframework.stereotype.Component;
 
+import ru.all_easy.push.expense.service.ExpenseServiceImpl;
 import ru.all_easy.push.helper.MathHelper;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
-import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.expense.strategy.ExpenseTypeRule;
 import ru.all_easy.push.expense.strategy.model.ExpenseRuleInfo;
@@ -17,11 +17,11 @@ import java.math.BigDecimal;
 public class IndividualRule implements ExpenseTypeRule {
 
     private final RoomService roomService;
-    private final ExpenseService expenseService;
+    private final ExpenseServiceImpl expenseService;
     private final MathHelper mathHelper;
 
     public IndividualRule(RoomService roomService,
-                          ExpenseService expenseService,
+                          ExpenseServiceImpl expenseService,
                           MathHelper mathHelper) {
         this.roomService = roomService;
         this.expenseService = expenseService;
