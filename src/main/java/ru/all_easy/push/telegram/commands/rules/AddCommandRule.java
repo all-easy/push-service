@@ -42,12 +42,14 @@ public class AddCommandRule implements CommandRule {
     @Override
     @Transactional
     public ResultK<CommandProcessed, CommandError> process(Update update) {
+        Long chatIdL = update.message().chat().id();
         String userId = String.valueOf(update.message().from().id());
-        String roomId = String.valueOf(update.message().chat().id());
+        String chatId = String.valueOf(chatIdL);
         String username = update.message().from().username();
         
         if (username == null) {
-            return ResultK.Err(new CommandError("Add username in Telegram settings please", chatId));
+            return ResultK.Err(
+                new CommandError("Add username in Telegram settings please", chatIdL));
         }
 
         try {
@@ -55,13 +57,13 @@ public class AddCommandRule implements CommandRule {
             if (chatTitle == null) {
                 chatTitle = update.message().from().username();
             }
-            RoomEntity room = roomService.createRoomEntity(new RoomInfo(userId, chatTitle, roomId, Shape.EMPTY));
+            RoomEntity room = roomService.createRoomEntity(new RoomInfo(userId, chatTitle, chatId, Shape.EMPTY));
             UserEntity user = userService.registerEntity(new RegisterInfo(username, StringUtils.EMPTY, userId));
             RoomResult result = roomService.enterRoom(user, room);
             String message = String.format("*%s* have been successfully added to virtual room *%s*", username, result.title());
-            return ResultK.Ok(new CommandProcessed(message, chatId));
+            return ResultK.Ok(new CommandProcessed(message, chatIdL));
         } catch (RoomServiceException ex) {
-            return ResultK.Err(new CommandError(ex.getMessage(), chatId));
+            return ResultK.Err(new CommandError(ex.getMessage(), chatIdL));
         }
     }
 }

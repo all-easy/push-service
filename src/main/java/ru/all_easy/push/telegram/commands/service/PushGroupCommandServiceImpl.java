@@ -57,12 +57,15 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
                 validated.getAmount().abs(),
                 validated.getName());
 
-        ExpenseEntity expense = expenseService.expense(info, roomEntity);
+        ExpenseEntity result = expenseService.expense(info, roomEntity);
         String answerMessage = String.format(
-                "Expense *%.2f* to user *%s* has been successfully added, description: %s",
-                expense.getAmount(),
-                expense.getTo().getUsername(),
-                expense.getName());
+                "Expense *%.2f*%s to user *%s* has been successfully added, description: %s",
+                result.getAmount(),
+                roomEntity.getCurrency() == null ? "" :
+                        " " + roomEntity.getCurrency().getSymbol() + " " + roomEntity.getCurrency().getCode(),
+                result.getTo().getUsername(),
+
+                result.getName());
 
         return ResultK.Ok(answerMessage);
     }
