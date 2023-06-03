@@ -33,12 +33,12 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
             return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage()));
         }
 
-        RoomUserEntity fromEntity = findRoomUser(roomEntity, validated.getFromUsername());
+        RoomUserEntity fromEntity = filterRoomUser(roomEntity, validated.getFromUsername());
         if (fromEntity == null) {
             return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNADDED_USER.getMessage()));
         }
 
-        RoomUserEntity toEntity = findRoomUser(roomEntity, validated.getToUsername());
+        RoomUserEntity toEntity = filterRoomUser(roomEntity, validated.getToUsername());
         if (toEntity == null) {
             return ResultK.Err(new PushCommandServiceError(
                     String.format(
@@ -59,18 +59,17 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
 
         ExpenseEntity result = expenseService.expense(info, roomEntity);
         String answerMessage = String.format(
-                "Expense *%.2f*%s to user *%s* has been successfully added, description: %s",
+                "Expense *%.2f*%s to user *%s* has been successfully added%s",
                 result.getAmount(),
                 roomEntity.getCurrency() == null ? "" :
                         " " + roomEntity.getCurrency().getSymbol() + " " + roomEntity.getCurrency().getCode(),
                 result.getTo().getUsername(),
-
-                result.getName());
+                result.getName().isBlank() ? "" : ", description: " + result.getName());
 
         return ResultK.Ok(answerMessage);
     }
 
-    private RoomUserEntity findRoomUser(RoomEntity room, String username) {
+    private RoomUserEntity filterRoomUser(RoomEntity room, String username) {
         return room.getUsers().stream()
                 .filter(entity -> entity.getUser().getUsername().equals(username))
                 .findFirst()
