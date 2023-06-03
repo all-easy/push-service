@@ -2,6 +2,7 @@ package ru.all_easy.push.telegram.api.client.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.all_easy.push.common.client.model.ReplayMarkup;
 
 public record SendMessageRequest(
     @JsonProperty("chat_id")
@@ -15,6 +16,6 @@ public record SendMessageRequest(
 
     @JsonProperty("reply_markup")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    InlineKeyboard replyMarkup
+    ReplayMarkup replyMarkup
 ) {
 }

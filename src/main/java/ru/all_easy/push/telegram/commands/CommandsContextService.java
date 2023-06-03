@@ -1,7 +1,6 @@
 package ru.all_easy.push.telegram.commands;
 
 import org.springframework.stereotype.Service;
-import ru.all_easy.push.common.client.model.SendMessage;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
@@ -39,8 +38,8 @@ public class CommandsContextService {
             });
     }
 
-    private void sendMessage(SendMessage message) {
-        telegramService.sendMessage((SendMessageInfo) message);
+    private void sendMessage(SendMessageInfo message) {
+        telegramService.sendMessage(message);
     }
 
 }

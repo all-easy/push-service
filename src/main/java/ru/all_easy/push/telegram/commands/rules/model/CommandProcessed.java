@@ -1,14 +1,14 @@
 package ru.all_easy.push.telegram.commands.rules.model;
 
-import ru.all_easy.push.telegram.api.client.model.InlineKeyboard;
+import ru.all_easy.push.common.client.model.ReplayMarkup;
 
 public record CommandProcessed(
-        String message,
         Long chatId,
-        InlineKeyboard allButtons
+        String message,
+        ReplayMarkup allButtons
 ) {
 
-    public CommandProcessed(String message, Long chatId) {
-        this(message, chatId,null);
+    public CommandProcessed(Long chatId, String message) {
+        this(chatId, message, null);
     }
 }

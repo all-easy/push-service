@@ -49,7 +49,7 @@ public class AddCommandRule implements CommandRule {
         
         if (username == null) {
             return ResultK.Err(
-                new CommandError("Add username in Telegram settings please", chatIdL));
+                new CommandError(chatIdL, "Add username in Telegram settings please"));
         }
 
         try {
@@ -61,9 +61,9 @@ public class AddCommandRule implements CommandRule {
             UserEntity user = userService.registerEntity(new RegisterInfo(username, StringUtils.EMPTY, userId));
             RoomResult result = roomService.enterRoom(user, room);
             String message = String.format("*%s* have been successfully added to virtual room *%s*", username, result.title());
-            return ResultK.Ok(new CommandProcessed(message, chatIdL));
+            return ResultK.Ok(new CommandProcessed(chatIdL, message));
         } catch (RoomServiceException ex) {
-            return ResultK.Err(new CommandError(ex.getMessage(), chatIdL));
+            return ResultK.Err(new CommandError(chatIdL, ex.getMessage()));
         }
     }
 }

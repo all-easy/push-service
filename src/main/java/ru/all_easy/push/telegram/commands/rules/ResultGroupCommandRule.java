@@ -48,14 +48,14 @@ public class ResultGroupCommandRule implements CommandRule {
         RoomEntity roomEntity = roomService.findByToken(roomId);
         if (roomEntity == null) {
             String answerMessage = "Virtual is empty, please send /addme command 🙃";
-            return ResultK.Ok(new CommandProcessed(answerMessage, chatId));
+            return ResultK.Ok(new CommandProcessed(chatId, answerMessage));
         }
 
         Map<String, BigDecimal> result = expenseService.optimize(roomEntity);
         String formattedMessage = formatHelper.formatResult(result);
         if (formattedMessage.isEmpty()) {
             String message = "No debts, chill for now \uD83D\uDE09";
-            return ResultK.Ok(new CommandProcessed(message, chatId));
+            return ResultK.Ok(new CommandProcessed(chatId, message));
         }
 
         if (roomEntity.getCurrency() != null) {
@@ -68,7 +68,7 @@ public class ResultGroupCommandRule implements CommandRule {
             formattedMessage = stringBuilder.toString();
         }
 
-        return ResultK.Ok(new CommandProcessed(formattedMessage, chatId));
+        return ResultK.Ok(new CommandProcessed(chatId, formattedMessage));
     }
 
 }

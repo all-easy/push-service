@@ -35,15 +35,21 @@ public class PushGroupCommandRule implements CommandRule {
     public ResultK<CommandProcessed, CommandError> process(Update update) {
         var validated = pushCommandValidator.validate(update);
         if (validated.hasError()) {
-            return ResultK.Err(new CommandError(validated.getError().message(), update.message().chat().id()));
+            return ResultK.Err(new CommandError(
+                update.message().chat().id(),
+                validated.getError().message()));
         }
 
         var result = pushGroupCommandService.push(validated.getResult());
         if (result.hasError()) {
-            return ResultK.Err(new CommandError(result.getError().message(), update.message().chat().id()));
+            return ResultK.Err(new CommandError(
+                update.message().chat().id(),
+                result.getError().message()));
         }
 
-        return ResultK.Ok(new CommandProcessed(result.getResult(), update.message().chat().id()));
+        return ResultK.Ok(new CommandProcessed(
+                update.message().chat().id(),
+                result.getResult()));
     }
     
 }

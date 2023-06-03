@@ -42,7 +42,7 @@ public class HistoryCommandRule implements  CommandRule {
 
         List<ExpenseInfoDateTime> infoList = expenseService.findLimitRoomExpenses(String.valueOf(chatId), MAX_HISTORY_LIMIT);
         if (infoList.isEmpty()) {
-            return ResultK.Ok(new CommandProcessed("History is empty", chatId));
+            return ResultK.Ok(new CommandProcessed(chatId, "History is empty"));
         }
 
         Integer virtualLimit = getLimit(update);
@@ -57,7 +57,7 @@ public class HistoryCommandRule implements  CommandRule {
                 info.name()));
         }
 
-        return ResultK.Ok(new CommandProcessed(message.toString(), chatId, null));
+        return ResultK.Ok(new CommandProcessed(chatId, message.toString(), null));
     }
 
     private Integer getLimit(Update update) {

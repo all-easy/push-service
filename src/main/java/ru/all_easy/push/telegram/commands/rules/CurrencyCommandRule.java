@@ -52,6 +52,6 @@ public class CurrencyCommandRule implements CommandRule {
             message += ". Current is %s %s".formatted(currencyEntity.getSymbol(), currencyEntity.getCode());
         }
 
-        return ResultK.Ok(new CommandProcessed(message, update.message().chat().id(), allButtons));
+        return ResultK.Ok(new CommandProcessed(update.message().chat().id(), message, allButtons));
     }
 }

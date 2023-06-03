@@ -2,7 +2,6 @@ package ru.all_easy.push.telegram.commands.rules;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
@@ -34,7 +33,7 @@ public class CallbackCommandRule implements CommandRule {
         currencyService.setCurrency(update.callbackQuery().message().chat().id(), currency);
         return ResultK.Ok(
                 new CommandProcessed(
-                        "Chat's currency is set to " + currency.getSymbol() + " " + currency.getCode(),
-                        update.callbackQuery().message().chat().id()));
+                        update.callbackQuery().message().chat().id(),
+                        "Chat's currency is set to " + currency.getSymbol() + " " + currency.getCode()));
     }
 }
