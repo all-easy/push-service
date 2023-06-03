@@ -27,6 +27,9 @@ public record Message(
     @JsonProperty("text")
     String text,
 
+    @JsonProperty("reply_to_message")
+    Message replayToMessage,
+
     @JsonProperty("entities")
     List<MessageEntity> entities
 ) {

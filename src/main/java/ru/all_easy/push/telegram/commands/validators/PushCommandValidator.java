@@ -26,6 +26,10 @@ public class PushCommandValidator {
 
     public ResultK<PushCommandValidated, ValidationError> validate(Update update) {
         var messageText = update.message().text();
+        if (update.message().replayToMessage() != null) {
+            messageText = update.message().replayToMessage().text() + " " + messageText;
+        }
+
         var messageParts = Arrays.stream(messageText.split(" ")).toList();
 
         if (messageParts.size() < 3) {
