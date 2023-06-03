@@ -40,7 +40,7 @@ public class PushGroupCommandRule implements CommandRule {
 
         var result = pushGroupCommandService.push(validated.getResult());
         if (result.hasError()) {
-            return ResultK.Err(new CommandError(validated.getError().message(), update.message().chat().id()));
+            return ResultK.Err(new CommandError(result.getError().message(), update.message().chat().id()));
         }
 
         return ResultK.Ok(new CommandProcessed(result.getResult(), update.message().chat().id()));
