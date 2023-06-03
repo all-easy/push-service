@@ -31,11 +31,12 @@ public class PushForceReplayRule implements CommandRule {
     public ResultK<CommandProcessed, CommandError> process(Update update) {
         return ResultK.Ok(new CommandProcessed(
                 update.message().chat().id(),
+                update.message().messageId(),
                 "/push",
                 new ForceReply(
                         true,
                         "@username amount",
-                        false
+                        true
         )));
     }
 }
