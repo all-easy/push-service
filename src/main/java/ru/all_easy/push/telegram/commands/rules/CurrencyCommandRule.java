@@ -43,7 +43,7 @@ public class CurrencyCommandRule implements CommandRule {
         InlineKeyboard allButtons = new InlineKeyboard(keyboard.keyboard());
 
         String message = "Please set up chat's currency";
-        CurrencyEntity currencyEntity = currencyService.getCurrencyByRoomId(update.message().chat().id());
+        CurrencyEntity currencyEntity = currencyService.getCurrencyByRoomId(String.valueOf(update.message().chat().id()));
         if (currencyEntity != null) {
             message += ". Current is %s %s".formatted(currencyEntity.getSymbol(), currencyEntity.getCode());
         }

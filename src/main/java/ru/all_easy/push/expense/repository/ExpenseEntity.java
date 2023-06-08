@@ -1,17 +1,10 @@
 package ru.all_easy.push.expense.repository;
 
+import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.user.repository.UserEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -26,6 +19,7 @@ public class ExpenseEntity {
     private String name;
     private BigDecimal amount;
     private LocalDateTime dateTime;
+    private CurrencyEntity currency;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,6 +60,12 @@ public class ExpenseEntity {
         return dateTime;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency", referencedColumnName = "code")
+    public CurrencyEntity getCurrency() {
+        return currency;
+    }
+
     public ExpenseEntity setId(Long id) {
         this.id = id;
         return this;
@@ -98,6 +98,11 @@ public class ExpenseEntity {
 
     public ExpenseEntity setAmount(BigDecimal amount) {
         this.amount = amount;
+        return this;
+    }
+
+    public ExpenseEntity setCurrency(CurrencyEntity currency) {
+        this.currency = currency;
         return this;
     }
 }
