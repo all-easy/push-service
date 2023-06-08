@@ -2,10 +2,8 @@ package ru.all_easy.push.telegram.commands.service;
 
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
-import ru.all_easy.push.currency.repository.model.CurrencyEntity;
-import ru.all_easy.push.currency.service.CurrencyService;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
-import ru.all_easy.push.expense.service.ExpenseServiceImpl;
+import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
@@ -20,15 +18,12 @@ import java.math.BigDecimal;
 public class PushGroupCommandServiceImpl implements PushGroupCommandService {
 
     private final RoomService roomService;
-    private final ExpenseServiceImpl expenseService;
-    private final CurrencyService currencyService;
+    private final ExpenseService expenseService;
 
     public PushGroupCommandServiceImpl(RoomService roomService,
-                                       ExpenseServiceImpl expenseService,
-                                       CurrencyService currencyService) {
+                                       ExpenseService expenseService) {
         this.roomService = roomService;
         this.expenseService = expenseService;
-        this.currencyService = currencyService;
     }
 
     @Override
@@ -50,8 +45,6 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
                             AnswerMessageTemplate.UNADDED_USER.getMessage(),
                             validated.getToUsername())));
         }
-
-        CurrencyEntity currency = currencyService.getCurrencyByRoomId(roomEntity.getToken());
 
         ExpenseInfo info = new ExpenseInfo(
                 roomEntity.getToken(),
