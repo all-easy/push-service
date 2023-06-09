@@ -4,5 +4,6 @@ databaseChangeLog:
       value: clob
       dbms: postgresql
   - include:
-      - file: changelog/init.yaml
-      - file: changelog/add_currency.yaml
+      file: changelog/init.yaml
+  - include:
+      file: changelog/add_currency.yaml
