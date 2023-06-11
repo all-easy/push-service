@@ -31,8 +31,8 @@ public class CurrencyService {
         roomService.setRoomCurrency(room, currency);
     }
 
-    public CurrencyEntity getCurrencyByRoomId(Long chatId) {
-        RoomEntity roomEntity = roomService.findByToken(String.valueOf(chatId));
+    public CurrencyEntity getCurrencyByRoomId(String chatId) {
+        RoomEntity roomEntity = roomService.findByToken(chatId);
         return roomEntity == null ? null : roomEntity.getCurrency();
     }
 

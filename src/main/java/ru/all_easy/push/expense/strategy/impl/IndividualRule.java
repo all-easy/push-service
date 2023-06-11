@@ -1,13 +1,12 @@
 package ru.all_easy.push.expense.strategy.impl;
 
 import org.springframework.stereotype.Component;
-
-import ru.all_easy.push.expense.service.ExpenseServiceImpl;
-import ru.all_easy.push.helper.MathHelper;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
+import ru.all_easy.push.expense.service.ExpenseServiceImpl;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.expense.strategy.ExpenseTypeRule;
 import ru.all_easy.push.expense.strategy.model.ExpenseRuleInfo;
+import ru.all_easy.push.helper.MathHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
 
@@ -40,6 +39,7 @@ public class IndividualRule implements ExpenseTypeRule {
                 amount,
                 expenseRuleInfo.name()
         );
+
         ExpenseEntity savedExpense = expenseService.expense(expenseInfo, room);
 
         return new ExpenseResult(

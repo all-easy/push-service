@@ -32,8 +32,12 @@ public class CommandsContextService {
                     sendMessage(new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode()));
                 } else {
                     var chatId = result.getResult().chatId();
-                    sendMessage(new SendMessageInfo(chatId, result.getResult().message(),
-                            ParseMode.MARKDOWN.getMode(), result.getResult().allButtons()));
+                    sendMessage(new SendMessageInfo(
+                            chatId,
+                            result.getResult().replayToId(),
+                            result.getResult().message(),
+                            ParseMode.MARKDOWN.getMode(),
+                            result.getResult().replayMarkup()));
                 }
             });
     }

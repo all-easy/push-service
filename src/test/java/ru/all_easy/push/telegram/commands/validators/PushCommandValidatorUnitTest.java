@@ -110,10 +110,10 @@ class PushCommandValidatorUnitTest extends UnitTest {
 
     private Update generateUpdate(String username, String message) {
         return new Update(1L,
-            new Message(1L,
+            new Message(1,
                     new User(1L, false, "a", username),
                     new Chat(1l, "type", "username", "ChatTitle"),
                     Instant.now().getEpochSecond(),
-                    message, List.of()));
+                    message, null, List.of()));
     }
 }

@@ -40,11 +40,12 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public Map<String, BigDecimal> optimize(RoomEntity room) {
-        List<ExpenseEntity> roomExpenses = findRoomExpenses(room);
+        List<ExpenseEntity> roomExpenses = findRoomExpensesByCurrency(room);
         return optimizeTools.optimize(roomExpenses);
     }
 
     @Transactional
+    @Override
     public ExpenseEntity expense(ExpenseInfo expenseInfo, RoomEntity room) {
         UserEntity from = userService.findUserByUid(expenseInfo.fromUid());
         UserEntity to = userService.findUserByUid(expenseInfo.toUid());
@@ -55,7 +56,8 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .setFrom(from)
                 .setName(expenseInfo.name())
                 .setDateTime(dateTimeHelper.now())
-                .setAmount(expenseInfo.amount());
+                .setAmount(expenseInfo.amount())
+                .setCurrency(room.getCurrency());
 
         return repository.save(expense);
     }
@@ -77,6 +79,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     public List<ExpenseEntity> findRoomExpenses(RoomEntity room) {
         return repository.findAllByRoom(room);
+    }
+
+    public List<ExpenseEntity> findRoomExpensesByCurrency(RoomEntity room) {
+        return repository.findAllByRoomAndCurrency(room, room.getCurrency());
     }
 
 }
