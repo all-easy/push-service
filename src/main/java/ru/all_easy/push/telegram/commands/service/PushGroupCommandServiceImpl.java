@@ -3,7 +3,7 @@ package ru.all_easy.push.telegram.commands.service;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
-import ru.all_easy.push.expense.service.ExpenseServiceImpl;
+import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
@@ -16,19 +16,19 @@ import java.math.BigDecimal;
 
 @Service
 public class PushGroupCommandServiceImpl implements PushGroupCommandService {
+
     private final RoomService roomService;
-    private final ExpenseServiceImpl expenseService;
+    private final ExpenseService expenseService;
 
     public PushGroupCommandServiceImpl(RoomService roomService,
-                                       ExpenseServiceImpl expenseService) {
+                                       ExpenseService expenseService) {
         this.roomService = roomService;
         this.expenseService = expenseService;
     }
 
     @Override
     public ResultK<String, PushCommandServiceError> push(PushCommandValidated validated) {
-        Long chatId = validated.getChatId();
-        RoomEntity roomEntity = roomService.findByToken(String.valueOf(chatId));
+        RoomEntity roomEntity = roomService.findByToken(String.valueOf(validated.getChatId()));
         if (roomEntity == null) {
             return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage()));
         }

@@ -3,6 +3,7 @@ package ru.all_easy.push.telegram.commands.rules;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
+import ru.all_easy.push.currency.service.CurrencyService;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.helper.FormatHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
@@ -20,13 +21,16 @@ import java.util.Map;
 public class ResultGroupCommandRule implements CommandRule {
     private final RoomService roomService;
     private final ExpenseService expenseService;
+    private final CurrencyService currencyService;
     private final FormatHelper formatHelper;
 
     public ResultGroupCommandRule(RoomService roomService,
                                   ExpenseService expenseService,
+                                  CurrencyService currencyService,
                                   FormatHelper formatHelper) {
         this.roomService = roomService;
         this.expenseService = expenseService;
+        this.currencyService = currencyService;
         this.formatHelper = formatHelper;
     }
 

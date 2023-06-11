@@ -2,7 +2,6 @@ package ru.all_easy.push.expense.strategy.impl;
 
 import com.fathzer.soft.javaluator.DoubleEvaluator;
 import org.springframework.stereotype.Component;
-
 import ru.all_easy.push.expense.controller.ExpenseType;
 import ru.all_easy.push.expense.service.ExpenseServiceImpl;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
@@ -54,6 +53,7 @@ public class AllRule implements ExpenseTypeRule {
                             amountPerUser,
                             expenseRuleInfo.name()
                     );
+
                     expenseService.expense(expenseInfo, room);
                 });
 

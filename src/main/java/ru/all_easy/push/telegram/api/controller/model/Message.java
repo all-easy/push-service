@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public record Message(
     
     @JsonProperty("message_id")
-    Long messageId,
+    Integer messageId,
 
     @JsonProperty("from")
     User from,
@@ -26,6 +26,9 @@ public record Message(
 
     @JsonProperty("text")
     String text,
+
+    @JsonProperty("reply_to_message")
+    Message replayToMessage,
 
     @JsonProperty("entities")
     List<MessageEntity> entities

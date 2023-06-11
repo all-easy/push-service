@@ -26,9 +26,19 @@ public class PushGroupCommandRule implements CommandRule {
         if (update.message() == null || update.message().text() == null) {
             return false;
         }
-        return update.message().text().contains(Commands.PUSH.getCommand())
-                && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
-                || update.message().chat().type().equals(ChatType.GROUP.getType()));
+
+        var pushCommand = update.message().text().contains(Commands.PUSH.getCommand());
+        if (update.message().text().split(" ").length <= 1 && pushCommand) {
+            return false;
+        }
+
+        var replay = update.message().replayToMessage() != null
+                && update.message().replayToMessage().text().contains(Commands.PUSH.getCommand());
+
+        var groupSuperGroup =  update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
+                || update.message().chat().type().equals(ChatType.GROUP.getType());
+
+        return (pushCommand || replay) && groupSuperGroup;
     }
 
     @Override
