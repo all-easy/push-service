@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: addColumn-currency-to-expense-table
+      author: denis-kartavenko
+      changes:
+        - addColumn:
+            tableName: expense
+            columns:
+              - column:
+                  name: currency
+                  type: varchar(3)
+                  constraints:
+                    nullable: true
+                    foreignKeyName: expense_currency_fk
+                    references: currency(code)
+        - sql:
+            endDelimiter: ;
+            splitStatements: true
+            sql: UPDATE expense SET currency = sub.rc FROM (
+              SELECT ex.currency exc, r.currency rc, r.token FROM expense ex
+              JOIN room r on ex.room_token = r.token) as sub
+              WHERE expense.room_token = sub.token;
