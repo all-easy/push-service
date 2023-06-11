@@ -33,6 +33,10 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
             return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage()));
         }
 
+        if (roomEntity.getCurrency() == null) {
+            return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNSET_CURRENCY.getMessage()));
+        }
+
         RoomUserEntity fromEntity = filterRoomUser(roomEntity, validated.getFromUsername());
         if (fromEntity == null) {
             return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNADDED_USER.getMessage()));
