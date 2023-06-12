@@ -72,7 +72,8 @@ public class ExpenseServiceImpl implements ExpenseService {
                         p.getTo().getUsername(),
                         p.getAmount(),
                         p.getName(),
-                        p.getDateTime()))
+                        p.getDateTime(),
+                        p.getCurrency().getCode() + " " + p.getCurrency().getSymbol()))
                 .sorted(Comparator.comparing(ExpenseInfoDateTime::dateTime))
                 .collect(Collectors.toList());
     }
