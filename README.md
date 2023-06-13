@@ -13,10 +13,8 @@ Developers guide
 
 ## How to start
 
-1. All participants need to have Telegram nicknames.
 1. Create Telegram group.
 1. Add @PushMyMoneyBot to the created group.
-1. Add group members.
 1. Group members have to register themselves with the bot, by typing `/addme` command.
 1. Use commands to create and manage expense records.
 
