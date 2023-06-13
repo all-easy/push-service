@@ -12,3 +12,15 @@ Example:
 /push @john 111+111
 /push @john 111
 ```
+
+# Spotless
+
+Run Spotless plugin
+
+```bash
+# Check
+./gradlew spotlessCheck
+
+# Apply changes
+./gradlew spotlessApply
+```
