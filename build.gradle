@@ -80,7 +80,9 @@ spotless {
 		googleJavaFormat()
 		importOrder()
 		removeUnusedImports()
-		indentWithTabs()
+		trimTrailingWhitespace()
 		endWithNewline()
+		indentWithTabs(2)
+		indentWithSpaces(4)
 	}
 }
