@@ -33,13 +33,11 @@ Under the following terms:
   same license as the original.
 
 Read and accept full license text in LICENSE.txt. Make sure that you also have read and accepted the following official
-Creative Commons references.
-
-Creative Common references
+Creative Commons references:
 
 - License legal text https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 - Licence overview https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 ### Attribution
 
-By All-Easy ©, Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0), all-easy.github.com/bot
+By All-Easy ©, Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0), all-easy.github.io/bot
