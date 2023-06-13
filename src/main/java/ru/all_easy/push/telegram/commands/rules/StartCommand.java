@@ -20,17 +20,18 @@ public class StartCommand implements CommandRule {
 
     @Override
     public ResultK<CommandProcessed, CommandError> process(Update update) {
-        var message = """
+        var message =
+                """
         ```
         Hi! I help you manage expenses with your friends and reduce money transfer commissions
-        
+
         Start with following steps:
         1) Add bot to chat group
         2) Ask all chat participants to call /addme command
         3) Call /currency command in chat and choose currency or skip this step
         4) Add your first expense
         5) Enjoy :)
-        
+
         More information here -> /help
         ```
         """;

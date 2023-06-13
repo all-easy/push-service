@@ -1,15 +1,14 @@
 package ru.all_easy.push.optimize;
 
-import org.springframework.stereotype.Component;
-import ru.all_easy.push.helper.MathHelper;
-import ru.all_easy.push.expense.repository.ExpenseEntity;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
+import ru.all_easy.push.expense.repository.ExpenseEntity;
+import ru.all_easy.push.helper.MathHelper;
 
 @Component
 public class OptimizeTools {
@@ -37,7 +36,9 @@ public class OptimizeTools {
         var grouped = new HashMap<String, BigDecimal>();
 
         roomExpenses.forEach(expense -> {
-            var key = expense.getFrom().getUsername() + SEPARATOR + expense.getTo().getUsername();
+            var key = expense.getFrom().getUsername()
+                    + SEPARATOR
+                    + expense.getTo().getUsername();
             if (grouped.get(key) == null) {
                 grouped.put(key, expense.getAmount());
                 return;
@@ -74,5 +75,4 @@ public class OptimizeTools {
         var ids = key.split(SEPARATOR);
         return ids[1] + SEPARATOR + ids[0];
     }
-
 }
