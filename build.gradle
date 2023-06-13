@@ -77,13 +77,11 @@ spotless {
 		endWithNewline()
 	}
 	java {
-		googleJavaFormat()
+		palantirJavaFormat()
 		importOrder()
 		removeUnusedImports()
 		trimTrailingWhitespace()
 		endWithNewline()
-		indentWithTabs(2)
-		indentWithSpaces(4)
 		formatAnnotations()
 	}
 }
