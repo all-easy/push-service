@@ -1,9 +1,9 @@
 package ru.all_easy.push.telegram.messages;
 
 public enum AnswerMessageTemplate {
-
     UNREGISTERED_ROOM("It seems virtual room is empty, send /addme command and ask others to do same 🙃"),
-    UNREGISTERED_USER("I guess user: *%s* is not registered, ask him to call /start command in private messages with me please"),
+    UNREGISTERED_USER(
+            "I guess user: *%s* is not registered, ask him to call /start command in private messages with me please"),
     UNADDED_USER("I guess user: *%s* is not in virtual group, ask him to call /addme command"),
     INCORRECT_FORMAT("Incorrect format 🤔, try like this: /push @username 123 name 18%"),
     UNRECOGNIZED_USERNAME("Unrecognized username"),

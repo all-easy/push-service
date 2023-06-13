@@ -1,5 +1,7 @@
 package ru.all_easy.push.telegram.commands.rules;
 
+import java.math.BigDecimal;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
@@ -13,18 +15,13 @@ import ru.all_easy.push.telegram.commands.Commands;
 import ru.all_easy.push.telegram.commands.rules.model.CommandError;
 import ru.all_easy.push.telegram.commands.rules.model.CommandProcessed;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
 @Service
 public class ResultGroupCommandRule implements CommandRule {
     private final RoomService roomService;
     private final ExpenseService expenseService;
     private final FormatHelper formatHelper;
 
-    public ResultGroupCommandRule(RoomService roomService,
-                                  ExpenseService expenseService,
-                                  FormatHelper formatHelper) {
+    public ResultGroupCommandRule(RoomService roomService, ExpenseService expenseService, FormatHelper formatHelper) {
         this.roomService = roomService;
         this.expenseService = expenseService;
         this.formatHelper = formatHelper;
@@ -37,7 +34,7 @@ public class ResultGroupCommandRule implements CommandRule {
         }
         return update.message().text().contains(Commands.RESULT.getCommand())
                 && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
-                || update.message().chat().type().equals(ChatType.GROUP.getType()));
+                        || update.message().chat().type().equals(ChatType.GROUP.getType()));
     }
 
     @Override
@@ -70,5 +67,4 @@ public class ResultGroupCommandRule implements CommandRule {
 
         return ResultK.Ok(new CommandProcessed(chatId, formattedMessage));
     }
-
 }
