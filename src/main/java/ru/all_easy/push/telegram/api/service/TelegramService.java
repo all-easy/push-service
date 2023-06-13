@@ -44,7 +44,12 @@ public class TelegramService implements ClientApi {
     @Override
     public String sendMessage(SendMessageInfo info) {
         var response = telegramFeignClient.sendMessage(
-                new SendMessageRequest(info.chatId(), info.text(), info.parseMode(), info.replayMarkup()));
+                new SendMessageRequest(
+                        info.chatId(),
+                        info.replayId(),
+                        info.text(),
+                        info.parseMode(),
+                        info.replayMarkup()));
         logger.info(response);
 
         return response;

@@ -49,15 +49,16 @@ public class HistoryCommandRule implements  CommandRule {
         virtualLimit = virtualLimit > infoList.size() ? infoList.size() : virtualLimit;
         StringBuilder message = new StringBuilder();
         for (var info : infoList.subList(infoList.size() - virtualLimit, infoList.size())) {
-            message.append(String.format("%s\n*%s* → %s\nsum *%.2f*\n%s\n\n",
+            message.append(String.format("%s\n*%s* → %s\nsum *%.2f* %s\n%s\n",
                 dateTimeHelper.toString(info.dateTime(), "dd.MM"),
                 info.fromUsername(),
                 info.toUsername(),
                 info.amount(),
-                info.name()));
+                info.currencyLabel(),
+                info.name() != null && !info.name().isBlank() ? info.name() + "\n" : ""));
         }
 
-        return ResultK.Ok(new CommandProcessed(chatId, message.toString(), null));
+        return ResultK.Ok(new CommandProcessed(chatId, message.toString()));
     }
 
     private Integer getLimit(Update update) {

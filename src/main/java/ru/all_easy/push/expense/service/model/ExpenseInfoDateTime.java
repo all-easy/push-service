@@ -8,6 +8,7 @@ public record ExpenseInfoDateTime(
     String toUsername,
     BigDecimal amount,
     String name,
-    LocalDateTime dateTime
+    LocalDateTime dateTime,
+    String currencyLabel
 ) {
 }

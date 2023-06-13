@@ -4,11 +4,20 @@ import ru.all_easy.push.common.client.model.ReplayMarkup;
 
 public record CommandProcessed(
         Long chatId,
+        Integer replayToId,
         String message,
-        ReplayMarkup allButtons
+        ReplayMarkup replayMarkup
 ) {
 
     public CommandProcessed(Long chatId, String message) {
-        this(chatId, message, null);
+        this(chatId, null, message, null);
+    }
+
+    public CommandProcessed(Long chatId, String message, ReplayMarkup replayMarkup) {
+        this(chatId, null, message, replayMarkup);
+    }
+
+    public CommandProcessed(Long chatId, Integer replayId, String message) {
+        this(chatId, replayId, message, null);
     }
 }
