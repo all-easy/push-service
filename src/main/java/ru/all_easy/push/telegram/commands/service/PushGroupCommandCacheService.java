@@ -1,6 +1,5 @@
 package ru.all_easy.push.telegram.commands.service;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
@@ -17,7 +16,6 @@ public class PushGroupCommandCacheService implements PushGroupCommandService {
     }
 
     @Override
-    @CacheEvict(value = "results", key = "#validated.chatId")
     public ResultK<String, PushCommandServiceError> push(PushCommandValidated validated) {
         return pushGroupCommandService.push(validated);
     }

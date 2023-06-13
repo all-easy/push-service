@@ -8,6 +8,10 @@ public record SendMessageRequest(
     @JsonProperty("chat_id")
     Long chatId,
 
+    @JsonProperty("reply_to_message_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    Integer replayToMessageId,
+
     @JsonProperty("text")
     String text,
 

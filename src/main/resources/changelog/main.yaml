@@ -7,3 +7,5 @@ databaseChangeLog:
       file: changelog/init.yaml
   - include:
       file: changelog/add_currency.yaml
+  - include:
+      file: changelog/v1_0__add_currency_to_transaction.yaml
