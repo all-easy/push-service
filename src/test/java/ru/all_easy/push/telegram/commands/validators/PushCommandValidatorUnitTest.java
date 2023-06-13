@@ -1,11 +1,6 @@
 package ru.all_easy.push.telegram.commands.validators;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.fathzer.soft.javaluator.DoubleEvaluator;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
@@ -19,6 +14,12 @@ import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.api.controller.model.User;
 import ru.all_easy.push.telegram.commands.validators.model.PushCommandValidated;
 import ru.all_easy.push.telegram.commands.validators.model.ValidationError;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PushCommandValidatorUnitTest extends UnitTest {
 
@@ -34,8 +35,8 @@ class PushCommandValidatorUnitTest extends UnitTest {
         ResultK<PushCommandValidated, ValidationError> validated = pushCommandValidator.validate(update);
 
         assertEquals(
-                "Incorrect format \uD83E\uDD14, try like this: /push @username 123 name 18%",
-                validated.getError().message());
+            "Incorrect format \uD83E\uDD14, try like this: /push @username 123 name 18%",
+            validated.getError().message());
     }
 
     @Test
@@ -44,7 +45,9 @@ class PushCommandValidatorUnitTest extends UnitTest {
 
         ResultK<PushCommandValidated, ValidationError> validated = pushCommandValidator.validate(update);
 
-        assertEquals("Unrecognized username", validated.getError().message());
+        assertEquals(
+                "Unrecognized username",
+                validated.getError().message());
     }
 
     @Test
@@ -54,7 +57,8 @@ class PushCommandValidatorUnitTest extends UnitTest {
         ResultK<PushCommandValidated, ValidationError> validated = pushCommandValidator.validate(update);
 
         assertEquals(
-                "You can't push to yourself \uD83D\uDE22", validated.getError().message());
+                "You can't push to yourself \uD83D\uDE22",
+                validated.getError().message());
     }
 
     @Test
@@ -105,14 +109,11 @@ class PushCommandValidatorUnitTest extends UnitTest {
     }
 
     private Update generateUpdate(String username, String message) {
-        return new Update(
-                1L,
-                new Message(
-                        1L,
-                        new User(1L, false, "a", username),
-                        new Chat(1l, "type", "username", "ChatTitle"),
-                        Instant.now().getEpochSecond(),
-                        message,
-                        List.of()));
+        return new Update(1L,
+            new Message(1L,
+                    new User(1L, false, "a", username),
+                    new Chat(1l, "type", "username", "ChatTitle"),
+                    Instant.now().getEpochSecond(),
+                    message, List.of()));
     }
 }

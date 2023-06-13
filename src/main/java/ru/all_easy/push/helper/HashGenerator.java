@@ -1,9 +1,10 @@
 package ru.all_easy.push.helper;
 
+import org.springframework.stereotype.Component;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.springframework.stereotype.Component;
 
 @Component
 public class HashGenerator {
@@ -20,7 +21,8 @@ public class HashGenerator {
 
     public String generate(String time) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hashString = digest.digest(time.getBytes(StandardCharsets.UTF_8));
+        byte[] hashString = digest.digest(
+                time.getBytes(StandardCharsets.UTF_8));
 
         return bytesToHex(hashString);
     }
@@ -34,4 +36,5 @@ public class HashGenerator {
         }
         return hexString.toString();
     }
+
 }

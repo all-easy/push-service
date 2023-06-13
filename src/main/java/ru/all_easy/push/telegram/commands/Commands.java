@@ -1,6 +1,7 @@
 package ru.all_easy.push.telegram.commands;
 
 public enum Commands {
+
     START("/start"),
     PUSH("/push"),
     RESULT("/result"),

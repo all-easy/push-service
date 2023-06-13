@@ -29,11 +29,11 @@ public class CallbackCommandRule implements CommandRule {
     @Override
     public ResultK<CommandProcessed, CommandError> process(Update update) {
         logger.info("Callback received: {}", update);
-        CurrencyEntity currency =
-                currencyService.getCurrencyByCode(update.callbackQuery().data());
+        CurrencyEntity currency = currencyService.getCurrencyByCode(update.callbackQuery().data());
         currencyService.setCurrency(update.callbackQuery().message().chat().id(), currency);
-        return ResultK.Ok(new CommandProcessed(
-                update.callbackQuery().message().chat().id(),
-                "Chat's currency is set to " + currency.getSymbol() + " " + currency.getCode()));
+        return ResultK.Ok(
+                new CommandProcessed(
+                        update.callbackQuery().message().chat().id(),
+                        "Chat's currency is set to " + currency.getSymbol() + " " + currency.getCode()));
     }
 }

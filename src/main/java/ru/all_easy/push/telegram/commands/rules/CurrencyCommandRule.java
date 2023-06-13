@@ -1,7 +1,5 @@
 package ru.all_easy.push.telegram.commands.rules;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
@@ -13,6 +11,9 @@ import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.Commands;
 import ru.all_easy.push.telegram.commands.rules.model.CommandError;
 import ru.all_easy.push.telegram.commands.rules.model.CommandProcessed;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CurrencyCommandRule implements CommandRule {
@@ -36,8 +37,8 @@ public class CurrencyCommandRule implements CommandRule {
         List<InlineKeyboardButton> buttonRow = new ArrayList<>();
 
         for (CurrencyInfo currency : currencies) {
-            InlineKeyboardButton button =
-                    new InlineKeyboardButton(currency.code() + " " + currency.symbol(), currency.code());
+            InlineKeyboardButton button = new InlineKeyboardButton(
+                    currency.code() + " " + currency.symbol(), currency.code());
             buttonRow.add(button);
         }
 
@@ -46,8 +47,7 @@ public class CurrencyCommandRule implements CommandRule {
         InlineKeyboard allButtons = new InlineKeyboard(buttonRows);
 
         String message = "Please set up chat's currency";
-        CurrencyEntity currencyEntity =
-                currencyService.getCurrencyByRoomId(update.message().chat().id());
+        CurrencyEntity currencyEntity = currencyService.getCurrencyByRoomId(update.message().chat().id());
         if (currencyEntity != null) {
             message += ". Current is %s %s".formatted(currencyEntity.getSymbol(), currencyEntity.getCode());
         }

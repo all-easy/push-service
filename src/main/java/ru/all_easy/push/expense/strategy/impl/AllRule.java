@@ -1,10 +1,8 @@
 package ru.all_easy.push.expense.strategy.impl;
 
 import com.fathzer.soft.javaluator.DoubleEvaluator;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Set;
 import org.springframework.stereotype.Component;
+
 import ru.all_easy.push.expense.controller.ExpenseType;
 import ru.all_easy.push.expense.service.ExpenseServiceImpl;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
@@ -15,6 +13,10 @@ import ru.all_easy.push.room.service.RoomService;
 import ru.all_easy.push.user.repository.UserEntity;
 import ru.all_easy.push.user.service.UserService;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Set;
+
 @Component
 public class AllRule implements ExpenseTypeRule {
 
@@ -23,11 +25,10 @@ public class AllRule implements ExpenseTypeRule {
     private final ExpenseServiceImpl expenseService;
     private final DoubleEvaluator doubleEvaluator;
 
-    public AllRule(
-            RoomService roomService,
-            UserService userService,
-            ExpenseServiceImpl expenseService,
-            DoubleEvaluator doubleEvaluator) {
+    public AllRule(RoomService roomService,
+                   UserService userService,
+                   ExpenseServiceImpl expenseService,
+                   DoubleEvaluator doubleEvaluator) {
         this.roomService = roomService;
         this.userService = userService;
         this.expenseService = expenseService;
@@ -51,11 +52,17 @@ public class AllRule implements ExpenseTypeRule {
                             expenseRuleInfo.fromUid(),
                             user.getUid(),
                             amountPerUser,
-                            expenseRuleInfo.name());
+                            expenseRuleInfo.name()
+                    );
                     expenseService.expense(expenseInfo, room);
                 });
 
-        return new ExpenseResult("", "", amountPerUser, ExpenseType.ALL);
+        return new ExpenseResult(
+                "",
+                "",
+                amountPerUser,
+                ExpenseType.ALL
+        );
     }
 
     private BigDecimal calculate(String amountStr) {

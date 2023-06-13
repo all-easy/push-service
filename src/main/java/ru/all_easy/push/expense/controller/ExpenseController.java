@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import ru.all_easy.push.common.AbstractAuthentication;
 import ru.all_easy.push.common.Result;
 import ru.all_easy.push.expense.strategy.impl.ExpenseResult;
@@ -27,12 +28,22 @@ public class ExpenseController extends AbstractAuthentication {
         User authentication = getAuthentication();
 
         ExpenseRuleInfo expenseInfo = new ExpenseRuleInfo(
-                roomToken, authentication.uid(), request.toUid(), request.amountStr(), request.name(), request.type());
+                roomToken,
+                authentication.uid(),
+                request.toUid(),
+                request.amountStr(),
+                request.name(),
+                request.type());
 
         ExpenseResult expense = context.process(expenseInfo);
 
-        ExpenseResponse response = new ExpenseResponse(expense.amount(), expense.from(), expense.to(), expense.type());
+        ExpenseResponse response = new ExpenseResponse(
+                expense.amount(),
+                expense.from(),
+                expense.to(),
+                expense.type());
 
         return new Result<>(response);
     }
+
 }

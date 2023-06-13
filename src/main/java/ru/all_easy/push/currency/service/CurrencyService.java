@@ -1,13 +1,14 @@
 package ru.all_easy.push.currency.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.currency.repository.CurrencyRepository;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.currency.service.model.CurrencyInfo;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CurrencyService {
@@ -38,4 +39,5 @@ public class CurrencyService {
     public CurrencyEntity getCurrencyByCode(String currencyCode) {
         return currencyRepository.findByCode(currencyCode);
     }
+
 }

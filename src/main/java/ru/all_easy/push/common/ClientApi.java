@@ -8,4 +8,5 @@ public interface ClientApi {
     String setWebhook(SetWebhookInfo info);
 
     String sendMessage(SendMessageInfo info);
+
 }

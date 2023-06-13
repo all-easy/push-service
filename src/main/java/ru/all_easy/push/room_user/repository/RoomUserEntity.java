@@ -1,6 +1,9 @@
 package ru.all_easy.push.room_user.repository;
 
-import java.io.Serializable;
+import ru.all_easy.push.room.repository.model.RoomEntity;
+import ru.all_easy.push.room.repository.model.RoomStatus;
+import ru.all_easy.push.user.repository.UserEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,9 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
-import ru.all_easy.push.room.repository.model.RoomEntity;
-import ru.all_easy.push.room.repository.model.RoomStatus;
-import ru.all_easy.push.user.repository.UserEntity;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "room_t_user")
@@ -45,7 +46,9 @@ public class RoomUserEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private RoomStatus status;
 
-    public RoomUserEntity() {}
+    public RoomUserEntity() {
+
+    }
 
     public RoomUserEntity(RoomEntity room, UserEntity user) {
         this.room = room;

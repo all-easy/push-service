@@ -20,21 +20,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.httpBasic()
-                .disable()
-                .csrf()
-                .disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/v1/api/user/register", "/v1/api/user/login", "/actuator/**", "/v1/api/telegram/**")
-                .permitAll()
-                .antMatchers("/**")
-                .authenticated()
-                .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+       return http
+               .httpBasic().disable()
+               .csrf().disable()
+               .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+               .and()
+               .authorizeRequests()
+               .antMatchers(
+                       "/v1/api/user/register",
+                       "/v1/api/user/login",
+                       "/actuator/**",
+                       "/v1/api/telegram/**")
+               .permitAll()
+               .antMatchers("/**")
+               .authenticated()
+               .and()
+               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+               .build();
     }
 
     @Bean

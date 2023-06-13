@@ -16,4 +16,5 @@ public class MonitoringConfig {
     MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
         return registry -> registry.config().commonTags("application", "PushApp-" + activeProfile);
     }
+
 }

@@ -1,12 +1,10 @@
 package ru.all_easy.push.user.service;
 
-import java.util.Collections;
-import java.util.Set;
-import javax.security.auth.message.AuthException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import ru.all_easy.push.user.exception.RegisterException;
 import ru.all_easy.push.user.exception.UserServiceException;
 import ru.all_easy.push.user.repository.UserEntity;
@@ -17,6 +15,10 @@ import ru.all_easy.push.user.service.model.RegisterResult;
 import ru.all_easy.push.user.service.model.UserServiceInfo;
 import ru.all_easy.push.web.security.JwtProvider;
 
+import javax.security.auth.message.AuthException;
+import java.util.Collections;
+import java.util.Set;
+
 @Service
 public class UserService {
 
@@ -26,7 +28,9 @@ public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository repository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository,
+                       JwtProvider jwtProvider,
+                       PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.jwtProvider = jwtProvider;
         this.passwordEncoder = passwordEncoder;
@@ -62,7 +66,7 @@ public class UserService {
         if (savedUser != null) {
             return savedUser;
         }
-
+        
         UserEntity entity = new UserEntity()
                 .setUsername(info.username())
                 .setPassword(passwordEncoder.encode(info.password()))
@@ -81,7 +85,7 @@ public class UserService {
 
     private UserEntity findByLoginAndPassword(String username, String password) throws AuthException {
         UserEntity userEntity = findUserByUsername(username);
-        if (userEntity == null || !passwordEncoder.matches(password, userEntity.getPassword())) {
+        if (userEntity == null || !passwordEncoder.matches(password, userEntity.getPassword())) { 
             throw new UserServiceException()
                     .setMessage("Wrong username or password")
                     .setErrorCode(401);

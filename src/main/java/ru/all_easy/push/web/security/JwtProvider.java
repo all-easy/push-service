@@ -4,14 +4,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
+
+import ru.all_easy.push.user.repository.UserEntity;
+import ru.all_easy.push.web.security.model.User;
+
+import javax.annotation.PostConstruct;
+import javax.crypto.SecretKey;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import javax.annotation.PostConstruct;
-import javax.crypto.SecretKey;
-import org.springframework.stereotype.Component;
-import ru.all_easy.push.user.repository.UserEntity;
-import ru.all_easy.push.web.security.model.User;
 
 @Component
 public class JwtProvider {
@@ -24,8 +26,7 @@ public class JwtProvider {
     }
 
     public String generateToken(UserEntity user) {
-        Date date = Date.from(
-                LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date date = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return Jwts.builder()
                 .setSubject(user.getUid())
                 .claim("fromUsername", user.getUsername())
@@ -36,23 +37,25 @@ public class JwtProvider {
 
     public void validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token);
+            Jwts
+                    .parserBuilder()
+                    .setSigningKey(jwtSecret)
+                    .build()
+                    .parseClaimsJws(token);
         } catch (Exception ex) {
             throw new JwtException(ex.getMessage(), ex);
         }
     }
 
     public Claims getClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(jwtSecret)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token).getBody();
     }
 
     public User getUser(String token) {
         Claims claims = getClaims(token);
-        return new User(getUsernameFromToken(claims), getUIdFromToken(claims));
+        return new User(
+                getUsernameFromToken(claims),
+                getUIdFromToken(claims));
     }
 
     private String getUsernameFromToken(Claims claims) {

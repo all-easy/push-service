@@ -1,6 +1,11 @@
 package ru.all_easy.push.common;
 
-public record Result<T>(T payload, String error, ErrorType type, Integer errorCode) {
+public record Result<T>(
+        T payload,
+        String error,
+        ErrorType type,
+        Integer errorCode
+) {
 
     public Result(T payload) {
         this(payload, null, null, null);

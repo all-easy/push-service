@@ -1,15 +1,16 @@
 package ru.all_easy.push.helper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.fathzer.soft.javaluator.DoubleEvaluator;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import ru.all_easy.push.common.UnitTest;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FormatHelperTest extends UnitTest {
 
@@ -29,8 +30,7 @@ class FormatHelperTest extends UnitTest {
 
         String actual = formatHelper.formatResult(result);
 
-        String expected =
-                """
+        String expected = """
         *person4* owes *person5* sum: *1000.00*
         *person1* owes *person2* sum: *22.00*""";
 
@@ -48,12 +48,12 @@ class FormatHelperTest extends UnitTest {
 
         String actual = formatHelper.formatResult(result);
 
-        String expected =
-                """
+        String expected = """
         *person1* owes *person3* sum: *0.00*
         *person4* owes *person5* sum: *1000.00*
         *person1* owes *person2* sum: *22.00*""";
 
         assertEquals(expected, actual);
     }
+  
 }

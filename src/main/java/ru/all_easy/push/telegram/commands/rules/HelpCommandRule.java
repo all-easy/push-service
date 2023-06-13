@@ -20,8 +20,8 @@ public class HelpCommandRule implements CommandRule {
 
     @Override
     public ResultK<CommandProcessed, CommandError> process(Update update) {
-        String message =
-                "[Here you can find info about bot and how to use it](https://all-easy.notion.site/all-easy/Push-Money-Bot-c86ff025dd144f0aa67fee649e9fe538)";
+        String message = "[Here you can find info about bot and how to use it](https://all-easy.notion.site/all-easy/Push-Money-Bot-c86ff025dd144f0aa67fee649e9fe538)";
         return ResultK.Ok(new CommandProcessed(update.message().chat().id(), message));
     }
+    
 }
