@@ -84,5 +84,6 @@ spotless {
 		endWithNewline()
 		indentWithTabs(2)
 		indentWithSpaces(4)
+		formatAnnotations()
 	}
 }
