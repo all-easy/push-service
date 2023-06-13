@@ -22,9 +22,11 @@ spring:
     driver-class-name: org.postgresql.Driver
     change-log: changelog/main.yaml
 
-app:
-  front:
-    host: http://localhost:3000
+  #REDIS
+  redis:
+    host: localhost
+    port: 6379
+    password: ${REDIS_PASSWORD}
 
 #Monitoring
 management:
@@ -42,10 +44,6 @@ management:
   metrics.tags.application: PushService
   server.port: 8085
 
-#API
-api:
-  key:
-
 #TELEGRAM
 telegram:
   api: https://api.telegram.org/bot
@@ -57,8 +55,10 @@ telegram:
   url: ${telegram.api}${telegram.token}
   drop-pending-updates: true
 
-#REDIS
-spring.redis:
-  host: localhost
-  port: 6379
-  password: ${REDIS_PASSWORD}
+#API
+api:
+  key:
+
+app:
+  front:
+    host: http://localhost:3000

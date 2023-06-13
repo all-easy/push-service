@@ -1,14 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/push-service
+    url: jdbc:postgresql://postgres:5432/${DB_NAME}
   jpa:
     show-sql: false
+  redis:
+    host: redis
 
 telegram:
-  hook: https://push.all-easy.ru/v1/api/telegram/${telegram.hook.secret}/
   drop-pending-updates: false
-
-spring.redis:
-  host: redis
-  port: 6379
-  password: ${REDIS_PASSWORD}
