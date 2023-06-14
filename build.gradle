@@ -79,7 +79,7 @@ spotless {
 		endWithNewline()
 	}
 	java {
-		palantirJavaFormat()
+		palantirJavaFormat("2.32.0")
 		importOrder()
 		removeUnusedImports()
 		trimTrailingWhitespace()
