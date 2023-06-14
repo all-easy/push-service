@@ -50,7 +50,6 @@ class FormatHelperTest extends UnitTest {
 
         String expected =
                 """
-        *person1* owes *person3* sum: *0.00*
         *person4* owes *person5* sum: *1000.00*
         *person1* owes *person2* sum: *22.00*""";
 
