@@ -3,7 +3,7 @@ services:
   # APP*****************************************
   push-service:
     container_name: push-service
-    build: .
+    image: dakotaio/push:0.0.3
     networks:
       - postgres
       - metrics

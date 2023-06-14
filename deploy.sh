@@ -1,1 +1,0 @@
-scp -r build/libs/*.jar root@all-easy.ru:./push/target
