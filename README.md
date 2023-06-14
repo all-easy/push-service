@@ -13,6 +13,19 @@ Example:
 /push @john 111
 ```
 
+# Spotless
+
+Run Spotless plugin
+
+```bash
+# Check
+./gradlew spotlessCheck
+
+# Apply changes
+./gradlew spotlessApply
+```
+
+
 ## License
 
 Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)

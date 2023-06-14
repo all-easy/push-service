@@ -2,12 +2,7 @@ package ru.all_easy.push.telegram.commands.rules.model;
 
 import ru.all_easy.push.common.client.model.ReplayMarkup;
 
-public record CommandProcessed(
-        Long chatId,
-        Integer replayToId,
-        String message,
-        ReplayMarkup replayMarkup
-) {
+public record CommandProcessed(Long chatId, Integer replayToId, String message, ReplayMarkup replayMarkup) {
 
     public CommandProcessed(Long chatId, String message) {
         this(chatId, null, message, null);

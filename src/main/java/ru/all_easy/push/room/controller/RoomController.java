@@ -1,5 +1,8 @@
 package ru.all_easy.push.room.controller;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -7,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import ru.all_easy.push.common.AbstractAuthentication;
 import ru.all_easy.push.common.Result;
 import ru.all_easy.push.helper.HashGenerator;
@@ -24,10 +26,6 @@ import ru.all_easy.push.room.service.model.UserRoomResult;
 import ru.all_easy.push.shape.repository.Shape;
 import ru.all_easy.push.web.security.model.User;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/v1/api/room")
 public class RoomController extends AbstractAuthentication {
@@ -35,8 +33,7 @@ public class RoomController extends AbstractAuthentication {
     private final RoomService roomService;
     private final HashGenerator hashGenerator;
 
-    public RoomController(RoomService roomService,
-                          HashGenerator hashGenerator) {
+    public RoomController(RoomService roomService, HashGenerator hashGenerator) {
         this.roomService = roomService;
         this.hashGenerator = hashGenerator;
     }
@@ -51,17 +48,19 @@ public class RoomController extends AbstractAuthentication {
     }
 
     @PostMapping("/join")
-    public Result<RoomResponse> addUser(@RequestHeader("RoomToken") String roomToken,
-                                        @RequestParam("shape") Shape shape) {
+    public Result<RoomResponse> addUser(
+            @RequestHeader("RoomToken") String roomToken, @RequestParam("shape") Shape shape) {
         User authentication = getAuthentication();
-        RoomResult result = roomService.join(new RoomJoinInfo(authentication.uid(), authentication.username(), shape, roomToken));
+        RoomResult result =
+                roomService.join(new RoomJoinInfo(authentication.uid(), authentication.username(), shape, roomToken));
         return response(result);
     }
 
     @GetMapping("/")
     public Result<RoomResponse> roomResult(@RequestHeader("RoomToken") String roomToken) {
         User authentication = getAuthentication();
-        RoomResult roomResult = roomService.roomInfo(new RoomJoinInfo(authentication.uid(), authentication.username(), null, roomToken));
+        RoomResult roomResult = roomService.roomInfo(
+                new RoomJoinInfo(authentication.uid(), authentication.username(), null, roomToken));
         return response(roomResult);
     }
 

@@ -1,7 +1,6 @@
 package ru.all_easy.push.telegram.api;
 
 public enum ChatType {
-    
     SUPER_GROUP("supergroup"),
     GROUP("group"),
     PRIVATE("private");

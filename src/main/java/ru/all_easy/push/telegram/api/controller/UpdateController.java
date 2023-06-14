@@ -9,7 +9,6 @@ import ru.all_easy.push.common.AbstractAuthentication;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.CommandsContextService;
 
-
 @RestController
 @RequestMapping("/v1/api/telegram/${telegram.hook.secret}")
 public class UpdateController extends AbstractAuthentication {
@@ -33,5 +32,4 @@ public class UpdateController extends AbstractAuthentication {
         logger.info("Update received: {}", update);
         commandContextService.process(update);
     }
-
 }
