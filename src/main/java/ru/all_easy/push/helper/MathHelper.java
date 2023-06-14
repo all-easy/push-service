@@ -1,10 +1,9 @@
 package ru.all_easy.push.helper;
 
 import com.fathzer.soft.javaluator.DoubleEvaluator;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
+import org.springframework.stereotype.Component;
 
 @Component
 public class MathHelper {

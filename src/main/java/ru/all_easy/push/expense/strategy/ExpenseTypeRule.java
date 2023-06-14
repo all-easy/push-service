@@ -6,5 +6,4 @@ import ru.all_easy.push.expense.strategy.model.ExpenseRuleInfo;
 public interface ExpenseTypeRule {
 
     ExpenseResult process(ExpenseRuleInfo expenseRuleInfo);
-
 }

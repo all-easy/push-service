@@ -10,7 +10,7 @@ public interface TelegramFeignClient {
 
     @PostMapping("/setWebhook")
     String setWebhook(SetWebhookRequest request);
-    
+
     @PostMapping("/sendMessage")
     String sendMessage(SendMessageRequest request);
 }
