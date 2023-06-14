@@ -50,7 +50,7 @@ telegram:
   hook:
     url: ${TG_HOOK_URL}
     secret: ${TG_HOOK_SECRET}
-    hook: ${telegram.hook.url}/v1/api/telegram/${telegram.hook.secret}/
+    full-hook-url: ${telegram.hook.url}/v1/api/telegram/${telegram.hook.secret}/
   token: ${TG_TOKEN}
   url: ${telegram.api}${telegram.token}
   drop-pending-updates: true
