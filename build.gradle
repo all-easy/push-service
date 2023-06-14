@@ -3,14 +3,16 @@ plugins {
 	id 'org.springframework.boot' version '2.7.8'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id 'com.diffplug.spotless' version "6.19.0"
+	id 'com.bmuschko.docker-spring-boot-application' version '9.3.1'
 }
 
-group = 'ru.all_easy'
-version = '0.0.1-SNAPSHOT'
+group = 'dakotaio'
+version = '0.0.3'
 sourceCompatibility = '17'
 
 repositories {
 	mavenCentral()
+	gradlePluginPortal()
 }
 
 ext {
@@ -28,8 +30,8 @@ dependencies {
 
 	//LOGS
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
-	implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
-	testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+	implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.9'
+	testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.9'
 
 	//JWT
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
@@ -77,11 +79,17 @@ spotless {
 		endWithNewline()
 	}
 	java {
-		palantirJavaFormat()
+		palantirJavaFormat("2.32.0")
 		importOrder()
 		removeUnusedImports()
 		trimTrailingWhitespace()
 		endWithNewline()
 		formatAnnotations()
+	}
+}
+
+docker {
+	springBootApplication {
+		baseImage = 'openjdk:17-jdk-slim'
 	}
 }
