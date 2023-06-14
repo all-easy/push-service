@@ -6,9 +6,8 @@ import ru.all_easy.push.telegram.commands.rules.model.CommandError;
 import ru.all_easy.push.telegram.commands.rules.model.CommandProcessed;
 
 public interface CommandRule {
-    
+
     boolean apply(Update update);
 
     ResultK<CommandProcessed, CommandError> process(Update update);
-
 }

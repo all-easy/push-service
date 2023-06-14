@@ -1,19 +1,11 @@
 package ru.all_easy.push.expense.repository;
 
-import ru.all_easy.push.room.repository.model.RoomEntity;
-import ru.all_easy.push.user.repository.UserEntity;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import javax.persistence.*;
+import ru.all_easy.push.currency.repository.model.CurrencyEntity;
+import ru.all_easy.push.room.repository.model.RoomEntity;
+import ru.all_easy.push.user.repository.UserEntity;
 
 @Entity
 @Table(name = "expense")
@@ -26,6 +18,7 @@ public class ExpenseEntity {
     private String name;
     private BigDecimal amount;
     private LocalDateTime dateTime;
+    private CurrencyEntity currency;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,19 +27,19 @@ public class ExpenseEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name="from_uid", nullable=false, referencedColumnName = "uid")
+    @JoinColumn(name = "from_uid", nullable = false, referencedColumnName = "uid")
     public UserEntity getFrom() {
         return from;
     }
 
     @ManyToOne
-    @JoinColumn(name="to_uid", nullable=false, referencedColumnName = "uid")
+    @JoinColumn(name = "to_uid", nullable = false, referencedColumnName = "uid")
     public UserEntity getTo() {
         return to;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="room_token", nullable=false, referencedColumnName = "token")
+    @JoinColumn(name = "room_token", nullable = false, referencedColumnName = "token")
     public RoomEntity getRoom() {
         return room;
     }
@@ -64,6 +57,12 @@ public class ExpenseEntity {
     @Column(name = "datetime")
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency", referencedColumnName = "code")
+    public CurrencyEntity getCurrency() {
+        return currency;
     }
 
     public ExpenseEntity setId(Long id) {
@@ -98,6 +97,11 @@ public class ExpenseEntity {
 
     public ExpenseEntity setAmount(BigDecimal amount) {
         this.amount = amount;
+        return this;
+    }
+
+    public ExpenseEntity setCurrency(CurrencyEntity currency) {
+        this.currency = currency;
         return this;
     }
 }

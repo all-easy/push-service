@@ -9,5 +9,6 @@
 
     <include file="changelog/init.xml"/>
     <include file="changelog/add_currency.xml"/>
+    <include file="changelog/v1_0__add_currency_to_transaction.xml"/>
 
 </databaseChangeLog>

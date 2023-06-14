@@ -15,8 +15,8 @@ public class PushGroupCommandRule implements CommandRule {
     private final PushGroupCommandService pushGroupCommandService;
     private final PushCommandValidator pushCommandValidator;
 
-    public PushGroupCommandRule(PushGroupCommandService pushGroupCommandService,
-                                PushCommandValidator pushCommandValidator) {
+    public PushGroupCommandRule(
+            PushGroupCommandService pushGroupCommandService, PushCommandValidator pushCommandValidator) {
         this.pushGroupCommandService = pushGroupCommandService;
         this.pushCommandValidator = pushCommandValidator;
     }
@@ -26,9 +26,19 @@ public class PushGroupCommandRule implements CommandRule {
         if (update.message() == null || update.message().text() == null) {
             return false;
         }
-        return update.message().text().contains(Commands.PUSH.getCommand())
-                && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
-                || update.message().chat().type().equals(ChatType.GROUP.getType()));
+
+        var pushCommand = update.message().text().contains(Commands.PUSH.getCommand());
+        if (update.message().text().split(" ").length <= 1 && pushCommand) {
+            return false;
+        }
+
+        var replay = update.message().replayToMessage() != null
+                && update.message().replayToMessage().text().contains(Commands.PUSH.getCommand());
+
+        var groupSuperGroup = update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
+                || update.message().chat().type().equals(ChatType.GROUP.getType());
+
+        return (pushCommand || replay) && groupSuperGroup;
     }
 
     @Override
@@ -36,20 +46,15 @@ public class PushGroupCommandRule implements CommandRule {
         var validated = pushCommandValidator.validate(update);
         if (validated.hasError()) {
             return ResultK.Err(new CommandError(
-                update.message().chat().id(),
-                validated.getError().message()));
+                    update.message().chat().id(), validated.getError().message()));
         }
 
         var result = pushGroupCommandService.push(validated.getResult());
         if (result.hasError()) {
             return ResultK.Err(new CommandError(
-                update.message().chat().id(),
-                result.getError().message()));
+                    update.message().chat().id(), result.getError().message()));
         }
 
-        return ResultK.Ok(new CommandProcessed(
-                update.message().chat().id(),
-                result.getResult()));
+        return ResultK.Ok(new CommandProcessed(update.message().chat().id(), result.getResult()));
     }
-    
 }

@@ -1,10 +1,9 @@
 package ru.all_easy.push.user.repository;
 
-import org.hibernate.annotations.NaturalId;
-
-import ru.all_easy.push.expense.repository.ExpenseEntity;
-import ru.all_easy.push.room_user.repository.RoomUserEntity;
-
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,10 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import org.hibernate.annotations.NaturalId;
+import ru.all_easy.push.expense.repository.ExpenseEntity;
+import ru.all_easy.push.room_user.repository.RoomUserEntity;
 
 @Entity
 @Table(name = "t_user")
@@ -51,16 +49,12 @@ public class UserEntity implements Serializable {
         return password;
     }
 
-    @OneToMany(mappedBy="from")
+    @OneToMany(mappedBy = "from")
     public Set<ExpenseEntity> getMyExpenses() {
         return myExpenses;
     }
 
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     public Set<RoomUserEntity> getRooms() {
         return rooms;
     }

@@ -1,16 +1,15 @@
 package ru.all_easy.push.room.repository.model;
 
-import org.hibernate.annotations.NaturalId;
-import ru.all_easy.push.currency.repository.model.CurrencyEntity;
-import ru.all_easy.push.room_user.repository.RoomUserEntity;
-import ru.all_easy.push.user.repository.UserEntity;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.NaturalId;
+import ru.all_easy.push.currency.repository.model.CurrencyEntity;
+import ru.all_easy.push.room_user.repository.RoomUserEntity;
+import ru.all_easy.push.user.repository.UserEntity;
 
 @Entity
 @Table(name = "room")
@@ -27,11 +26,7 @@ public class RoomEntity implements Serializable {
     @Column(name = "token")
     private String token;
 
-    @OneToMany(
-            mappedBy = "room",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RoomUserEntity> users = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,11 +41,9 @@ public class RoomEntity implements Serializable {
         return title;
     }
 
-
     public String getToken() {
         return token;
     }
-
 
     public Set<RoomUserEntity> getUsers() {
         return users;

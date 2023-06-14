@@ -1,5 +1,6 @@
 package ru.all_easy.push.telegram.commands.rules;
 
+import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
@@ -17,16 +18,13 @@ import ru.all_easy.push.user.repository.UserEntity;
 import ru.all_easy.push.user.service.UserService;
 import ru.all_easy.push.user.service.model.RegisterInfo;
 
-import javax.transaction.Transactional;
-
 @Service
 public class AddCommandRule implements CommandRule {
 
     private final RoomService roomService;
     private final UserService userService;
 
-    public AddCommandRule(RoomService roomService,
-                          UserService userService) {
+    public AddCommandRule(RoomService roomService, UserService userService) {
         this.roomService = roomService;
         this.userService = userService;
     }
@@ -46,10 +44,9 @@ public class AddCommandRule implements CommandRule {
         String userId = String.valueOf(update.message().from().id());
         String chatId = String.valueOf(chatIdL);
         String username = update.message().from().username();
-        
+
         if (username == null) {
-            return ResultK.Err(
-                new CommandError(chatIdL, "Add username in Telegram settings please"));
+            return ResultK.Err(new CommandError(chatIdL, "Add username in Telegram settings please"));
         }
 
         try {
@@ -60,7 +57,8 @@ public class AddCommandRule implements CommandRule {
             RoomEntity room = roomService.createRoomEntity(new RoomInfo(userId, chatTitle, chatId, Shape.EMPTY));
             UserEntity user = userService.registerEntity(new RegisterInfo(username, StringUtils.EMPTY, userId));
             RoomResult result = roomService.enterRoom(user, room);
-            String message = String.format("*%s* have been successfully added to virtual room *%s*", username, result.title());
+            String message =
+                    String.format("*%s* have been successfully added to virtual room *%s*", username, result.title());
             return ResultK.Ok(new CommandProcessed(chatIdL, message));
         } catch (RoomServiceException ex) {
             return ResultK.Err(new CommandError(chatIdL, ex.getMessage()));
