@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: addCurrencyTable
+      author: Oleg
+      changes:
+        - createTable:
+            tableName: currency
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: code
+                  type: varchar
+                  constraints:
+                    unique: true
+              - column:
+                  name: symbol
+                  type: varchar
+                  constraints:
+                    unique: true
+
+  - changeSet:
+      id: addFkToRoomTable
+      author: Oleg
+      changes:
+        - addColumn:
+            tableName: room
+            columns:
+              - column:
+                  name: currency
+                  type: varchar
+                  constraints:
+                    nullable: true
+                    foreignKeyName: currency
+                    references: currency(code)
+
+  - changeSet:
+      id: addCurrencyInitSqlScript
+      author: Oleg
+      changes:
+        - sqlFile:
+            path: add_currency.sql
+            relativeToChangelogFile: true
+            endDelimiter: ;
+            splitStatements: true
