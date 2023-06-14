@@ -87,6 +87,8 @@ this command.
 
 Send `/currency` command to choose your currency. Just visual feature)
 
+[Top](#pushmoneybot)
+
 ## Developers Guide
 
 ### Spotless
@@ -110,7 +112,7 @@ Run Spring Boot
 ./gradlew bootRun
 ```
 
-[Top](#push-money-bot)
+[Top](#pushmoneybot)
 
 ## License
 
@@ -140,3 +142,5 @@ Creative Commons references:
 ### Attribution
 
 By All-Easy ©, Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0), https://all-easy.github.io/bot
+
+[Top](#pushmoneybot)
