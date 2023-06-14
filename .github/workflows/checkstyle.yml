@@ -5,12 +5,12 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  checkstyle:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-      - name: Build
+      - name: Check style
         run: ./gradlew spotlessCheck
