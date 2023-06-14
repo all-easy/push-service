@@ -1,5 +1,6 @@
 package ru.all_easy.push.room_user.service;
 
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -7,8 +8,6 @@ import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room_user.repository.RoomUserEntity;
 import ru.all_easy.push.room_user.repository.RoomUserRepository;
 import ru.all_easy.push.user.repository.UserEntity;
-
-import java.util.List;
 
 @Service
 public class RoomUserService {

@@ -22,8 +22,8 @@ public class PushForceReplayRule implements CommandRule {
             return false;
         }
 
-        return update.message().text().split(" ").length == 1 &&
-                (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
+        return update.message().text().split(" ").length == 1
+                && (update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
                         || update.message().chat().type().equals(ChatType.GROUP.getType()));
     }
 
@@ -33,10 +33,6 @@ public class PushForceReplayRule implements CommandRule {
                 update.message().chat().id(),
                 update.message().messageId(),
                 "/push",
-                new ForceReply(
-                        true,
-                        "@username amount",
-                        true
-        )));
+                new ForceReply(true, "@username amount", true)));
     }
 }

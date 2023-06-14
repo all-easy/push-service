@@ -1,13 +1,12 @@
 package ru.all_easy.push.helper;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import ru.all_easy.push.common.UnitTest;
-
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MathHelperUnitTest extends UnitTest {
 
