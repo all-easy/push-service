@@ -1,20 +1,22 @@
-# Push Money Bot
+# PushMoneyBot
 
-@PushMyMoneyBot
+Hold and optimize common expenses with your friends with [PushMoneyBot](https://t.me/PushMyMoneyBot)
 
-User guide  
-[How to start](#how-to-start)  
-[Commands](#commands)  
+**User guide**<br>
+[How to start](#how-to-start)<br>
+[Commands](#commands)<br>
 [Last features](#last-features)
 
-Developers guide  
-[Spotless](#spotless)  
-[Spring](#spring)
+**Developers guide**<br>
+[Spotless](#spotless)<br>
+[Spring](#spring)<br>
+
+[License](#license)
 
 ## How to start
 
 1. Create Telegram group.
-1. Add @PushMyMoneyBot to the created group.
+1. Add [@PushMyMoneyBot](https://t.me/PushMyMoneyBot) to the created group.
 1. Group members have to register themselves with the bot, by typing `/addme` command.
 1. Use commands to create and manage expense records.
 
@@ -78,12 +80,12 @@ Example:
 
 ### Force replays
 
-Now if you miss click to /push command you can continue typing @username amount as usual in replay box, bot writes down
+Now if you miss click to `/push` command you can continue typing `@username amount` as usual in replay box, bot writes down
 this command.
 
 ### Currencies
 
-Send /currency command to choose your currency. Just visual feature)
+Send `/currency` command to choose your currency. Just visual feature)
 
 ## Developers Guide
 
@@ -109,20 +111,6 @@ Run Spring Boot
 ```
 
 [Top](#push-money-bot)
-
-
-# Spotless
-
-Run Spotless plugin
-
-```bash
-# Check
-./gradlew spotlessCheck
-
-# Apply changes
-./gradlew spotlessApply
-```
-
 
 ## License
 
@@ -151,4 +139,4 @@ Creative Commons references:
 
 ### Attribution
 
-By All-Easy ©, Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0), all-easy.github.io/bot
+By All-Easy ©, Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0), https://all-easy.github.io/bot
