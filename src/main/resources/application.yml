@@ -1,0 +1,64 @@
+spring:
+  profiles:
+    active: ${PROFILE}
+
+  #Datasource
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  #Jpa
+  jpa:
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    show-sql: false
+
+  #Migration
+  liquibase:
+    enabled: true
+    driver-class-name: org.postgresql.Driver
+    change-log: changelog/main.yaml
+
+  #REDIS
+  redis:
+    host: localhost
+    port: 6379
+    password: ${REDIS_PASSWORD}
+
+#Monitoring
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  metrics.tags.application: PushService
+  server.port: 8085
+
+#TELEGRAM
+telegram:
+  api: https://api.telegram.org/bot
+  hook:
+    url: ${TG_HOOK_URL}
+    secret: ${TG_HOOK_SECRET}
+    full-hook-url: ${telegram.hook.url}/v1/api/telegram/${telegram.hook.secret}/
+  token: ${TG_TOKEN}
+  url: ${telegram.api}${telegram.token}
+  drop-pending-updates: true
+
+#API
+api:
+  key:
+
+app:
+  front:
+    host: http://localhost:3000

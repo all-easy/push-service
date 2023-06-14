@@ -57,7 +57,6 @@ dependencies {
 	//TESTS
 	testImplementation group: 'junit', name: 'junit', version: '4.13.2'
 	testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.3.1'
-
 }
 
 dependencyManagement {

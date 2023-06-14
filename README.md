@@ -1,8 +1,41 @@
-# Commands
+# PushMoneyBot
+
+Hold and optimize common expenses with your friends with [PushMoneyBot](https://t.me/PushMyMoneyBot)
+
+**User guide**<br>
+[How to start](#how-to-start)<br>
+[Commands](#commands)<br>
+[Last features](#last-features)
+
+**Developers guide**<br>
+[Spotless](#spotless)<br>
+[Spring](#spring)<br>
+
+[License](#license)
+
+## How to start
+
+1. Create Telegram group.
+1. Add [@PushMyMoneyBot](https://t.me/PushMyMoneyBot) to the created group.
+1. Group members have to register themselves with the bot, by typing `/addme` command.
+1. Use commands to create and manage expense records.
+
+## Commands
+
+### Register a group member within bot
 
 ```
-/push @username <amount> <percent:optional> <title:optional>
-/push @username <amount> <title:optional> <percent:optional>
+/addme
+
+Example:
+/addme @MyTelegramNickname
+```
+
+### Create an expense record
+
+```
+/push @<username> <amountOrMathExpression> [ <percent>% <oneWordTitle> ]
+/push @<username> <amountOrMathExpression> [ <oneWordTitle> <percent>% ]
 
 Example:
 /push @john 111+111 30% bread
@@ -13,7 +46,52 @@ Example:
 /push @john 111
 ```
 
-# Spotless
+### Setup group’s currency
+
+```
+/currency
+```
+
+Then click button with currency you want to set up.
+
+### Display money balance
+
+```
+/result
+```
+
+### Show transaction history
+
+```
+/history [ <amountOfTransactions> ]
+
+Example:
+/history
+/history 5
+```
+
+### Getting help
+
+```
+/help
+```
+
+## Last Features
+
+### Force replays
+
+Now if you miss click to `/push` command you can continue typing `@username amount` as usual in replay box, bot writes down
+this command.
+
+### Currencies
+
+Send `/currency` command to choose your currency. Just visual feature)
+
+[Top](#pushmoneybot)
+
+## Developers Guide
+
+### Spotless
 
 Run Spotless plugin
 
@@ -25,6 +103,16 @@ Run Spotless plugin
 ./gradlew spotlessApply
 ```
 
+### Spring
+
+Run Spring Boot
+
+```bash
+# Set environment variables, then
+./gradlew bootRun
+```
+
+[Top](#pushmoneybot)
 
 ## License
 
@@ -53,4 +141,6 @@ Creative Commons references:
 
 ### Attribution
 
-By All-Easy ©, Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0), all-easy.github.io/bot
+By All-Easy ©, Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0), https://all-easy.github.io/bot
+
+[Top](#pushmoneybot)

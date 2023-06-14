@@ -1,0 +1,142 @@
+databaseChangeLog:
+  - changeSet:
+      id: init
+      author: Denis Kartavenko
+      context: structure
+      comment: Init first tables
+
+      changes:
+        - createTable:
+            tableName: t_user
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: uid
+                  type: varchar
+                  constraints:
+                    unique: true
+              - column:
+                  name: username
+                  type: varchar
+                  constraints:
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar
+
+        - createTable:
+            tableName: shape
+            columns:
+              - column:
+                  name: room_token
+                  type: varchar
+                  #autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: shape_pk
+              - column:
+                  name: user_uid
+                  type: varchar
+                  #autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: shape_pk
+              - column:
+                  name: shape
+                  type: varchar
+
+        - createTable:
+            tableName: room
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: token
+                  type: varchar
+                  constraints:
+                    unique: true
+              - column:
+                  name: title
+                  type: varchar
+
+        - createTable:
+            tableName: room_t_user
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: room_token
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    foreignKeyName: room_t_user_token_fk
+                    primaryKeyName: room_t_user_pk
+                    references: room(token)
+              - column:
+                  name: t_user_uid
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    foreignKeyName: room_t_user_uid_fk
+                    primaryKeyName: room_t_user_pk
+                    references: t_user(uid)
+              - column:
+                  name: status
+                  type: varchar
+
+        - createTable:
+            tableName: expense
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar
+              - column:
+                  name: from_uid
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    foreignKeyName: expense_from_t_user_fk
+                    references: t_user(uid)
+              - column:
+                  name: to_uid
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    foreignKeyName: expense_to_t_user_fk
+                    references: t_user(uid)
+              - column:
+                  name: room_token
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    foreignKeyName: expense_room_fk
+                    references: room(token)
+              - column:
+                  name: datetime
+                  type: datetime
+              - column:
+                  name: amount
+                  type: numeric
