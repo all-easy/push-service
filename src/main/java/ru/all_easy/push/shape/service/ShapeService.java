@@ -1,10 +1,9 @@
 package ru.all_easy.push.shape.service;
 
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.shape.repository.ShapeEntity;
 import ru.all_easy.push.shape.repository.ShapeRepository;
-
-import java.util.Set;
 
 @Service
 public class ShapeService {
@@ -20,8 +19,7 @@ public class ShapeService {
     }
 
     public ShapeEntity findShape(ShapeInfo shapeInfo) {
-        return repository.findShapeEntityByRoomTokenAndShape(
-                shapeInfo.roomToken(), shapeInfo.shape());
+        return repository.findShapeEntityByRoomTokenAndShape(shapeInfo.roomToken(), shapeInfo.shape());
     }
 
     public ShapeEntity save(ShapeEntity shapeEntity) {

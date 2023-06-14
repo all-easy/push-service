@@ -1,9 +1,8 @@
 package ru.all_easy.push.telegram.api.tools;
 
-import ru.all_easy.push.telegram.api.client.model.InlineKeyboardButton;
-
 import java.util.ArrayList;
 import java.util.List;
+import ru.all_easy.push.telegram.api.client.model.InlineKeyboardButton;
 
 public class Keyboard {
 

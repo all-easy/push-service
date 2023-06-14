@@ -1,9 +1,15 @@
 package ru.all_easy.push.room.service;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import ru.all_easy.push.common.ErrorType;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
@@ -12,26 +18,18 @@ import ru.all_easy.push.optimize.OweInfo;
 import ru.all_easy.push.room.repository.RoomRepository;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.repository.model.RoomStatus;
-import ru.all_easy.push.room_user.repository.RoomUserEntity;
 import ru.all_easy.push.room.service.exception.RoomServiceException;
 import ru.all_easy.push.room.service.model.RoomInfo;
 import ru.all_easy.push.room.service.model.RoomJoinInfo;
 import ru.all_easy.push.room.service.model.RoomResult;
 import ru.all_easy.push.room.service.model.RoomUserInfo;
 import ru.all_easy.push.room.service.model.UserRoomResult;
+import ru.all_easy.push.room_user.repository.RoomUserEntity;
 import ru.all_easy.push.room_user.service.RoomUserService;
 import ru.all_easy.push.shape.repository.ShapeEntity;
 import ru.all_easy.push.shape.service.ShapeService;
 import ru.all_easy.push.user.repository.UserEntity;
 import ru.all_easy.push.user.service.UserService;
-
-import javax.transaction.Transactional;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomService {
@@ -47,12 +45,13 @@ public class RoomService {
 
     private static final Logger logger = LoggerFactory.getLogger(RoomService.class);
 
-    public RoomService(RoomRepository repository,
-                       ShapeService shapeService,
-                       UserService userService,
-                       ExpenseService expenseService,
-                       RoomUserService roomUserService,
-                       OptimizeTools optimizeTools) {
+    public RoomService(
+            RoomRepository repository,
+            ShapeService shapeService,
+            UserService userService,
+            ExpenseService expenseService,
+            RoomUserService roomUserService,
+            OptimizeTools optimizeTools) {
         this.repository = repository;
         this.shapeService = shapeService;
         this.userService = userService;
@@ -64,21 +63,18 @@ public class RoomService {
     public RoomResult createRoom(RoomInfo roomInfo) {
         RoomEntity savedRoom = createRoomEntity(roomInfo);
 
-        Set<UserEntity> users = savedRoom.getUsers().stream()
-                .map(RoomUserEntity::getUser)
-                .collect(Collectors.toSet());
+        Set<UserEntity> users =
+                savedRoom.getUsers().stream().map(RoomUserEntity::getUser).collect(Collectors.toSet());
         return createRoomResult(savedRoom, Collections.emptySet(), users, null);
     }
-    
+
     public RoomEntity createRoomEntity(RoomInfo roomInfo) {
         RoomEntity savedRoom = findByToken(roomInfo.token());
         if (savedRoom != null) {
             return savedRoom;
         }
 
-        RoomEntity room = new RoomEntity()
-                .setTitle(roomInfo.title())
-                .setToken(roomInfo.token());
+        RoomEntity room = new RoomEntity().setTitle(roomInfo.title()).setToken(roomInfo.token());
 
         return repository.save(room);
     }
@@ -86,9 +82,9 @@ public class RoomService {
     @Transactional
     public RoomResult enterRoom(UserEntity user, RoomEntity room) {
         RoomUserEntity roomUser = room.getUsers().stream()
-            .filter(rm -> rm.getUser().getUid().equals(user.getUid()))
-            .findFirst()
-            .orElse(null);
+                .filter(rm -> rm.getUser().getUid().equals(user.getUid()))
+                .findFirst()
+                .orElse(null);
         if (roomUser == null) {
             roomUser = new RoomUserEntity(room, user);
         }
@@ -143,8 +139,7 @@ public class RoomService {
         ShapeEntity savedShape = shapeService.save(shapeEntity);
 
         RoomResult roomResult = createRoomResult(savedRoom, roomShapes, usersInRoom, Collections.emptySet());
-        roomResult.users()
-                .add(new RoomUserInfo(user.getUsername(), user.getUid(), savedShape.getShape()));
+        roomResult.users().add(new RoomUserInfo(user.getUsername(), user.getUid(), savedShape.getShape()));
 
         return roomResult;
     }
@@ -179,20 +174,15 @@ public class RoomService {
         return optimizeTools.getOwes(username, optimized);
     }
 
-    private RoomResult createRoomResult(RoomEntity room,
-                                        Set<ShapeEntity> shapes,
-                                        Set<UserEntity> usersInRoom,
-                                        Set<OweInfo> owes) {
+    private RoomResult createRoomResult(
+            RoomEntity room, Set<ShapeEntity> shapes, Set<UserEntity> usersInRoom, Set<OweInfo> owes) {
         Set<RoomUserInfo> roomUsers = usersInRoom.stream()
                 .map(u -> {
                     ShapeEntity shape = shapes.stream()
                             .filter(s -> s.getUserUid().equals(u.getUid()))
                             .findFirst()
                             .orElse(null);
-                    return new RoomUserInfo(
-                            u.getUsername(),
-                            u.getUid(),
-                            shape != null ? shape.getShape() : null);
+                    return new RoomUserInfo(u.getUsername(), u.getUid(), shape != null ? shape.getShape() : null);
                 })
                 .collect(Collectors.toSet());
         return new RoomResult(null, room.getToken(), room.getTitle(), roomUsers, owes);
@@ -200,7 +190,7 @@ public class RoomService {
 
     public RoomEntity findRoomByToken(String token) {
         RoomEntity savedRoom = findByToken(token);
-        if (savedRoom == null) {            
+        if (savedRoom == null) {
             throw new RoomServiceException()
                     .setMessage("Room with token: " + token + " not found")
                     .setCode(404);
@@ -218,13 +208,15 @@ public class RoomService {
                 .map(ur -> {
                     RoomUserEntity userRoom = findUserRoom(uid, ur.getUsers());
                     return new UserRoomResult(ur.getToken(), ur.getTitle(), userRoom.getStatus());
-                }).collect(Collectors.toSet());
+                })
+                .collect(Collectors.toSet());
     }
 
     private RoomUserEntity findUserRoom(String uid, Set<RoomUserEntity> roomUsers) {
         return roomUsers.stream()
                 .filter(u -> u.getUserUid().equals(uid))
-                .findFirst().orElseThrow(() -> {
+                .findFirst()
+                .orElseThrow(() -> {
                     logger.info("Cannot find user from room roomUser with uid: {}", uid);
                     throw new RoomServiceException().setMessage("Something went wrong");
                 });
@@ -245,5 +237,4 @@ public class RoomService {
         room.setCurrency(currency);
         repository.save(room);
     }
-
 }
