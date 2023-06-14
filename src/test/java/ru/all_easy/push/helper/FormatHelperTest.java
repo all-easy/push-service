@@ -42,6 +42,7 @@ class FormatHelperTest extends UnitTest {
         Map<String, BigDecimal> result = new HashMap<>();
         result.put("person1,person2", BigDecimal.valueOf(22));
         result.put("person1,person3", BigDecimal.valueOf(0.000123));
+        result.put("person1,person5", BigDecimal.valueOf(0.001123));
         result.put("person1,person9", BigDecimal.valueOf(0.000092131));
         result.put("person2,person3", BigDecimal.ZERO);
         result.put("person4,person5", BigDecimal.valueOf(1000));

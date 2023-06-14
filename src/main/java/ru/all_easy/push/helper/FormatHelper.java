@@ -16,7 +16,7 @@ public class FormatHelper {
 
     public String formatResult(Map<String, BigDecimal> result) {
         return result.entrySet().stream()
-                .filter(set -> !mathHelper.equalWithDelta(set.getValue(), BigDecimal.ZERO, 0.001))
+                .filter(set -> !mathHelper.equalWithDelta(set.getValue(), BigDecimal.ZERO, 0.01))
                 .map(set -> {
                     String[] participants = set.getKey().split(",");
                     BigDecimal sum = set.getValue();
