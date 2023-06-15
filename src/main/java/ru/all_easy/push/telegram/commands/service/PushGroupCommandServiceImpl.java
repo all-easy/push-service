@@ -6,6 +6,7 @@ import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
+import ru.all_easy.push.helper.MathHelper;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
 import ru.all_easy.push.room_user.repository.RoomUserEntity;
@@ -18,10 +19,12 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
 
     private final RoomService roomService;
     private final ExpenseService expenseService;
+    private final MathHelper mathHelper;
 
-    public PushGroupCommandServiceImpl(RoomService roomService, ExpenseService expenseService) {
+    public PushGroupCommandServiceImpl(RoomService roomService, ExpenseService expenseService, MathHelper mathHelper) {
         this.roomService = roomService;
         this.expenseService = expenseService;
+        this.mathHelper = mathHelper;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
                 roomEntity.getToken(),
                 validated.getAmount().compareTo(BigDecimal.ZERO) < 0 ? toEntity.getUserUid() : fromEntity.getUserUid(),
                 validated.getAmount().compareTo(BigDecimal.ZERO) < 0 ? fromEntity.getUserUid() : toEntity.getUserUid(),
-                validated.getAmount().abs(),
+                mathHelper.round(validated.getAmount().abs()),
                 validated.getName());
 
         ExpenseEntity result = expenseService.expense(info, roomEntity);
