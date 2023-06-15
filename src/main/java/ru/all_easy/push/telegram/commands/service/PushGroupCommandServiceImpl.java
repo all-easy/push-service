@@ -37,7 +37,8 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
 
         RoomUserEntity fromEntity = filterRoomUser(roomEntity, validated.getFromUsername());
         if (fromEntity == null) {
-            return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNADDED_USER.getMessage()));
+            return ResultK.Err(new PushCommandServiceError(
+                    String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), validated.getFromUsername())));
         }
 
         RoomUserEntity toEntity = filterRoomUser(roomEntity, validated.getToUsername());
