@@ -35,4 +35,9 @@ public class PushParser {
                 messageParts.stream().filter(part -> part.contains(PERCENT)).findFirst();
         return percent.map(it -> NumberUtils.toInt(it.replace(PERCENT, ""))).orElse(0);
     }
+
+    // public BigDecimal extractAmount(String string) {}
+    // public List<String> extractUsernames(String string) {}
+    // public String extractMathExpression(String string) {}
+    // public Optional<Numeric> isAmount(String string) {}
 }
