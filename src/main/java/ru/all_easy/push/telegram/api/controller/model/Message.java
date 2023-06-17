@@ -15,4 +15,17 @@ public record Message(
         @JsonProperty("date") Long date,
         @JsonProperty("text") String text,
         @JsonProperty("reply_to_message") Message replayToMessage,
-        @JsonProperty("entities") List<MessageEntity> entities) {}
+        @JsonProperty("entities") List<MessageEntity> entities,
+        @JsonProperty("migrate_to_chat_id") Integer migrateToChatId,
+        @JsonProperty("migrate_from_chat_id") Integer migrateFromChatId) {
+    public Message(
+            Integer messageId,
+            User from,
+            Chat chat,
+            Long date,
+            String text,
+            Message replayToMessage,
+            List<MessageEntity> entities) {
+        this(messageId, from, chat, date, text, replayToMessage, entities, null, null);
+    }
+}
