@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import ru.all_easy.push.common.ErrorType;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
@@ -236,5 +237,12 @@ public class RoomService {
     public void setRoomCurrency(RoomEntity room, CurrencyEntity currency) {
         room.setCurrency(currency);
         repository.save(room);
+    }
+
+    @org.springframework.transaction.annotation.Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void autoMigrate(String migrateFromChatId, String migrateToChatId) {
+        repository.updateExpenseRoomToken(migrateFromChatId, migrateToChatId);
+        repository.updateRoomUserRoomToken(migrateFromChatId, migrateToChatId);
+        repository.deleteRoomByRoomToken(migrateFromChatId);
     }
 }
