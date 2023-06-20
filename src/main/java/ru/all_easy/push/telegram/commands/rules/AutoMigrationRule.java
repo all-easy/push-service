@@ -4,10 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.all_easy.push.common.ResultK;
-import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.currency.service.CurrencyService;
 import ru.all_easy.push.room.service.RoomService;
-import ru.all_easy.push.room.service.model.RoomInfo;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.rules.model.CommandError;
 import ru.all_easy.push.telegram.commands.rules.model.CommandProcessed;
@@ -35,10 +33,7 @@ public class AutoMigrationRule implements CommandRule {
         final String newToken = String.valueOf(update.message().chat().id());
 
         try {
-            roomService.createRoomEntity(new RoomInfo(null, "Supergroup", newToken, null));
-            CurrencyEntity currency = currencyService.getCurrencyByRoomId(oldToken);
-            if (currency != null) currencyService.setCurrency(Long.valueOf(newToken), currency);
-            roomService.autoMigrate(oldToken, newToken);
+            roomService.autoMigrateToSupergroup(oldToken, newToken);
         } catch (Exception e) {
             return ResultK.Err(new CommandError(update.message().chat().id(), e.getMessage()));
         }

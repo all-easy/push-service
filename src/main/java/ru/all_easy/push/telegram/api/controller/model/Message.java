@@ -16,7 +16,6 @@ public record Message(
         @JsonProperty("text") String text,
         @JsonProperty("reply_to_message") Message replayToMessage,
         @JsonProperty("entities") List<MessageEntity> entities,
-        @JsonProperty("migrate_to_chat_id") Long migrateToChatId,
         @JsonProperty("migrate_from_chat_id") Long migrateFromChatId) {
     public Message(
             Integer messageId,
@@ -26,6 +25,6 @@ public record Message(
             String text,
             Message replayToMessage,
             List<MessageEntity> entities) {
-        this(messageId, from, chat, date, text, replayToMessage, entities, null, null);
+        this(messageId, from, chat, date, text, replayToMessage, entities, null);
     }
 }
