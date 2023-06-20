@@ -247,13 +247,8 @@ public class RoomService {
         if (oldRoomEntity.getCurrency() != null) newRoomEntity.setCurrency(oldRoomEntity.getCurrency());
         newRoomEntity.setToken(newToken);
         repository.save(newRoomEntity);
-        autoMigrate(oldToken, newToken);
-    }
-
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    private void autoMigrate(String migrateFromChatId, String migrateToChatId) {
-        repository.updateExpenseRoomToken(migrateFromChatId, migrateToChatId);
-        repository.updateRoomUserRoomToken(migrateFromChatId, migrateToChatId);
-        repository.deleteRoomByRoomToken(migrateFromChatId);
+        repository.updateExpenseRoomToken(oldToken, newToken);
+        repository.updateRoomUserRoomToken(oldToken, newToken);
+        repository.deleteRoomByRoomToken(oldToken);
     }
 }

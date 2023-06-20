@@ -1,8 +1,6 @@
 package ru.all_easy.push.telegram.commands.rules;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.currency.service.CurrencyService;
 import ru.all_easy.push.room.service.RoomService;
@@ -26,7 +24,6 @@ public class AutoMigrationRule implements CommandRule {
         return update.message().migrateFromChatId() != null;
     }
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
     public ResultK<CommandProcessed, CommandError> process(Update update) {
         final String oldToken = String.valueOf(update.message().migrateFromChatId());
