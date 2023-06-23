@@ -1,5 +1,7 @@
 package ru.all_easy.push.telegram.commands.rules;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.currency.service.CurrencyService;
@@ -10,6 +12,7 @@ import ru.all_easy.push.telegram.commands.rules.model.CommandProcessed;
 
 @Service
 public class AutoMigrationRule implements CommandRule {
+    private static final Logger logger = LoggerFactory.getLogger(AutoMigrationRule.class);
     private final RoomService roomService;
     private final CurrencyService currencyService;
 
@@ -32,9 +35,11 @@ public class AutoMigrationRule implements CommandRule {
         try {
             roomService.autoMigrateToSupergroup(oldToken, newToken);
         } catch (Exception e) {
-            return ResultK.Err(new CommandError(update.message().chat().id(), e.getMessage()));
+            logger.error("An error occurred while upgrading to supergroup: {}", e.getMessage());
+            return ResultK.Err(new CommandError(
+                    update.message().chat().id(), "Something went wrong while upgrading to supergroup"));
         }
 
-        return ResultK.Ok(new CommandProcessed(update.message().chat().id(), "Chat was upgraded to supergroup"));
+        return ResultK.Ok(new CommandProcessed(update.message().chat().id(), "Chat has been upgraded to supergroup"));
     }
 }
