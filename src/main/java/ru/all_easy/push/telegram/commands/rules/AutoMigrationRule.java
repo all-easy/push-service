@@ -35,7 +35,6 @@ public class AutoMigrationRule implements CommandRule {
             return ResultK.Err(new CommandError(update.message().chat().id(), e.getMessage()));
         }
 
-        return ResultK.Ok(new CommandProcessed(
-                update.message().chat().id(), "Moved to supergroup, from " + oldToken + " to " + newToken));
+        return ResultK.Ok(new CommandProcessed(update.message().chat().id(), "Chat was upgraded to supergroup"));
     }
 }
