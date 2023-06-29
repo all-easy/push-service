@@ -6,10 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.all_easy.push.common.ErrorType;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
@@ -236,5 +237,18 @@ public class RoomService {
     public void setRoomCurrency(RoomEntity room, CurrencyEntity currency) {
         room.setCurrency(currency);
         repository.save(room);
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void autoMigrateToSupergroup(String oldToken, String newToken) {
+        RoomEntity oldRoomEntity = repository.findByToken(oldToken);
+        RoomEntity newRoomEntity = new RoomEntity();
+        newRoomEntity.setTitle(oldRoomEntity.getTitle());
+        if (oldRoomEntity.getCurrency() != null) newRoomEntity.setCurrency(oldRoomEntity.getCurrency());
+        newRoomEntity.setToken(newToken);
+        repository.save(newRoomEntity);
+        repository.updateExpenseRoomToken(oldToken, newToken);
+        repository.updateRoomUserRoomToken(oldToken, newToken);
+        repository.deleteRoomByRoomToken(oldToken);
     }
 }
