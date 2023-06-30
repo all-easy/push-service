@@ -32,17 +32,12 @@ public class SplitCommandRule implements CommandRule {
     @Override
     public ResultK<CommandProcessed, CommandError> process(Update update) {
         Long chatId = update.message().chat().id();
-
-        // Validate: Update => SplitCommandValidated
-        // <expenseAmountOrMathExpression> [ <percent>% <oneWordTitle> ] [ @<username1>, ..., @<usernameN> ]
-        // Class: expenseAmountOrMathExpression, percent, oneWordTitle, List<String> usernames;
         ResultK<SplitCommandValidated, ValidationError> validated = splitCommandValidator.validate(update);
         if (validated.hasError()) {
             return ResultK.Err(new CommandError(
                     update.message().chat().id(), validated.getError().message()));
         }
 
-        // Split and push: SplitCommandValidated => changes in db, and return CommandProcessed
         ResultK<CommandProcessed, CommandError> result = splitCommandService.split(validated.getResult());
         if (result.hasError()) {
             return ResultK.Err(new CommandError(
