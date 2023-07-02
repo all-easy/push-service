@@ -25,16 +25,18 @@ public class TelegramService implements ClientApi {
 
     @PostConstruct
     void init() {
-        String removeHookResult = setWebhook(new SetWebhookInfo("", telegramConfig.dropPendingUpdates()));
+        String removeHookResult = setWebhook(new SetWebhookInfo("", telegramConfig.dropPendingUpdates(), ""));
         logger.info("Remove WebHook: {}", removeHookResult);
-        String setHookResult = setWebhook(
-                new SetWebhookInfo(telegramConfig.hook().fullHookUrl(), telegramConfig.dropPendingUpdates()));
+        String setHookResult = setWebhook(new SetWebhookInfo(
+                telegramConfig.hook().fullHookUrl(),
+                telegramConfig.dropPendingUpdates(),
+                telegramConfig.hook().secret()));
         logger.info("Set WebHook: {}, {}", setHookResult, telegramConfig.hook().fullHookUrl());
     }
 
     @Override
     public String setWebhook(SetWebhookInfo info) {
-        SetWebhookRequest request = new SetWebhookRequest(info.url(), info.dropPendingUpdates());
+        SetWebhookRequest request = new SetWebhookRequest(info.url(), info.dropPendingUpdates(), info.secret());
         String response = telegramFeignClient.setWebhook(request);
         logger.info(response);
 
