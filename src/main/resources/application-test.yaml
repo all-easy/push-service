@@ -1,10 +1,11 @@
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/${DB_NAME}
+    url: jdbc:tc:postgresql:12.15:///${DB_NAME}
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   jpa:
-    show-sql: false
-  redis:
-    host: redis
+    show-sql: true
 
 telegram:
   drop-pending-updates: false
+  hook:
+    secret: test-secret
