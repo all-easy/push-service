@@ -1,6 +1,7 @@
 package ru.all_easy.push.telegram.api.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,26 +13,30 @@ import java.util.*;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 import redis.clients.jedis.Jedis;
+import ru.all_easy.push.common.IntegrationTest;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.repository.ExpenseRepository;
 import ru.all_easy.push.room.repository.RoomRepository;
 import ru.all_easy.push.telegram.api.controller.model.*;
 import ru.all_easy.push.telegram.api.service.TelegramService;
+import ru.all_easy.push.telegram.commands.CommandsContextService;
+import ru.all_easy.push.telegram.commands.rules.SplitCommandRule;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@Import(TestConfig.class)
-class UpdateControllerTest {
+/**
+ * Controller integration testing
+ *
+ * @see UpdateController
+ * @see CommandsContextService
+ * @see SplitCommandRule
+ */
+class UpdateControllerTest extends IntegrationTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -47,10 +52,12 @@ class UpdateControllerTest {
     @Autowired
     ExpenseRepository expenseRepository;
 
-    private static final String URL = "/v1/api/telegram/test-secret/";
+    private static final String URL = "/v1/api/telegram/telegram-hook-secret/";
 
     @Autowired
     TestData testData;
+
+    private static PostgreSQLContainer<?> postgres;
 
     private static GenericContainer<?> redis;
 
@@ -87,7 +94,8 @@ class UpdateControllerTest {
 
     @Test
     @Order(2)
-    void resultCommand_NoCache_Positive() throws Exception {
+    void postPositiveTest_ResultCommand_WithoutRedisCache() throws Exception {
+
         Message message = new Message(
                 1,
                 new User(1L, false, "user_1_nickname", "user_1"),
@@ -96,7 +104,9 @@ class UpdateControllerTest {
                 "/result",
                 null,
                 Collections.singletonList(new MessageEntity("bot_command", 0, null)));
+
         Update update = new Update(null, message);
+
         String updateAsString = objectMapper.writeValueAsString(update);
 
         when(telegramService.sendMessage(any(SendMessageInfo.class))).thenAnswer(inv -> {
@@ -109,29 +119,37 @@ class UpdateControllerTest {
                 *user_2* owes *user_1* sum: *80.00*
                 *user_3* owes *user_1* sum: *20.00*
                 *user_3* owes *user_2* sum: *40.00* $ USD""";
+
         SendMessageInfo expectedObject = new SendMessageInfo(11111L, responseText, "Markdown");
 
         mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(updateAsString))
                 .andDo(print());
 
         ArgumentCaptor<SendMessageInfo> argumentCaptor = ArgumentCaptor.forClass(SendMessageInfo.class);
+
         verify(telegramService, times(1)).sendMessage(argumentCaptor.capture());
+
         SendMessageInfo capturedArgument = argumentCaptor.getValue();
+
         assertEquals(expectedObject, capturedArgument);
+
         verify(telegramService).sendMessage(eq(expectedObject));
 
         assertEquals(1, jedis.keys("*").size());
+
         String valueAsString = jedis.get("results::11111,USD");
         assertFalse(valueAsString.isEmpty());
     }
 
     //    @Test
     //    @Order(3)
-    void resultCommand_WithCache_Positive() throws Exception {
+    void postPositiveTest_ResultCommand_WithRedisCache() throws Exception {
+
         // TODO: Repair deserialization issue
         Map<String, BigDecimal> cache = new HashMap<>();
         cache.put("redis-test-response-value", new BigDecimal(10));
         jedis.set("results::11111,USD", objectMapper.writeValueAsString(cache));
+
         Message message = new Message(
                 1,
                 new User(1L, false, "user_1_nickname", "user_1"),
@@ -140,7 +158,9 @@ class UpdateControllerTest {
                 "/result",
                 null,
                 Collections.singletonList(new MessageEntity("bot_command", 0, null)));
+
         Update update = new Update(null, message);
+
         String updateAsString = objectMapper.writeValueAsString(update);
 
         when(telegramService.sendMessage(any(SendMessageInfo.class))).thenAnswer(inv -> {
@@ -166,7 +186,8 @@ class UpdateControllerTest {
 
     @Test
     @Order(4)
-    void splitCommand_Positive() throws Exception {
+    void postPositiveTest_SplitCommand() throws Exception {
+
         Message message = new Message(
                 1,
                 new User(1L, false, "user_1_nickname", "user_1"),
@@ -175,7 +196,9 @@ class UpdateControllerTest {
                 "/split 100 test-description",
                 null,
                 Collections.singletonList(new MessageEntity("bot_command", 0, null)));
+
         Update update = new Update(null, message);
+
         String updateAsString = objectMapper.writeValueAsString(update);
 
         when(telegramService.sendMessage(any(SendMessageInfo.class))).thenAnswer(inv -> {
@@ -183,27 +206,24 @@ class UpdateControllerTest {
             return objectMapper.writeValueAsString(args[0]);
         });
 
-        String responseTextVariation1 =
+        String responseText =
                 """
                 Expense *33.33* $ USD to user *user_2* has been successfully added, description: test-description
                 Expense *33.33* $ USD to user *user_3* has been successfully added, description: test-description
-                """;
-        String responseTextVariation2 =
-                """
-                Expense *33.33* $ USD to user *user_3* has been successfully added, description: test-description
-                Expense *33.33* $ USD to user *user_2* has been successfully added, description: test-description
                 """;
 
         mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(updateAsString))
                 .andDo(print());
 
         ArgumentCaptor<SendMessageInfo> argumentCaptor = ArgumentCaptor.forClass(SendMessageInfo.class);
+
         verify(telegramService, times(1)).sendMessage(argumentCaptor.capture());
+
         SendMessageInfo capturedArgument = argumentCaptor.getValue();
+
         assertEquals(11111L, capturedArgument.chatId());
         assertEquals("Markdown", capturedArgument.parseMode());
-        assertTrue(capturedArgument.text().equals(responseTextVariation1)
-                || capturedArgument.text().equals(responseTextVariation2));
+        assertEquals(capturedArgument.text(), responseText);
         assertNull(capturedArgument.replayId());
         assertNull(capturedArgument.replayMarkup());
 

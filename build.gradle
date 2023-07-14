@@ -73,6 +73,12 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+test {
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
 spotless {
 	format 'misc', {
 		target '*.gradle', '*.md', '.gitignore'

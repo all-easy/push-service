@@ -8,7 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import ru.all_easy.push.common.AbstractAuthentication;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.CommandsContextService;
+import ru.all_easy.push.telegram.commands.service.SplitCommandService;
 
+/**
+ * Controller to interact with Telegram API
+ *
+ * @see CommandsContextService
+ * @see SplitCommandService
+ */
 @RestController
 @RequestMapping("/v1/api/telegram/${telegram.hook.secret}")
 public class UpdateController extends AbstractAuthentication {

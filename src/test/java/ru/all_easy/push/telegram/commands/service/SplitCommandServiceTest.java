@@ -1,18 +1,18 @@
 package ru.all_easy.push.telegram.commands.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 import com.fathzer.soft.javaluator.DoubleEvaluator;
 import java.math.BigDecimal;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 import ru.all_easy.push.common.ResultK;
+import ru.all_easy.push.common.UnitTest;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseServiceImpl;
@@ -28,8 +28,12 @@ import ru.all_easy.push.telegram.commands.validators.model.SplitCommandValidated
 import ru.all_easy.push.telegram.messages.AnswerMessageTemplate;
 import ru.all_easy.push.user.repository.UserEntity;
 
-@ExtendWith(MockitoExtension.class)
-class SplitCommandServiceTest {
+/**
+ * Unit testing for the main logic of the split command
+ *
+ * @see SplitCommandService
+ */
+class SplitCommandServiceTest extends UnitTest {
 
     @InjectMocks
     SplitCommandService splitCommandService;
@@ -47,8 +51,10 @@ class SplitCommandServiceTest {
     DateTimeHelper dateTimeHelper = new DateTimeHelper();
 
     @Test
-    void split_WithoutDescription_Positive() {
-        // Test data
+    void splitPositiveTest_ValidatedWithoutDescription() {
+
+        // TEST DATA
+
         CurrencyEntity USD = new CurrencyEntity();
         USD.setCode("USD");
         USD.setSymbol("$");
@@ -85,7 +91,8 @@ class SplitCommandServiceTest {
         validated.setAmount(BigDecimal.valueOf(100.0));
         validated.setDescription("");
 
-        // Stubbing
+        // STUBS
+
         when(roomService.findByToken("11111")).thenReturn(roomEntity);
 
         ExpenseInfo expenseInfo1 = new ExpenseInfo("11111", "10001", "10002", BigDecimal.valueOf(33.33), "");
@@ -110,17 +117,8 @@ class SplitCommandServiceTest {
                 .setCurrency(USD);
         when(expenseService.expense(expenseInfo2, roomEntity)).thenReturn(expenseEntity2);
 
-        // Expected
-        String responseTextVariation1 =
-                """
-                Expense *33.33* $ USD to user *user_2* has been successfully added
-                Expense *33.33* $ USD to user *user_3* has been successfully added
-                """;
-        String responseTextVariation2 =
-                """
-                Expense *33.33* $ USD to user *user_3* has been successfully added
-                Expense *33.33* $ USD to user *user_2* has been successfully added
-                """;
+        // EXPECT
+
         String responseText =
                 """
                 Expense *33.33* $ USD to user *user_2* has been successfully added
@@ -128,19 +126,26 @@ class SplitCommandServiceTest {
                 """;
         ResultK<CommandProcessed, CommandError> expectedResult = ResultK.Ok(new CommandProcessed(11111L, responseText));
 
-        // Test
+        // RESULT
+
         ResultK<CommandProcessed, CommandError> actualResult = splitCommandService.split(validated);
+
         assertNull(actualResult.getError());
         assertEquals(11111L, actualResult.getResult().chatId());
-        assertTrue(actualResult.getResult().message().equals(responseTextVariation1)
-                || actualResult.getResult().message().equals(responseTextVariation2));
+        assertEquals(actualResult.getResult().message(), responseText);
         assertNull(actualResult.getResult().replayToId());
         assertNull(actualResult.getResult().replayMarkup());
+
+        verify(roomService, times(1)).findByToken(eq("11111"));
+        verify(expenseService, times(1)).expense(eq(expenseInfo1), eq(roomEntity));
+        verify(expenseService, times(1)).expense(eq(expenseInfo2), eq(roomEntity));
     }
 
     @Test
-    void split_WithDescription_Positive() {
-        // Test data
+    void splitPositiveTest_ValidatedWithDescription() {
+
+        // TEST DATA
+
         CurrencyEntity USD = new CurrencyEntity();
         USD.setCode("USD");
         USD.setSymbol("$");
@@ -177,7 +182,8 @@ class SplitCommandServiceTest {
         validated.setAmount(BigDecimal.valueOf(100.0));
         validated.setDescription("test-description");
 
-        // Stubbing
+        // STUB
+
         when(roomService.findByToken("11111")).thenReturn(roomEntity);
 
         ExpenseInfo expenseInfo1 =
@@ -204,41 +210,50 @@ class SplitCommandServiceTest {
                 .setCurrency(USD);
         when(expenseService.expense(expenseInfo2, roomEntity)).thenReturn(expenseEntity2);
 
-        // Expected
-        String responseTextVariation1 =
+        // EXPECT
+
+        String responseText =
                 """
                 Expense *33.33* $ USD to user *user_2* has been successfully added, description: test-description
                 Expense *33.33* $ USD to user *user_3* has been successfully added, description: test-description
-                """;
-        String responseTextVariation2 =
-                """
-                Expense *33.33* $ USD to user *user_3* has been successfully added, description: test-description
-                Expense *33.33* $ USD to user *user_2* has been successfully added, description: test-description
                 """;
 
-        // Test
+        // RESULT
+
         ResultK<CommandProcessed, CommandError> actualResult = splitCommandService.split(validated);
-        assertNull(actualResult.getError());
 
+        assertNull(actualResult.getError());
         assertEquals(11111L, actualResult.getResult().chatId());
-        assertTrue(actualResult.getResult().message().equals(responseTextVariation1)
-                || actualResult.getResult().message().equals(responseTextVariation2));
+        assertEquals(actualResult.getResult().message(), responseText);
         assertNull(actualResult.getResult().replayToId());
         assertNull(actualResult.getResult().replayMarkup());
+
+        verify(roomService, times(1)).findByToken(eq("11111"));
+        verify(expenseService, times(1)).expense(eq(expenseInfo1), eq(roomEntity));
+        verify(expenseService, times(1)).expense(eq(expenseInfo2), eq(roomEntity));
     }
 
     @Test
-    void split_RoomIsNull_Negative() {
+    void splitNegativeTest_WithoutRoom() {
+
+        // TEST DATA
+
         SplitCommandValidated validated = new SplitCommandValidated();
         validated.setChatId(55555L);
         validated.setFromUsername("user_1");
         validated.setAmount(BigDecimal.valueOf(100.0));
         validated.setDescription("test-description");
 
+        // STUB
+
         when(roomService.findByToken("55555")).thenReturn(null);
+
+        // EXPECT
 
         ResultK<CommandProcessed, CommandError> expectedResult =
                 ResultK.Err(new CommandError(55555L, AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage()));
+
+        // RESULT
 
         ResultK<CommandProcessed, CommandError> actualResult = splitCommandService.split(validated);
 
@@ -246,10 +261,16 @@ class SplitCommandServiceTest {
         assertEquals(expectedResult.getError().chatId(), actualResult.getError().chatId());
         assertEquals(
                 expectedResult.getError().message(), actualResult.getError().message());
+
+        verify(roomService, times(1)).findByToken(eq("55555"));
+        verify(expenseService, times(0)).expense(any(ExpenseInfo.class), any(RoomEntity.class));
     }
 
     @Test
-    void split_CurrencyIsNull_Negative() {
+    void splitNegativeTest_WithoutCurrency() {
+
+        // TEST DATA
+
         RoomEntity roomEntity = new RoomEntity();
         roomEntity.setId(1L).setToken("55555").setTitle("room_title");
 
@@ -259,21 +280,33 @@ class SplitCommandServiceTest {
         validated.setAmount(BigDecimal.valueOf(100.0));
         validated.setDescription("test-description");
 
+        // STUB
+
         when(roomService.findByToken("55555")).thenReturn(roomEntity);
+
+        // EXPECT
 
         ResultK<CommandProcessed, CommandError> expectedResult =
                 ResultK.Err(new CommandError(55555L, AnswerMessageTemplate.UNSET_CURRENCY.getMessage()));
 
         ResultK<CommandProcessed, CommandError> actualResult = splitCommandService.split(validated);
 
+        // RESULT
+
         assertNull(actualResult.getResult());
         assertEquals(expectedResult.getError().chatId(), actualResult.getError().chatId());
         assertEquals(
                 expectedResult.getError().message(), actualResult.getError().message());
+
+        verify(roomService, times(1)).findByToken(eq("55555"));
+        verify(expenseService, times(0)).expense(any(ExpenseInfo.class), any(RoomEntity.class));
     }
 
     @Test
-    void split_FromEntityIsNull_Negative() {
+    void splitNegativeTest_WithoutFromEntity() {
+
+        // TEST DATA
+
         CurrencyEntity USD = new CurrencyEntity();
         USD.setCode("USD");
         USD.setSymbol("$");
@@ -288,7 +321,11 @@ class SplitCommandServiceTest {
         validated.setAmount(BigDecimal.valueOf(100.0));
         validated.setDescription("test-description");
 
+        // STUB
+
         when(roomService.findByToken("55555")).thenReturn(roomEntity);
+
+        // EXPECT
 
         ResultK<CommandProcessed, CommandError> expectedResult = ResultK.Err(new CommandError(
                 55555L, String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), validated.getFromUsername())));
@@ -299,5 +336,8 @@ class SplitCommandServiceTest {
         assertEquals(expectedResult.getError().chatId(), actualResult.getError().chatId());
         assertEquals(
                 expectedResult.getError().message(), actualResult.getError().message());
+
+        verify(roomService, times(1)).findByToken(eq("55555"));
+        verify(expenseService, times(0)).expense(any(ExpenseInfo.class), any(RoomEntity.class));
     }
 }

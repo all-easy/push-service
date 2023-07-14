@@ -11,6 +11,19 @@ import ru.all_easy.push.telegram.commands.validators.SplitCommandValidator;
 import ru.all_easy.push.telegram.commands.validators.model.SplitCommandValidated;
 import ru.all_easy.push.telegram.commands.validators.model.ValidationError;
 
+/**
+ * Splits the money among all members of the group<br>
+ *
+ * Example usage:
+ * <pre>
+ *     /split amount_or_math percent%_optionally description_optionally
+ * </pre>
+ *
+ * @see SplitCommandService
+ * @see SplitCommandValidator
+ * @see SplitCommandValidated
+ * @see Update
+ */
 @Service
 public class SplitCommandRule implements CommandRule {
     private final SplitCommandValidator splitCommandValidator;
@@ -23,26 +36,25 @@ public class SplitCommandRule implements CommandRule {
 
     @Override
     public boolean apply(Update update) {
-        if (update.message() == null || update.message().text() == null) {
-            return false;
-        }
+        if (update.message() == null || update.message().text() == null) return false;
         return update.message().text().contains(Commands.SPLIT.getCommand());
     }
 
     @Override
     public ResultK<CommandProcessed, CommandError> process(Update update) {
         Long chatId = update.message().chat().id();
+
         ResultK<SplitCommandValidated, ValidationError> validated = splitCommandValidator.validate(update);
-        if (validated.hasError()) {
+
+        if (validated.hasError())
             return ResultK.Err(new CommandError(
                     update.message().chat().id(), validated.getError().message()));
-        }
 
         ResultK<CommandProcessed, CommandError> result = splitCommandService.split(validated.getResult());
-        if (result.hasError()) {
+
+        if (result.hasError())
             return ResultK.Err(new CommandError(
                     update.message().chat().id(), result.getError().message()));
-        }
 
         return ResultK.Ok(new CommandProcessed(chatId, result.getResult().message()));
     }

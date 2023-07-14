@@ -1,34 +1,32 @@
 spring:
-  profiles:
-    active: ${PROFILE}
 
-  #Datasource
+  # Datasource
   datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME}
-    driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:tc:postgresql:12.15:///test-db
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    username: test-user
+    password: test-password
 
-  #Jpa
+  # Jpa
   jpa:
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
     show-sql: false
 
-  #Migration
+  # Migration
   liquibase:
     enabled: true
     driver-class-name: org.postgresql.Driver
     change-log: changelog/main.yaml
 
-  #REDIS
+  # Redis
   redis:
     host: localhost
     port: 6379
     password: ${REDIS_PASSWORD}
 
-#Monitoring
+# Monitoring
 management:
   endpoint:
     metrics:
@@ -44,21 +42,13 @@ management:
   metrics.tags.application: PushService
   server.port: 8085
 
-#TELEGRAM
+# Telegram API
 telegram:
   api: https://api.telegram.org/bot
   hook:
-    url: ${TG_HOOK_URL}
-    secret: ${TG_HOOK_SECRET}
+    url: telegram-hook-url
+    secret: telegram-hook-secret
     full-hook-url: ${telegram.hook.url}/v1/api/telegram/${telegram.hook.secret}/
-  token: ${TG_TOKEN}
+  token: telegram-token
   url: ${telegram.api}${telegram.token}
   drop-pending-updates: true
-
-#API
-api:
-  key:
-
-app:
-  front:
-    host: http://localhost:3000
