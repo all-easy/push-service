@@ -36,8 +36,11 @@ public class TestData {
     @Autowired
     ExpenseRepository expenseRepository;
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void init() {
+        expenseRepository.deleteAll();
+        roomRepository.deleteAll();
+        roomUserRepository.deleteAll();
+        userRepository.deleteAll();
         createUsers();
         createRooms();
         createRoomToUser();

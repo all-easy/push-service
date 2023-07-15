@@ -3,17 +3,20 @@ package ru.all_easy.push.common;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.all_easy.push.telegram.api.controller.TestConfig;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Testcontainers
 @AutoConfigureMockMvc
 @SpringBootTest
+@Import(TestConfig.class)
 public abstract class IntegrationTest {
 
     @Container

@@ -1,6 +1,8 @@
 package ru.all_easy.push.telegram.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -41,26 +43,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 class UpdateControllerTest extends IntegrationTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @MockBean
-    TelegramService telegramService;
+    private TelegramService telegramService;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    RoomRepository roomRepository;
+    private RoomRepository roomRepository;
 
     @Autowired
-    ExpenseRepository expenseRepository;
+    private ExpenseRepository expenseRepository;
 
-    private static final String URL = "/v1/api/telegram";
+    @Autowired
+    private TestData testData;
+
+    private static final String URL = "/v1/api/telegram/";
 
     private static Jedis jedis;
 
+    @BeforeEach
+    void init() {
+        testData.init();
+    }
+
     @Test
-    @Order(2)
     void postPositiveTest_ResultCommand_WithoutRedisCache() throws Exception {
         Message message = new Message(
                 1,
@@ -88,23 +97,16 @@ class UpdateControllerTest extends IntegrationTest {
 
         SendMessageInfo expectedObject = new SendMessageInfo(11111L, responseText, "Markdown");
 
-        mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(updateAsString))
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Telegram-Bot-Api-Secret-Token", "1234")
+                        .content(updateAsString))
                 .andDo(print());
 
-//        ArgumentCaptor<SendMessageInfo> argumentCaptor = ArgumentCaptor.forClass(SendMessageInfo.class);
-//
-//        verify(telegramService, times(1)).sendMessage(argumentCaptor.capture());
-//
-//        SendMessageInfo capturedArgument = argumentCaptor.getValue();
-//
-//        assertEquals(expectedObject, capturedArgument);
-//
-//        verify(telegramService).sendMessage(eq(expectedObject));
+        ArgumentCaptor<SendMessageInfo> argumentCaptor = ArgumentCaptor.forClass(SendMessageInfo.class);
 
-//        assertEquals(1, jedis.keys("*").size());
-//
-//        String valueAsString = jedis.get("results::11111,USD");
-//        assertFalse(valueAsString.isEmpty());
+        verify(telegramService, times(1)).sendMessage(argumentCaptor.capture());
+        verify(telegramService).sendMessage(eq(expectedObject));
     }
 
     //    @Test
