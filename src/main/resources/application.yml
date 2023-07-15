@@ -37,10 +37,20 @@ management:
       enabled: true
     health:
       show-details: always
+    shutdown:
+      enabled: true
+    info:
+      enabled: true
   endpoints:
+    enabled-by-default: false
+    jmx:
+      exposure:
+        include: "health,info"
     web:
       exposure:
-        include: prometheus
+        include: actuator,prometheus
+      discovery:
+        enabled: false
   metrics.tags.application: PushService
   server.port: 8085
 
@@ -50,7 +60,7 @@ telegram:
   hook:
     url: ${TG_HOOK_URL:`http://localhost:1000`}
     secret: ${TG_HOOK_SECRET:1234}
-    full-hook-url: ${telegram.hook.url}/v1/api/telegram/${telegram.hook.secret}/
+    full-hook-url: ${telegram.hook.url}/v1/api/telegram/
   token: ${TG_TOKEN:token}
   url: ${telegram.api}${telegram.token}
   drop-pending-updates: true
