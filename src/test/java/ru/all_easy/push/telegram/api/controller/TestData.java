@@ -3,8 +3,6 @@ package ru.all_easy.push.telegram.api.controller;
 import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.all_easy.push.currency.repository.CurrencyRepository;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
