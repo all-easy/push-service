@@ -1,6 +1,7 @@
 package ru.all_easy.push.telegram.commands.rules;
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.Commands;
@@ -19,7 +20,7 @@ public class StartCommand implements CommandRule {
     }
 
     @Override
-    public ResultK<CommandProcessed, CommandError> process(Update update) {
+    public Mono<ResultK<CommandProcessed, CommandError>> process(Update update) {
         var message =
                 """
         ```
@@ -35,6 +36,6 @@ public class StartCommand implements CommandRule {
         More information here -> /help
         ```
         """;
-        return ResultK.Ok(new CommandProcessed(update.message().chat().id(), message));
+        return Mono.just(ResultK.Ok(new CommandProcessed(update.message().chat().id(), message)));
     }
 }

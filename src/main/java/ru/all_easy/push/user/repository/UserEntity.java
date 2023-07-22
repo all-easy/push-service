@@ -4,20 +4,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import org.hibernate.annotations.NaturalId;
+import org.springframework.data.annotation.Id;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.room_user.repository.RoomUserEntity;
 
-@Entity
-@Table(name = "t_user")
 public class UserEntity implements Serializable {
 
     private Long id;
@@ -28,33 +18,26 @@ public class UserEntity implements Serializable {
     private Set<RoomUserEntity> rooms = new HashSet<>();
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
 
-    @NaturalId
-    @Column(name = "uid")
     public String getUid() {
         return uid;
     }
 
-    @Column(name = "username")
     public String getUsername() {
         return username;
     }
 
-    @Column(name = "password")
     public String getPassword() {
         return password;
     }
 
-    @OneToMany(mappedBy = "from")
     public Set<ExpenseEntity> getMyExpenses() {
         return myExpenses;
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     public Set<RoomUserEntity> getRooms() {
         return rooms;
     }

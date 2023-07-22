@@ -1,8 +1,8 @@
 package ru.all_easy.push.common;
 
 public class ResultK<T, E> {
-    private T result;
-    private E error;
+    private final T result;
+    private final E error;
 
     private ResultK(T result, E error) {
         this.result = result;
@@ -10,11 +10,11 @@ public class ResultK<T, E> {
     }
 
     public static <T, E> ResultK<T, E> Err(E error) {
-        return new ResultK(null, error);
+        return new ResultK<>(null, error);
     }
 
     public static <T, E> ResultK<T, E> Ok(T result) {
-        return new ResultK(result, null);
+        return new ResultK<>(result, null);
     }
 
     public boolean hasError() {

@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.repository.ExpenseRepository;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
@@ -39,34 +39,37 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public Map<String, BigDecimal> optimize(RoomEntity room) {
-        List<ExpenseEntity> roomExpenses = findRoomExpensesByCurrency(room);
-        return optimizeTools.optimize(roomExpenses);
+    public Mono<Map<String, BigDecimal>> optimize(RoomEntity room) {
+        return findRoomExpensesByCurrency(room).map(optimizeTools::optimize);
     }
 
     @Transactional
     @Override
-    public ExpenseEntity expense(ExpenseInfo expenseInfo, RoomEntity room) {
-        UserEntity from = userService.findUserByUid(expenseInfo.fromUid());
-        UserEntity to = userService.findUserByUid(expenseInfo.toUid());
+    public Mono<ExpenseEntity> expense(ExpenseInfo expenseInfo, RoomEntity room) {
+        Mono<UserEntity> fromMono = userService.findUserByUid(expenseInfo.fromUid());
+        Mono<UserEntity> toMono = userService.findUserByUid(expenseInfo.toUid());
 
-        ExpenseEntity expense = new ExpenseEntity()
-                .setRoom(room)
-                .setTo(to)
-                .setFrom(from)
-                .setName(expenseInfo.name())
-                .setDateTime(dateTimeHelper.now())
-                .setAmount(expenseInfo.amount())
-                .setCurrency(room.getCurrency());
+        return Mono.zip(fromMono, toMono).flatMap(tuple -> {
+            UserEntity from = tuple.getT1();
+            UserEntity to = tuple.getT2();
 
-        return repository.save(expense);
+            ExpenseEntity expense = new ExpenseEntity()
+                    .setRoom(room)
+                    .setTo(to)
+                    .setFrom(from)
+                    .setName(expenseInfo.name())
+                    .setDateTime(dateTimeHelper.now())
+                    .setAmount(expenseInfo.amount())
+                    .setCurrency(room.getCurrency());
+
+            return repository.save(expense);
+        });
     }
 
-    public List<ExpenseInfoDateTime> findLimitRoomExpenses(String roomToken, Integer limit) {
-        Page<ExpenseEntity> page = repository.findAllByRoomToken(
-                roomToken, PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "dateTime")));
-
-        return page.get()
+    public Mono<List<ExpenseInfoDateTime>> findLimitRoomExpenses(String roomToken, Integer limit) {
+        return repository
+                .findAllByRoomToken(roomToken, PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "dateTime")))
+                .flatMapMany(page -> Flux.fromIterable(page.getContent()))
                 .map(p -> new ExpenseInfoDateTime(
                         p.getFrom().getUsername(),
                         p.getTo().getUsername(),
@@ -74,15 +77,11 @@ public class ExpenseServiceImpl implements ExpenseService {
                         p.getName(),
                         p.getDateTime(),
                         p.getCurrency().getCode() + " " + p.getCurrency().getSymbol()))
-                .sorted(Comparator.comparing(ExpenseInfoDateTime::dateTime))
-                .collect(Collectors.toList());
+                .sort(Comparator.comparing(ExpenseInfoDateTime::dateTime))
+                .collectList();
     }
 
-    public List<ExpenseEntity> findRoomExpenses(RoomEntity room) {
-        return repository.findAllByRoom(room);
-    }
-
-    public List<ExpenseEntity> findRoomExpensesByCurrency(RoomEntity room) {
+    public Mono<List<ExpenseEntity>> findRoomExpensesByCurrency(RoomEntity room) {
         return repository.findAllByRoomAndCurrency(room, room.getCurrency());
     }
 }

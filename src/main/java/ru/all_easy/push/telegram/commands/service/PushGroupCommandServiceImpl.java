@@ -2,8 +2,8 @@ package ru.all_easy.push.telegram.commands.service;
 
 import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.common.ResultK;
-import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.helper.MathHelper;
@@ -28,53 +28,69 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
     }
 
     @Override
-    public ResultK<String, PushCommandServiceError> push(PushCommandValidated validated) {
-        RoomEntity roomEntity = roomService.findByToken(String.valueOf(validated.getChatId()));
-        if (roomEntity == null) {
-            return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage()));
-        }
+    public Mono<ResultK<String, PushCommandServiceError>> push(PushCommandValidated validated) {
+        Mono<RoomEntity> roomEntityMono = roomService.findByToken(String.valueOf(validated.getChatId()));
+        Mono<RoomUserEntity> fromEntityMono = filterRoomUser(roomEntityMono, validated.getFromUsername());
+        Mono<RoomUserEntity> toEntityMono = filterRoomUser(roomEntityMono, validated.getToUsername());
 
-        if (roomEntity.getCurrency() == null) {
-            return ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNSET_CURRENCY.getMessage()));
-        }
+        return Mono.zip(roomEntityMono, fromEntityMono, toEntityMono).flatMap(tuple -> {
+            var roomEntity = tuple.getT1();
+            var fromEntity = tuple.getT2();
+            var toEntity = tuple.getT3();
 
-        RoomUserEntity fromEntity = filterRoomUser(roomEntity, validated.getFromUsername());
-        if (fromEntity == null) {
-            return ResultK.Err(new PushCommandServiceError(
-                    String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), validated.getFromUsername())));
-        }
+            if (roomEntity == null) {
+                return Mono.just(
+                        ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage())));
+            }
 
-        RoomUserEntity toEntity = filterRoomUser(roomEntity, validated.getToUsername());
-        if (toEntity == null) {
-            return ResultK.Err(new PushCommandServiceError(
-                    String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), validated.getToUsername())));
-        }
+            if (roomEntity.getCurrency() == null) {
+                return Mono.just(
+                        ResultK.Err(new PushCommandServiceError(AnswerMessageTemplate.UNSET_CURRENCY.getMessage())));
+            }
 
-        ExpenseInfo info = new ExpenseInfo(
-                roomEntity.getToken(),
-                validated.getAmount().compareTo(BigDecimal.ZERO) < 0 ? toEntity.getUserUid() : fromEntity.getUserUid(),
-                validated.getAmount().compareTo(BigDecimal.ZERO) < 0 ? fromEntity.getUserUid() : toEntity.getUserUid(),
-                mathHelper.round(validated.getAmount().abs()),
-                validated.getName());
+            if (fromEntity == null) {
+                return Mono.just(ResultK.Err(new PushCommandServiceError(
+                        String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), validated.getFromUsername()))));
+            }
 
-        ExpenseEntity result = expenseService.expense(info, roomEntity);
-        String answerMessage = String.format(
-                "Expense *%.2f*%s to user *%s* has been successfully added%s",
-                result.getAmount(),
-                roomEntity.getCurrency() == null
-                        ? ""
-                        : " " + roomEntity.getCurrency().getSymbol() + " "
-                                + roomEntity.getCurrency().getCode(),
-                result.getTo().getUsername(),
-                result.getName().isBlank() ? "" : ", description: " + result.getName());
+            if (toEntity == null) {
+                return Mono.just(ResultK.Err(new PushCommandServiceError(
+                        String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), validated.getToUsername()))));
+            }
 
-        return ResultK.Ok(answerMessage);
+            ExpenseInfo info = new ExpenseInfo(
+                    roomEntity.getToken(),
+                    validated.getAmount().compareTo(BigDecimal.ZERO) < 0
+                            ? toEntity.getUserUid()
+                            : fromEntity.getUserUid(),
+                    validated.getAmount().compareTo(BigDecimal.ZERO) < 0
+                            ? fromEntity.getUserUid()
+                            : toEntity.getUserUid(),
+                    mathHelper.round(validated.getAmount().abs()),
+                    validated.getName());
+
+            return expenseService.expense(info, roomEntity).map(result -> {
+                String answerMessage = String.format(
+                        "Expense *%.2f*%s to user *%s* has been successfully added%s",
+                        result.getAmount(),
+                        roomEntity.getCurrency() == null
+                                ? ""
+                                : " " + roomEntity.getCurrency().getSymbol() + " "
+                                        + roomEntity.getCurrency().getCode(),
+                        result.getTo().getUsername(),
+                        result.getName().isBlank() ? "" : ", description: " + result.getName());
+
+                return ResultK.Ok(answerMessage);
+            });
+        });
     }
 
-    private RoomUserEntity filterRoomUser(RoomEntity room, String username) {
-        return room.getUsers().stream()
-                .filter(entity -> entity.getUser().getUsername().equals(username))
+    private Mono<RoomUserEntity> filterRoomUser(Mono<RoomEntity> roomMono, String username) {
+        return roomMono.flatMap(room -> room.getUsers().stream()
+                // FIX CAUSE NEED TO EQUAL USERNAMES
+                .filter(entity -> entity.getUserId().equals(username))
                 .findFirst()
-                .orElse(null);
+                .map(Mono::just)
+                .orElse(Mono.empty()));
     }
 }

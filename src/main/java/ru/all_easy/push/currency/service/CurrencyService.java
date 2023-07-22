@@ -1,12 +1,11 @@
 package ru.all_easy.push.currency.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.currency.repository.CurrencyRepository;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.currency.service.model.CurrencyInfo;
-import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
 
 @Service
@@ -19,23 +18,19 @@ public class CurrencyService {
         this.roomService = roomService;
     }
 
-    public List<CurrencyInfo> getAll() {
-        return currencyRepository.findAll().stream()
-                .map(entity -> new CurrencyInfo(entity.getCode(), entity.getSymbol()))
-                .collect(Collectors.toList());
+    public Flux<CurrencyInfo> getAll() {
+        return currencyRepository.findAll().map(entity -> new CurrencyInfo(entity.getCode(), entity.getSymbol()));
     }
 
-    public void setCurrency(Long chatId, CurrencyEntity currency) {
-        RoomEntity room = roomService.findRoomByToken(String.valueOf(chatId));
-        roomService.setRoomCurrency(room, currency);
+    public Mono<Void> updateCurrency(Long chatId, CurrencyEntity currency) {
+        return roomService.setRoomCurrency(chatId, currency);
     }
 
-    public CurrencyEntity getCurrencyByRoomId(String chatId) {
-        RoomEntity roomEntity = roomService.findByToken(chatId);
-        return roomEntity == null ? null : roomEntity.getCurrency();
+    public Mono<CurrencyEntity> getCurrencyByRoomId(String chatId) {
+        return roomService.findByToken(chatId).map(roomEntity -> roomEntity != null ? roomEntity.getCurrency() : null);
     }
 
-    public CurrencyEntity getCurrencyByCode(String currencyCode) {
+    public Mono<CurrencyEntity> getCurrencyByCode(String currencyCode) {
         return currencyRepository.findByCode(currencyCode);
     }
 }

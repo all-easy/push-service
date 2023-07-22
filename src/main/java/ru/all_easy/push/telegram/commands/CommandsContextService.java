@@ -2,6 +2,8 @@ package ru.all_easy.push.telegram.commands;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.telegram.api.ParseMode;
 import ru.all_easy.push.telegram.api.controller.model.Update;
@@ -19,29 +21,24 @@ public class CommandsContextService {
         this.commands = commands;
     }
 
-    public void process(Update update) {
-        commands.stream()
+    public Mono<Void> process(Update update) {
+        return Flux.fromIterable(commands)
                 .filter(it -> it.apply(update))
-                .findFirst()
-                .map(commandRule -> commandRule.process(update))
-                .ifPresent(result -> {
+                .next()
+                .flatMap(rule -> rule.process(update))
+                .flatMap(result -> {
                     if (result.hasError()) {
                         var chatId = result.getError().chatId();
-                        sendMessage(
-                                new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode()));
+                        return telegramService.sendMessage(new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode()));
                     } else {
                         var chatId = result.getResult().chatId();
-                        sendMessage(new SendMessageInfo(
+                        return telegramService.sendMessage(new SendMessageInfo(
                                 chatId,
                                 result.getResult().replayToId(),
                                 result.getResult().message(),
                                 ParseMode.MARKDOWN.getMode(),
                                 result.getResult().replayMarkup()));
                     }
-                });
-    }
-
-    private void sendMessage(SendMessageInfo message) {
-        telegramService.sendMessage(message);
+                }).then();
     }
 }

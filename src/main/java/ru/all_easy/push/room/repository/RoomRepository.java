@@ -1,21 +1,22 @@
 package ru.all_easy.push.room.repository;
 
 import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.r2dbc.repository.Modifying;
+import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.repository.query.Param;
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.room.repository.model.RoomEntity;
 
-public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
+public interface RoomRepository extends R2dbcRepository<RoomEntity, Long> {
 
     @Query("SELECT DISTINCT room FROM RoomEntity room " + "LEFT JOIN FETCH room.users ru "
             + "LEFT JOIN FETCH ru.user "
             + "WHERE room.token = :roomToken")
-    RoomEntity findByToken(String roomToken);
+    Mono<RoomEntity> findByToken(String roomToken);
 
     @Query("SELECT DISTINCT room FROM RoomEntity room " + "LEFT JOIN FETCH room.users u " + "WHERE u.user.uid = :uid")
-    List<RoomEntity> findAllByUid(String uid);
+    Mono<List<RoomEntity>> findAllByUid(String uid);
 
     @Modifying
     @Query("UPDATE ExpenseEntity e SET e.room.token = :migrateToChatId WHERE e.room.token = :migrateFromChatId")
@@ -29,5 +30,5 @@ public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
 
     @Modifying
     @Query("DELETE FROM RoomEntity r WHERE r.token = :migrateFromChatId")
-    void deleteRoomByRoomToken(@Param("migrateFromChatId") String migrateFromChatId);
+    Mono<Integer> deleteRoomByRoomToken(@Param("migrateFromChatId") String migrateFromChatId);
 }

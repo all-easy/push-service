@@ -38,12 +38,12 @@ databaseChangeLog:
                     foreignKeyName: currency
                     references: currency(code)
 
-  - changeSet:
-      id: addCurrencyInitSqlScript
-      author: Oleg
-      changes:
-        - sqlFile:
-            path: add_currency.sql
-            relativeToChangelogFile: true
-            endDelimiter: ;
-            splitStatements: true
+#  - changeSet:
+#      id: addCurrencyInitSqlScript
+#      author: Oleg
+#      changes:
+#        - sqlFile:
+#            path: /src/main/resources/changelog/add_currency.sql
+#            relativeToChangelogFile: true
+#            endDelimiter: ;
+#            splitStatements: true

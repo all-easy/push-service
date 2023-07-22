@@ -1,13 +1,12 @@
 package ru.all_easy.push.room_user.repository;
 
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-import ru.all_easy.push.room.repository.model.RoomEntity;
-import ru.all_easy.push.user.repository.UserEntity;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-public interface RoomUserRepository extends JpaRepository<RoomUserEntity, Long> {
+public interface RoomUserRepository extends R2dbcRepository<RoomUserEntity, Long> {
 
-    RoomUserEntity findByUserAndRoom(UserEntity user, RoomEntity room);
+    Mono<RoomUserEntity> findByUserIdAndRoomId(String userId, String roomId);
 
-    List<RoomUserEntity> findByUser(UserEntity user);
+    Flux<RoomUserEntity> findByUserId(String userId);
 }

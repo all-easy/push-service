@@ -3,18 +3,17 @@ spring:
     active: ${PROFILE}
 
   #Datasource
-  datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME}
-    driver-class-name: org.postgresql.Driver
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/${DB_NAME}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
   #Jpa
-  jpa:
-    properties:
-      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-    open-in-view: false
-    show-sql: false
+#  jpa:
+#    properties:
+#      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+#    open-in-view: false
+#    show-sql: false
 
   #Migration
   liquibase:

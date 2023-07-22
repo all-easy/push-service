@@ -1,11 +1,12 @@
 package ru.all_easy.push.common;
 
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.common.client.model.SetWebhookInfo;
 
 public interface ClientApi {
 
-    String setWebhook(SetWebhookInfo info);
+    Mono<String> setWebhook(SetWebhookInfo info);
 
-    String sendMessage(SendMessageInfo info);
+    Mono<String> sendMessage(SendMessageInfo info);
 }

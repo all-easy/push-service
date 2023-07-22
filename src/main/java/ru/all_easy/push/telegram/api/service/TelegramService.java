@@ -1,9 +1,10 @@
 package ru.all_easy.push.telegram.api.service;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.common.ClientApi;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.common.client.model.SetWebhookInfo;
@@ -13,6 +14,7 @@ import ru.all_easy.push.telegram.api.client.model.SetWebhookRequest;
 
 @Service
 public class TelegramService implements ClientApi {
+
     private final TelegramFeignClient telegramFeignClient;
     private final TelegramConfig telegramConfig;
 
@@ -25,30 +27,33 @@ public class TelegramService implements ClientApi {
 
     @PostConstruct
     void init() {
-        String removeHookResult = setWebhook(new SetWebhookInfo("", telegramConfig.dropPendingUpdates(), ""));
-        logger.info("Remove WebHook: {}", removeHookResult);
-        String setHookResult = setWebhook(new SetWebhookInfo(
-                telegramConfig.hook().fullHookUrl(),
-                telegramConfig.dropPendingUpdates(),
-                telegramConfig.hook().secret()));
-        logger.info("Set WebHook: {}, {}", setHookResult, telegramConfig.hook().fullHookUrl());
+        setWebhook(new SetWebhookInfo("", telegramConfig.dropPendingUpdates(), ""))
+                .flatMap(removeHookResult -> {
+                    logger.info("Remove WebHook: {}", removeHookResult);
+                    return setWebhook(new SetWebhookInfo(
+                            telegramConfig.hook().fullHookUrl(),
+                            telegramConfig.dropPendingUpdates(),
+                            telegramConfig.hook().secret()));
+                })
+                .doOnSuccess(setWebHookResult -> logger.info(
+                        "Set WebHook: {}, {}",
+                        setWebHookResult,
+                        telegramConfig.hook().fullHookUrl()))
+                .subscribe();
     }
 
     @Override
-    public String setWebhook(SetWebhookInfo info) {
+    public Mono<String> setWebhook(SetWebhookInfo info) {
         SetWebhookRequest request = new SetWebhookRequest(info.url(), info.dropPendingUpdates(), info.secret());
-        String response = telegramFeignClient.setWebhook(request);
-        logger.info(response);
-
-        return response;
+        return telegramFeignClient.setWebhook(request);
     }
 
     @Override
-    public String sendMessage(SendMessageInfo info) {
-        var response = telegramFeignClient.sendMessage(new SendMessageRequest(
-                info.chatId(), info.replayId(), info.text(), info.parseMode(), info.replayMarkup()));
-        logger.info(response);
-
-        return response;
+    public Mono<String> sendMessage(SendMessageInfo info) {
+        return telegramFeignClient
+                .sendMessage(new SendMessageRequest(
+                        info.chatId(), info.replayId(), info.text(), info.parseMode(), info.replayMarkup()))
+                .doOnSuccess(logger::info)
+                .doOnError(error -> logger.error("Error during sending message occurred: {}", error.getMessage()));
     }
 }

@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
-import ru.all_easy.push.common.AbstractAuthentication;
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.telegram.api.controller.model.Update;
 import ru.all_easy.push.telegram.commands.CommandsContextService;
 
 @RestController
 @RequestMapping("/v1/api/telegram/")
-public class UpdateController extends AbstractAuthentication {
+public class UpdateController {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateController.class);
 
@@ -33,13 +33,13 @@ public class UpdateController extends AbstractAuthentication {
     }
 
     @PostMapping("/")
-    public void postMethodName(
+    public Mono<Void> postMethodName(
             @RequestHeader("X-Telegram-Bot-Api-Secret-Token") String secretToken, @RequestBody Update update) {
         if (!secretToken.equals(secret)) {
             logger.error("Header secret token not match for update: {}", update);
-            return;
+            return Mono.empty();
         }
         logger.info("Update received: {}", update);
-        commandContextService.process(update);
+        return commandContextService.process(update);
     }
 }

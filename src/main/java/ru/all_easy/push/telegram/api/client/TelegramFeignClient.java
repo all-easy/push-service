@@ -1,16 +1,18 @@
 package ru.all_easy.push.telegram.api.client;
 
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import reactivefeign.spring.config.ReactiveFeignClient;
+import reactor.core.publisher.Mono;
+import ru.all_easy.push.telegram.api.client.config.FeignConfiguration;
 import ru.all_easy.push.telegram.api.client.model.SendMessageRequest;
 import ru.all_easy.push.telegram.api.client.model.SetWebhookRequest;
 
-@FeignClient(name = "telegram", url = "${telegram.url}")
+@ReactiveFeignClient(name = "telegram", url = "${telegram.url}", configuration = FeignConfiguration.class)
 public interface TelegramFeignClient {
 
     @PostMapping("/setWebhook")
-    String setWebhook(SetWebhookRequest request);
+    Mono<String> setWebhook(SetWebhookRequest request);
 
     @PostMapping("/sendMessage")
-    String sendMessage(SendMessageRequest request);
+    Mono<String> sendMessage(SendMessageRequest request);
 }

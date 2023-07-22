@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.room.repository.model.RoomEntity;
@@ -21,13 +22,13 @@ public class ExpenseServiceCache implements ExpenseService {
 
     @Override
     @Cacheable(value = "results", key = "{#room.token, #room.currency.code}")
-    public Map<String, BigDecimal> optimize(RoomEntity room) {
+    public Mono<Map<String, BigDecimal>> optimize(RoomEntity room) {
         return expenseService.optimize(room);
     }
 
     @Override
     @CacheEvict(value = "results", key = "{#room.token, #room.currency.code}")
-    public ExpenseEntity expense(ExpenseInfo expenseInfo, RoomEntity room) {
+    public Mono<ExpenseEntity> expense(ExpenseInfo expenseInfo, RoomEntity room) {
         return expenseService.expense(expenseInfo, room);
     }
 }
