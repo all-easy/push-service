@@ -1,15 +1,15 @@
 package ru.all_easy.push.telegram.commands.service;
 
 import java.math.BigDecimal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ru.all_easy.push.common.ResultK;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.expense.service.model.ExpenseInfo;
 import ru.all_easy.push.helper.MathHelper;
-import ru.all_easy.push.room.repository.model.RoomEntity;
 import ru.all_easy.push.room.service.RoomService;
-import ru.all_easy.push.room_user.repository.RoomUserEntity;
 import ru.all_easy.push.telegram.commands.service.model.PushCommandServiceError;
 import ru.all_easy.push.telegram.commands.service.model.PushCommandServiceResult;
 import ru.all_easy.push.telegram.commands.validators.model.PushCommandValidated;
@@ -25,6 +25,8 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
     private final ExpenseService expenseService;
     private final MathHelper mathHelper;
 
+    private static final Logger logger = LoggerFactory.getLogger(PushGroupCommandServiceImpl.class);
+
     public PushGroupCommandServiceImpl(
             RoomService roomService, UserService userService, ExpenseService expenseService, MathHelper mathHelper) {
         this.roomService = roomService;
@@ -35,52 +37,71 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
 
     @Override
     public Mono<ResultK> push(PushCommandValidated validated) {
-        Mono<RoomEntity> roomEntityMono = roomService.findByToken(String.valueOf(validated.chatId()));
-        Mono<UserEntity> fromEntityMono = userService.findUserInRoomByUsername(
-                String.valueOf(validated.chatId()), validated.fromUsername());
-        Mono<UserEntity> toEntityMono =
-                userService.findUserInRoomByUsername(String.valueOf(validated.chatId()), validated.toUsername());
-        return Mono.zip(roomEntityMono, fromEntityMono, toEntityMono).flatMap(tuple -> {
-            var roomEntity = tuple.getT1();
-            var fromEntity = tuple.getT2();
-            var toEntity = tuple.getT3();
+        return roomService.findByToken(String.valueOf(validated.chatId())).flatMap(roomEntity -> {
             if (roomEntity == null) {
-                return Mono.just(
-                        ResultK.Err(new PushCommandServiceError(validated.chatId(), AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage())));
+                return Mono.just(ResultK.Err(new PushCommandServiceError(
+                        validated.chatId(), AnswerMessageTemplate.UNREGISTERED_ROOM.getMessage())));
             }
             if (roomEntity.getCurrency() == null) {
-                return Mono.just(
-                        ResultK.Err(new PushCommandServiceError(validated.chatId(), AnswerMessageTemplate.UNSET_CURRENCY.getMessage())));
-            }
-            if (fromEntity == null) {
-                return Mono.just(ResultK.Err(new PushCommandServiceError(validated.chatId(),
-                        String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), validated.fromUsername()))));
-            }
-            if (toEntity == null) {
-                return Mono.just(ResultK.Err(new PushCommandServiceError(validated.chatId(),
-                        String.format(AnswerMessageTemplate.UNADDED_USER.getMessage(), validated.toUsername()))));
+                return Mono.just(ResultK.Err(new PushCommandServiceError(
+                        validated.chatId(), AnswerMessageTemplate.UNSET_CURRENCY.getMessage())));
             }
 
-            ExpenseInfo info = new ExpenseInfo(
-                    roomEntity.getToken(),
-                    validated.amount().compareTo(BigDecimal.ZERO) < 0 ? toEntity.getUid() : fromEntity.getUid(),
-                    validated.amount().compareTo(BigDecimal.ZERO) < 0 ? fromEntity.getUid() : toEntity.getUid(),
-                    mathHelper.round(validated.amount().abs()),
-                    validated.name());
+            return userService
+                    .findUserInRoomByUsername(String.valueOf(validated.chatId()), validated.fromUsername())
+                    .defaultIfEmpty(new UserEntity()) // Provide a default UserEntity if not found
+                    .flatMap(fromEntity -> {
+                        if (fromEntity.getUid() == null) {
+                            return Mono.just(ResultK.Err(new PushCommandServiceError(
+                                    validated.chatId(),
+                                    String.format(
+                                            AnswerMessageTemplate.UNADDED_USER.getMessage(),
+                                            validated.fromUsername()))));
+                        }
 
-            return expenseService.expense(info, roomEntity).map(result -> {
-                String answerMessage = String.format(
-                        "Expense *%.2f*%s to user *%s* has been successfully added%s",
-                        result.getAmount(),
-                        roomEntity.getCurrency() == null
-                                ? ""
-                                : " " + roomEntity.getCurrency().getSymbol() + " "
-                                        + roomEntity.getCurrency().getCode(),
-                        result.getTo().getUsername(),
-                        result.getName().isBlank() ? "" : ", description: " + result.getName());
+                        return userService
+                                .findUserInRoomByUsername(String.valueOf(validated.chatId()), validated.toUsername())
+                                .defaultIfEmpty(new UserEntity()) // Provide a default UserEntity if not found
+                                .flatMap(toEntity -> {
+                                    if (toEntity.getUid() == null) {
+                                        return Mono.just(ResultK.Err(new PushCommandServiceError(
+                                                validated.chatId(),
+                                                String.format(
+                                                        AnswerMessageTemplate.UNADDED_USER.getMessage(),
+                                                        validated.toUsername()))));
+                                    }
 
-                return ResultK.Ok(new PushCommandServiceResult(validated.chatId(), null, answerMessage, null));
-            });
+                                    ExpenseInfo info = new ExpenseInfo(
+                                            roomEntity.getToken(),
+                                            validated.amount().compareTo(BigDecimal.ZERO) < 0
+                                                    ? toEntity.getUid()
+                                                    : fromEntity.getUid(),
+                                            validated.amount().compareTo(BigDecimal.ZERO) < 0
+                                                    ? fromEntity.getUid()
+                                                    : toEntity.getUid(),
+                                            mathHelper.round(validated.amount().abs()),
+                                            validated.name());
+
+                                    return expenseService
+                                            .expense(info, roomEntity)
+                                            .map(result -> {
+                                                String answerMessage = String.format(
+                                                        "Expense *%.2f*%s to user *%s* has been successfully added%s",
+                                                        result.getAmount(),
+                                                        roomEntity.getCurrency() == null
+                                                                ? ""
+                                                                : " " + roomEntity.getCurrency() + " "
+                                                                        + roomEntity.getCurrency(),
+                                                        result.getToUid(),
+                                                        result.getName().isBlank()
+                                                                ? ""
+                                                                : ", description: " + result.getName());
+
+                                                return ResultK.Ok(new PushCommandServiceResult(
+                                                        validated.chatId(), null, answerMessage, null));
+                                            });
+                                });
+                    });
         });
     }
 }

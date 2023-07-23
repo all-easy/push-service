@@ -1,14 +1,11 @@
 package ru.all_easy.push.expense.service;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.all_easy.push.expense.repository.ExpenseEntity;
 import ru.all_easy.push.expense.repository.ExpenseRepository;
@@ -21,6 +18,7 @@ import ru.all_easy.push.user.repository.UserEntity;
 import ru.all_easy.push.user.service.UserService;
 
 @Service
+@Primary
 public class ExpenseServiceImpl implements ExpenseService {
     private final OptimizeTools optimizeTools;
     private final UserService userService;
@@ -54,9 +52,9 @@ public class ExpenseServiceImpl implements ExpenseService {
             UserEntity to = tuple.getT2();
 
             ExpenseEntity expense = new ExpenseEntity()
-                    .setRoom(room)
-                    .setTo(to)
-                    .setFrom(from)
+                    .setRoomToken(room.getToken())
+                    .setToUid(to.getUid())
+                    .setFromUid(from.getUid())
                     .setName(expenseInfo.name())
                     .setDateTime(dateTimeHelper.now())
                     .setAmount(expenseInfo.amount())
@@ -67,21 +65,23 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     public Mono<List<ExpenseInfoDateTime>> findLimitRoomExpenses(String roomToken, Integer limit) {
-        return repository
-                .findAllByRoomToken(roomToken, PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "dateTime")))
-                .flatMapMany(page -> Flux.fromIterable(page.getContent()))
-                .map(p -> new ExpenseInfoDateTime(
-                        p.getFrom().getUsername(),
-                        p.getTo().getUsername(),
-                        p.getAmount(),
-                        p.getName(),
-                        p.getDateTime(),
-                        p.getCurrency().getCode() + " " + p.getCurrency().getSymbol()))
-                .sort(Comparator.comparing(ExpenseInfoDateTime::dateTime))
-                .collectList();
+        return Mono.empty();
+        //        return repository
+        //                .findAllByRoomToken(roomToken, PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC,
+        // "dateTime")))
+        //                .flatMapMany(page -> Flux.fromIterable(page.getContent()))
+        //                .map(p -> new ExpenseInfoDateTime(
+        //                        p.getFromUid().getUsername(),
+        //                        p.getToUid().getUsername(),
+        //                        p.getAmount(),
+        //                        p.getName(),
+        //                        p.getDateTime(),
+        //                        p.getCurrency() + " " + p.getCurrency()))
+        //                .sort(Comparator.comparing(ExpenseInfoDateTime::dateTime))
+        //                .collectList();
     }
 
     public Mono<List<ExpenseEntity>> findRoomExpensesByCurrency(RoomEntity room) {
-        return repository.findAllByRoomAndCurrency(room, room.getCurrency());
+        return repository.findAllByRoomTokenAndCurrency(room.getToken(), room.getCurrency());
     }
 }

@@ -4,36 +4,43 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
-import ru.all_easy.push.currency.repository.model.CurrencyEntity;
-import ru.all_easy.push.room.repository.model.RoomEntity;
-import ru.all_easy.push.user.repository.UserEntity;
+import org.springframework.data.relational.core.mapping.Table;
 
+@Table("expense")
 public class ExpenseEntity {
 
+    @Id
     private Long id;
-    private UserEntity from;
-    private UserEntity to;
-    private RoomEntity room;
+
+    @Column("from_uid")
+    private String fromUid;
+
+    @Column("to_uid")
+    private String toUid;
+
+    @Column("room_token")
+    private String roomToken;
+
     private String name;
     private BigDecimal amount;
     private LocalDateTime dateTime;
-    private CurrencyEntity currency;
+    private String currency;
 
     @Id
     public Long getId() {
         return id;
     }
 
-    public UserEntity getFrom() {
-        return from;
+    public String getFromUid() {
+        return fromUid;
     }
 
-    public UserEntity getTo() {
-        return to;
+    public String getToUid() {
+        return toUid;
     }
 
-    public RoomEntity getRoom() {
-        return room;
+    public String getRoomToken() {
+        return roomToken;
     }
 
     @Column("name")
@@ -51,7 +58,7 @@ public class ExpenseEntity {
         return dateTime;
     }
 
-    public CurrencyEntity getCurrency() {
+    public String getCurrency() {
         return currency;
     }
 
@@ -60,13 +67,13 @@ public class ExpenseEntity {
         return this;
     }
 
-    public ExpenseEntity setFrom(UserEntity from) {
-        this.from = from;
+    public ExpenseEntity setFromUid(String fromUid) {
+        this.fromUid = fromUid;
         return this;
     }
 
-    public ExpenseEntity setTo(UserEntity to) {
-        this.to = to;
+    public ExpenseEntity setToUid(String toUid) {
+        this.toUid = toUid;
         return this;
     }
 
@@ -80,8 +87,8 @@ public class ExpenseEntity {
         return this;
     }
 
-    public ExpenseEntity setRoom(RoomEntity room) {
-        this.room = room;
+    public ExpenseEntity setRoomToken(String roomToken) {
+        this.roomToken = roomToken;
         return this;
     }
 
@@ -90,7 +97,7 @@ public class ExpenseEntity {
         return this;
     }
 
-    public ExpenseEntity setCurrency(CurrencyEntity currency) {
+    public ExpenseEntity setCurrency(String currency) {
         this.currency = currency;
         return this;
     }

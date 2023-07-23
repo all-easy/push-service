@@ -36,9 +36,7 @@ public class OptimizeTools {
         var grouped = new HashMap<String, BigDecimal>();
 
         roomExpenses.forEach(expense -> {
-            var key = expense.getFrom().getUsername()
-                    + SEPARATOR
-                    + expense.getTo().getUsername();
+            var key = expense.getFromUid() + SEPARATOR + expense.getToUid();
             if (grouped.get(key) == null) {
                 grouped.put(key, expense.getAmount());
                 return;

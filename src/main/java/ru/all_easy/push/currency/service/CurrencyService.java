@@ -23,7 +23,7 @@ public class CurrencyService {
     }
 
     public Mono<Void> updateCurrency(Long chatId, CurrencyEntity currency) {
-        return roomService.setRoomCurrency(chatId, currency);
+        return roomService.setRoomCurrency(chatId, currency.getCode());
     }
 
     public Mono<String> getRoomCurrencyCode(String chatId) {

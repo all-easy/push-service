@@ -12,6 +12,7 @@ public interface RoomUserRepository extends R2dbcRepository<RoomUserEntity, Long
 
     Flux<RoomUserEntity> findByUserUid(String userId);
 
-    @Query("INSERT INTO room_t_user (room_token, t_user_uid, status) VALUES (:token, :uid, :roomStatus) ON CONFLICT DO NOTHING")
+    @Query(
+            "INSERT INTO room_t_user (room_token, t_user_uid, status) VALUES (:token, :uid, :roomStatus) ON CONFLICT DO NOTHING")
     Mono<RoomUserEntity> save(String uid, String token, RoomStatus roomStatus);
 }

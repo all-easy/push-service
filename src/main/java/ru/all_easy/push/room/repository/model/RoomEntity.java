@@ -3,7 +3,6 @@ package ru.all_easy.push.room.repository.model;
 import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 
 @Table("room")
 public class RoomEntity implements Serializable {
@@ -14,7 +13,7 @@ public class RoomEntity implements Serializable {
     private String title;
     private String token;
 
-    private CurrencyEntity currency;
+    private String currency;
 
     public Long getId() {
         return id;
@@ -28,7 +27,7 @@ public class RoomEntity implements Serializable {
         return token;
     }
 
-    public CurrencyEntity getCurrency() {
+    public String getCurrency() {
         return currency;
     }
 
@@ -47,7 +46,7 @@ public class RoomEntity implements Serializable {
         return this;
     }
 
-    public void setCurrency(CurrencyEntity currency) {
+    public void setCurrency(String currency) {
         this.currency = currency;
     }
 }

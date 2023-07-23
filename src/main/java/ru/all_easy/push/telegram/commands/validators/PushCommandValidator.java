@@ -61,7 +61,8 @@ public class PushCommandValidator {
             BigDecimal calculatedAmount = pushHelper.addPercentToMathExpression(messageParts.get(2), percent);
             validated.setAmount(calculatedAmount);
         } catch (IllegalArgumentException ex) {
-            return ResultK.Err(new ValidationError(chatId, AnswerMessageTemplate.INCORRECT_MATH_EXPRESSION.getMessage()));
+            return ResultK.Err(
+                    new ValidationError(chatId, AnswerMessageTemplate.INCORRECT_MATH_EXPRESSION.getMessage()));
         }
 
         validated.setChatId(update.message().chat().id());

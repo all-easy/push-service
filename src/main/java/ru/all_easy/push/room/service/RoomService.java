@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
-import ru.all_easy.push.currency.repository.model.CurrencyEntity;
 import ru.all_easy.push.expense.service.ExpenseService;
 import ru.all_easy.push.optimize.OptimizeTools;
 import ru.all_easy.push.optimize.OweInfo;
@@ -70,7 +69,7 @@ public class RoomService {
         return repository.findRoomCurrency(token);
     }
 
-    public Mono<Void> setRoomCurrency(Long chatId, CurrencyEntity currency) {
+    public Mono<Void> setRoomCurrency(Long chatId, String currency) {
         return findRoomByToken(String.valueOf(chatId))
                 .flatMap(room -> {
                     room.setCurrency(currency);
