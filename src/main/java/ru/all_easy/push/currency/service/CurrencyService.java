@@ -26,8 +26,8 @@ public class CurrencyService {
         return roomService.setRoomCurrency(chatId, currency);
     }
 
-    public Mono<CurrencyEntity> getCurrencyByRoomId(String chatId) {
-        return roomService.findByToken(chatId).map(roomEntity -> roomEntity != null ? roomEntity.getCurrency() : null);
+    public Mono<String> getRoomCurrencyCode(String chatId) {
+        return roomService.getRoomCurrency(chatId);
     }
 
     public Mono<CurrencyEntity> getCurrencyByCode(String currencyCode) {

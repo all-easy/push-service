@@ -1,18 +1,22 @@
 package ru.all_easy.push.room_user.repository;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 import ru.all_easy.push.room.repository.model.RoomStatus;
 
+@Table("room_t_user")
 public class RoomUserEntity {
 
     @Id
     private Long id;
 
+    @Column("room_token")
     private String roomToken;
 
+    @Column("t_user_uid")
     private String userUid;
-    private String roomId;
-    private String userId;
+
     private RoomStatus status;
 
     public Long getId() {
@@ -42,30 +46,12 @@ public class RoomUserEntity {
         return this;
     }
 
-    public String getRoomId() {
-        return roomId;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
     public RoomStatus getStatus() {
         return status;
     }
 
     public RoomUserEntity setStatus(RoomStatus roomStatus) {
         this.status = roomStatus;
-        return this;
-    }
-
-    public RoomUserEntity setRoomId(String roomId) {
-        this.roomId = roomId;
-        return this;
-    }
-
-    public RoomUserEntity setUserId(String userId) {
-        this.userId = userId;
         return this;
     }
 }

@@ -29,7 +29,8 @@ public class CommandsContextService {
                 .flatMap(result -> {
                     if (result.hasError()) {
                         var chatId = result.getError().chatId();
-                        return telegramService.sendMessage(new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode()));
+                        return telegramService.sendMessage(
+                                new SendMessageInfo(chatId, result.getError().message(), ParseMode.MARKDOWN.getMode()));
                     } else {
                         var chatId = result.getResult().chatId();
                         return telegramService.sendMessage(new SendMessageInfo(
@@ -39,6 +40,7 @@ public class CommandsContextService {
                                 ParseMode.MARKDOWN.getMode(),
                                 result.getResult().replayMarkup()));
                     }
-                }).then();
+                })
+                .then();
     }
 }

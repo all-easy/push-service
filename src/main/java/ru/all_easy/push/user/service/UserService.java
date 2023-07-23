@@ -2,6 +2,7 @@ package ru.all_easy.push.user.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -15,23 +16,26 @@ public class UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
 
+    private final DatabaseClient db;
+
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, DatabaseClient db) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.db = db;
     }
 
     public Mono<UserEntity> findUserByUid(String uid) {
         return findUserEntity(uid);
     }
 
-    public Mono<UserEntity> findUserEntity(String uid) {
-        return repository.findUserEntity(uid);
+    public Mono<UserEntity> registerEntity(RegisterInfo info) {
+        return findUserEntity(info.id()).switchIfEmpty(Mono.defer(() -> createUser(info)));
     }
 
-    public Mono<UserEntity> registerEntity(RegisterInfo info) {
-        return findUserEntity(info.id()).flatMap(Mono::just).switchIfEmpty(createUser(info));
+    public Mono<UserEntity> findUserEntity(String uid) {
+        return repository.findUserEntity(uid);
     }
 
     private Mono<UserEntity> createUser(RegisterInfo info) {

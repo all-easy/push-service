@@ -86,11 +86,6 @@ public class PushGroupCommandServiceImpl implements PushGroupCommandService {
     }
 
     private Mono<RoomUserEntity> filterRoomUser(Mono<RoomEntity> roomMono, String username) {
-        return roomMono.flatMap(room -> room.getUsers().stream()
-                // FIX CAUSE NEED TO EQUAL USERNAMES
-                .filter(entity -> entity.getUserId().equals(username))
-                .findFirst()
-                .map(Mono::just)
-                .orElse(Mono.empty()));
+        return Mono.empty();
     }
 }

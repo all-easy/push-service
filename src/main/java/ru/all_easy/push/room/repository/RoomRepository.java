@@ -10,10 +10,12 @@ import ru.all_easy.push.room.repository.model.RoomEntity;
 
 public interface RoomRepository extends R2dbcRepository<RoomEntity, Long> {
 
-    @Query("SELECT DISTINCT room FROM RoomEntity room " + "LEFT JOIN FETCH room.users ru "
-            + "LEFT JOIN FETCH ru.user "
-            + "WHERE room.token = :roomToken")
+    @Query("select distinct * from room r where r.token = :roomToken")
     Mono<RoomEntity> findByToken(String roomToken);
+
+    @Query(
+            "SELECT code FROM RoomEntity room JOIN CurrencyEntity currency on room.currencyId = currency.id WHERE room.token = :token")
+    Mono<String> findRoomCurrency(String token);
 
     @Query("SELECT DISTINCT room FROM RoomEntity room " + "LEFT JOIN FETCH room.users u " + "WHERE u.user.uid = :uid")
     Mono<List<RoomEntity>> findAllByUid(String uid);

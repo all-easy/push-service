@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 
 public interface UserRepository extends R2dbcRepository<UserEntity, Long> {
 
-    @Query("SELECT user FROM UserEntity user LEFT JOIN user.rooms WHERE user.uid = :uid")
+    @Query("SELECT * FROM t_user tu WHERE tu.uid = :uid")
     Mono<UserEntity> findUserEntity(String uid);
 
     @Query(

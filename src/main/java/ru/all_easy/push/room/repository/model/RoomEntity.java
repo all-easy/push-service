@@ -1,13 +1,11 @@
 package ru.all_easy.push.room.repository.model;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import ru.all_easy.push.currency.repository.model.CurrencyEntity;
-import ru.all_easy.push.room_user.repository.RoomUserEntity;
 
+@Table("room")
 public class RoomEntity implements Serializable {
 
     @Id
@@ -15,7 +13,7 @@ public class RoomEntity implements Serializable {
 
     private String title;
     private String token;
-    private Set<RoomUserEntity> users = new HashSet<>();
+
     private CurrencyEntity currency;
 
     public Long getId() {
@@ -28,10 +26,6 @@ public class RoomEntity implements Serializable {
 
     public String getToken() {
         return token;
-    }
-
-    public Set<RoomUserEntity> getUsers() {
-        return users;
     }
 
     public CurrencyEntity getCurrency() {
@@ -53,25 +47,7 @@ public class RoomEntity implements Serializable {
         return this;
     }
 
-    public RoomEntity setUsers(Set<RoomUserEntity> roomUser) {
-        this.users = roomUser;
-        return this;
-    }
-
     public void setCurrency(CurrencyEntity currency) {
         this.currency = currency;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RoomEntity that = (RoomEntity) o;
-        return id.equals(that.id) && title.equals(that.title) && token.equals(that.token);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, token);
     }
 }

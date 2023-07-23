@@ -9,14 +9,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import reactivefeign.spring.config.EnableReactiveFeignClients;
 
 @SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class})
 @EnableR2dbcRepositories
 @ConfigurationPropertiesScan
 @EnableCaching
-@EnableTransactionManagement
 @EnableReactiveFeignClients
 public class PushService {
 

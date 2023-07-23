@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface RoomUserRepository extends R2dbcRepository<RoomUserEntity, Long> {
 
-    Mono<RoomUserEntity> findByUserIdAndRoomId(String userId, String roomId);
+    Mono<RoomUserEntity> findByUserUidAndRoomToken(String userId, String roomId);
 
-    Flux<RoomUserEntity> findByUserId(String userId);
+    Flux<RoomUserEntity> findByUserUid(String userId);
 }

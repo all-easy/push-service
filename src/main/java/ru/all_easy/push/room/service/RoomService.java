@@ -34,7 +34,7 @@ public class RoomService {
     }
 
     public Mono<RoomEntity> createRoomEntity(RoomInfo roomInfo) {
-        return findByToken(roomInfo.token()).switchIfEmpty(createAndSaveRoom(roomInfo));
+        return findByToken(roomInfo.token()).switchIfEmpty(Mono.defer(() -> createAndSaveRoom(roomInfo)));
     }
 
     private Mono<RoomEntity> createAndSaveRoom(RoomInfo roomInfo) {
@@ -44,7 +44,6 @@ public class RoomService {
 
     @Transactional
     public Mono<RoomResult> enterRoom(UserEntity user, RoomEntity room) {
-        // TODO: room enter logic
 
         return Mono.just(new RoomResult(null, room.getToken(), room.getTitle(), null, null));
     }
@@ -65,6 +64,10 @@ public class RoomService {
 
     public Mono<RoomEntity> findByToken(String token) {
         return repository.findByToken(token);
+    }
+
+    public Mono<String> getRoomCurrency(String token) {
+        return repository.findRoomCurrency(token);
     }
 
     public Mono<Void> setRoomCurrency(Long chatId, CurrencyEntity currency) {
