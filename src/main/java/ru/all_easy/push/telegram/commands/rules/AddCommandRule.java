@@ -46,7 +46,7 @@ public class AddCommandRule implements CommandRule {
     }
 
     @Override
-    public Mono<ResultK<CommandProcessed, CommandError>> process(Update update) {
+    public Mono<ResultK> process(Update update) {
         Long chatIdL = update.message().chat().id();
         String userId = String.valueOf(update.message().from().id());
         String chatId = String.valueOf(chatIdL);
@@ -64,15 +64,15 @@ public class AddCommandRule implements CommandRule {
                 .flatMap(room -> userService
                         .registerEntity(new RegisterInfo(username, StringUtils.EMPTY, userId))
                         .flatMap(user -> roomUserService.enterRoom(user.getUid(), room.getToken())))
-                .map(result -> {
+                .then(Mono.fromCallable(() -> {
                     String message = String.format(
                             "*%s* have been successfully added to virtual room *%s*", username, chatTitle);
-                    return ResultK.<CommandProcessed, CommandError>Ok(new CommandProcessed(chatIdL, message));
-                })
+                    return ResultK.Ok(new CommandProcessed(chatIdL, message));
+                }))
                 .as(txOperator::transactional)
                 .onErrorResume(ex -> {
                     logger.error(ex.getMessage());
-                    return Mono.just(ResultK.Ok(new CommandProcessed(chatIdL, "Something went wrong")));
+                    return Mono.just(ResultK.Err(new CommandError(chatIdL, "Something went wrong")));
                 });
     }
 }

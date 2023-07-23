@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_unique_constraint_on_room_user
+      author: denis-kartavenko
+      changes:
+        - sql:
+            sql: create unique index if not exists room_t_user_unique_index on room_t_user (room_token, t_user_uid);
+            splitStatements: true

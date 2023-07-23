@@ -38,12 +38,10 @@ databaseChangeLog:
                     foreignKeyName: currency
                     references: currency(code)
 
-#  - changeSet:
-#      id: addCurrencyInitSqlScript
-#      author: Oleg
-#      changes:
-#        - sqlFile:
-#            path: /src/main/resources/changelog/add_currency.sql
-#            relativeToChangelogFile: true
-#            endDelimiter: ;
-#            splitStatements: true
+  - changeSet:
+      id: addCurrencyInitSqlScript
+      author: Oleg
+      changes:
+        - sql:
+            sql: insert into currency(code, symbol) values ('USD', '$'), ('GBR', '£'), ('EUR', '€'), ('GEL', '₾'), ('AMD', '֏');
+            splitStatements: true

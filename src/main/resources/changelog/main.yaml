@@ -9,3 +9,5 @@ databaseChangeLog:
       file: changelog/add_currency.yaml
   - include:
       file: changelog/v1_0__add_currency_to_transaction.yaml
+  - include:
+      file: changelog/v2_0__add_unique_constraint_room_user.yaml

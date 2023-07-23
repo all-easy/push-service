@@ -1,31 +1,31 @@
 package ru.all_easy.push.common;
 
-public class ResultK<T, E> {
-    private final T result;
-    private final E error;
+public class ResultK {
+    private final Result result;
+    private final Error error;
 
-    private ResultK(T result, E error) {
+    private ResultK(Result result, Error error) {
         this.result = result;
         this.error = error;
     }
 
-    public static <T, E> ResultK<T, E> Err(E error) {
-        return new ResultK<>(null, error);
+    public static ResultK Err(Error error) {
+        return new ResultK(null, error);
     }
 
-    public static <T, E> ResultK<T, E> Ok(T result) {
-        return new ResultK<>(result, null);
+    public static ResultK Ok(Result result) {
+        return new ResultK(result, null);
     }
 
     public boolean hasError() {
         return error != null;
     }
 
-    public T getResult() {
+    public Result getResult() {
         return result;
     }
 
-    public E getError() {
+    public Error getError() {
         return error;
     }
 }

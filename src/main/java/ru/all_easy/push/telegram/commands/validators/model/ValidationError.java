@@ -1,3 +1,5 @@
 package ru.all_easy.push.telegram.commands.validators.model;
 
-public record ValidationError(String message) {}
+import ru.all_easy.push.common.Error;
+
+public record ValidationError(Long chatId, String message) implements Error {}

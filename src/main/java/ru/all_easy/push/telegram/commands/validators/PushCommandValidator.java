@@ -22,8 +22,9 @@ public class PushCommandValidator {
         this.pushHelper = pushHelper;
     }
 
-    public ResultK<PushCommandValidated, ValidationError> validate(Update update) {
+    public ResultK validate(Update update) {
         var messageText = update.message().text();
+        var chatId = update.message().chat().id();
         if (update.message().replayToMessage() != null) {
             messageText = update.message().replayToMessage().text() + " " + messageText;
         }
@@ -31,7 +32,7 @@ public class PushCommandValidator {
         var messageParts = Arrays.stream(messageText.split(" ")).toList();
 
         if (messageParts.size() < 3) {
-            return ResultK.Err(new ValidationError(AnswerMessageTemplate.INCORRECT_FORMAT.getMessage()));
+            return ResultK.Err(new ValidationError(chatId, AnswerMessageTemplate.INCORRECT_FORMAT.getMessage()));
         }
 
         var validated = new PushCommandValidated();
@@ -42,14 +43,14 @@ public class PushCommandValidator {
         }
 
         if (!messageParts.get(1).contains("@")) {
-            return ResultK.Err(new ValidationError(AnswerMessageTemplate.UNRECOGNIZED_USERNAME.getMessage()));
+            return ResultK.Err(new ValidationError(chatId, AnswerMessageTemplate.UNRECOGNIZED_USERNAME.getMessage()));
         }
 
         validated.setToUsername(messageParts.get(1).replace("@", ""));
 
         var fromUsername = update.message().from().username();
-        if (fromUsername.equals(validated.getToUsername())) {
-            return ResultK.Err(new ValidationError(AnswerMessageTemplate.YOURSELF_PUSH.getMessage()));
+        if (fromUsername.equals(validated.toUsername())) {
+            return ResultK.Err(new ValidationError(chatId, AnswerMessageTemplate.YOURSELF_PUSH.getMessage()));
         }
         validated.setFromUsername(fromUsername);
 
@@ -60,7 +61,7 @@ public class PushCommandValidator {
             BigDecimal calculatedAmount = pushHelper.addPercentToMathExpression(messageParts.get(2), percent);
             validated.setAmount(calculatedAmount);
         } catch (IllegalArgumentException ex) {
-            return ResultK.Err(new ValidationError(AnswerMessageTemplate.INCORRECT_MATH_EXPRESSION.getMessage()));
+            return ResultK.Err(new ValidationError(chatId, AnswerMessageTemplate.INCORRECT_MATH_EXPRESSION.getMessage()));
         }
 
         validated.setChatId(update.message().chat().id());

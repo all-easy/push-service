@@ -1,9 +1,4 @@
-insert into currency(code, symbol) values
-('USD', '$'),
-('GBR', '£'),
-('EUR', '€'),
-('GEL', '₾'),
-('AMD', '֏');
+
 
 -- USD \u0024 $
 -- GBR \u00a3 £

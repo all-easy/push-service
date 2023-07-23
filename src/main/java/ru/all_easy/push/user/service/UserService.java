@@ -38,6 +38,10 @@ public class UserService {
         return repository.findUserEntity(uid);
     }
 
+    public Mono<UserEntity> findUserInRoomByUsername(String roomToken, String username) {
+        return repository.findUserInRoomByUsername(roomToken, username);
+    }
+
     private Mono<UserEntity> createUser(RegisterInfo info) {
         return repository.save(new UserEntity()
                 .setUsername(info.username())

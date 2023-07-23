@@ -1,16 +1,14 @@
 package ru.all_easy.push.common;
 
-public record Result<T>(T payload, String error, ErrorType type, Integer errorCode) {
+import ru.all_easy.push.common.client.model.ReplayMarkup;
 
-    public Result(T payload) {
-        this(payload, null, null, null);
-    }
+public interface Result {
 
-    public Result(String message, int code) {
-        this(message, null, code);
-    }
+    Long chatId();
 
-    public Result(String message, ErrorType errorType, int code) {
-        this(null, message, errorType, code);
-    }
+    Integer replayToId();
+
+    String message();
+
+    ReplayMarkup replayMarkup();
 }

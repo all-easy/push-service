@@ -20,7 +20,7 @@ public class StartCommand implements CommandRule {
     }
 
     @Override
-    public Mono<ResultK<CommandProcessed, CommandError>> process(Update update) {
+    public Mono<ResultK> process(Update update) {
         var message =
                 """
         ```

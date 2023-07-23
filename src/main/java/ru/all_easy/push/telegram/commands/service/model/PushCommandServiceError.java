@@ -1,3 +1,6 @@
 package ru.all_easy.push.telegram.commands.service.model;
 
-public record PushCommandServiceError(String message) {}
+import ru.all_easy.push.common.Error;
+
+public record PushCommandServiceError(Long chatId, String message) implements Error {
+}

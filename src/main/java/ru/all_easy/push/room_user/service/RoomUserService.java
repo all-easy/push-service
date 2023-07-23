@@ -41,8 +41,7 @@ public class RoomUserService {
         });
     }
 
-    public Mono<RoomUserEntity> enterRoom(String uid, String token) {
-        return repository.save(
-                new RoomUserEntity().setUserUid(uid).setRoomToken(token).setStatus(RoomStatus.ACTIVE));
+    public Mono<Void> enterRoom(String uid, String token) {
+        return repository.save(uid, token, RoomStatus.ACTIVE).then();
     }
 }
