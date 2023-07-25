@@ -57,9 +57,7 @@ public class TestData {
         roomEntity1.setCurrency(USD);
         roomRepository.save(roomEntity1);
 
-        CurrencyEntity EURO = currencyRepository.findByCode("EURO");
         RoomEntity roomEntity2 = new RoomEntity().setId(2L).setToken("22222").setTitle("room_title_2");
-        roomEntity2.setCurrency(EURO);
         roomRepository.save(roomEntity2);
     }
 
@@ -76,7 +74,6 @@ public class TestData {
         UserEntity user1 = userRepository.findUserEntity("10001");
         UserEntity user2 = userRepository.findUserEntity("10002");
         UserEntity user3 = userRepository.findUserEntity("10003");
-        UserEntity user4 = userRepository.findUserEntity("10004");
         RoomEntity room = roomRepository.findByToken("11111");
         CurrencyEntity USD = currencyRepository.findByCode("USD");
         expenseRepository.save(new ExpenseEntity()
