@@ -1,5 +1,6 @@
 package ru.all_easy.push.telegram.api.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -9,13 +10,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
+import redis.clients.jedis.Jedis;
 import ru.all_easy.push.common.IntegrationTest;
 import ru.all_easy.push.common.client.model.SendMessageInfo;
 import ru.all_easy.push.expense.repository.ExpenseRepository;
@@ -53,8 +62,28 @@ class UpdateControllerSplitCommandTest extends IntegrationTest {
     @Autowired
     private TestData testData;
 
+    public static Jedis jedis;
+
     private static final String URL = "/v1/api/telegram/";
     private static final String HEADER_SECRET = "1234";
+
+    @Container
+    private static GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis"))
+            .withExposedPorts(6379)
+            .waitingFor(Wait.defaultWaitStrategy());
+
+    @DynamicPropertySource
+    static void redisProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.redis.host", redisContainer::getHost);
+        registry.add("spring.redis.port", redisContainer::getFirstMappedPort);
+
+        jedis = new Jedis(redisContainer.getHost(), redisContainer.getFirstMappedPort());
+    }
+
+    @BeforeAll
+    static void beforeAll() {
+        assertThat(redisContainer.isRunning()).isTrue();
+    }
 
     @BeforeEach
     void beforeEach() {
