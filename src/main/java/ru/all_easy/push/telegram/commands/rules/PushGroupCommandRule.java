@@ -33,6 +33,7 @@ public class PushGroupCommandRule implements CommandRule {
         }
 
         var replay = update.message().replayToMessage() != null
+                && update.message().replayToMessage().text() != null
                 && update.message().replayToMessage().text().contains(Commands.PUSH.getCommand());
 
         var groupSuperGroup = update.message().chat().type().equals(ChatType.SUPER_GROUP.getType())
