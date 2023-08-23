@@ -1,13 +1,13 @@
 spring:
   profiles:
-    active: ${PROFILE}
+    active: ${PROFILE:test}
 
   #Datasource
   datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+    url: jdbc:postgresql://localhost:5432/${DB_NAME:test}
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME:username}
+    password: ${DB_PASSWORD:password}
 
   #Jpa
   jpa:
@@ -26,7 +26,7 @@ spring:
   redis:
     host: localhost
     port: 6379
-    password: ${REDIS_PASSWORD}
+    password: ${REDIS_PASSWORD:redispassword}
 
 #Monitoring
 management:
@@ -58,10 +58,10 @@ management:
 telegram:
   api: https://api.telegram.org/bot
   hook:
-    url: ${TG_HOOK_URL}
-    secret: ${TG_HOOK_SECRET}
+    url: ${TG_HOOK_URL:`http://localhost:1000`}
+    secret: ${TG_HOOK_SECRET:1234}
     full-hook-url: ${telegram.hook.url}/v1/api/telegram/
-  token: ${TG_TOKEN}
+  token: ${TG_TOKEN:token}
   url: ${telegram.api}${telegram.token}
   drop-pending-updates: true
 

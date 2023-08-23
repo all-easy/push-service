@@ -16,8 +16,16 @@ public class CurrencyEntity implements Serializable {
     @Column(name = "symbol", unique = true)
     String symbol;
 
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getCode() {
         return code;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
     public String getSymbol() {
