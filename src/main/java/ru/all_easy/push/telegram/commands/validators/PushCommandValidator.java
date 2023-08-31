@@ -34,6 +34,10 @@ public class PushCommandValidator {
             return ResultK.Err(new ValidationError(AnswerMessageTemplate.INCORRECT_FORMAT.getMessage()));
         }
 
+        if (update.message().entities() == null) {
+            return ResultK.Err(new ValidationError(AnswerMessageTemplate.INCORRECT_FORMAT.getMessage()));
+        }
+
         var validated = new PushCommandValidated();
         for (MessageEntity entity : update.message().entities()) {
             if (TEXT_MENTION.equals(entity.type()) && !entity.user().username().isEmpty()) {
