@@ -44,21 +44,24 @@ public class HistoryCommandRule implements CommandRule {
             return ResultK.Ok(new CommandProcessed(chatId, "History is empty"));
         }
 
-        Integer virtualLimit = getLimit(update);
-        virtualLimit = virtualLimit > infoList.size() ? infoList.size() : virtualLimit;
-        StringBuilder message = new StringBuilder();
-        for (var info : infoList.subList(infoList.size() - virtualLimit, infoList.size())) {
-            message.append(String.format(
-                    "%s\n*%s* → %s\nsum *%.2f* %s\n%s\n",
-                    dateTimeHelper.toString(info.dateTime(), "dd.MM"),
-                    info.fromUsername(),
-                    info.toUsername(),
-                    info.amount(),
-                    info.currencyLabel(),
-                    info.name() != null && !info.name().isBlank() ? info.name() + "\n" : ""));
+        try {
+            Integer virtualLimit = getLimit(update);
+            virtualLimit = virtualLimit > infoList.size() ? infoList.size() : virtualLimit;
+            StringBuilder message = new StringBuilder();
+            for (var info : infoList.subList(infoList.size() - virtualLimit, infoList.size())) {
+                message.append(String.format(
+                        "%s\n*%s* → %s\nsum *%.2f* %s\n%s\n",
+                        dateTimeHelper.toString(info.dateTime(), "dd.MM"),
+                        info.fromUsername(),
+                        info.toUsername(),
+                        info.amount(),
+                        info.currencyLabel(),
+                        info.name() != null && !info.name().isBlank() ? info.name() + "\n" : ""));
+            }
+            return ResultK.Ok(new CommandProcessed(chatId, message.toString()));
+        } catch (Exception ex) {
+            return ResultK.Err(new CommandError(chatId, "Error format sorry"));
         }
-
-        return ResultK.Ok(new CommandProcessed(chatId, message.toString()));
     }
 
     private Integer getLimit(Update update) {
